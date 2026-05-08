@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="transparent"/>
+  <!-- Diagonal color blocks -->
+  <polygon points="0,0 280,0 0,280" fill="#E63946"/>
+  <polygon points="400,400 120,400 400,120" fill="#457B9D"/>
+  <!-- White center diamond -->
+  <polygon points="200,60 340,200 200,340 60,200" fill="#F1FAEE"/>
+  <!-- Inner red diamond -->
+  <polygon points="200,100 300,200 200,300 100,200" fill="#E63946"/>
+  <!-- Center dot -->
+  <circle cx="200" cy="200" r="32" fill="#F1FAEE"/>
+  <circle cx="200" cy="200" r="16" fill="#E63946"/>
+  <!-- Corner accents -->
+  <rect x="0" y="0" width="40" height="40" fill="#1D3557"/>
+  <rect x="360" y="360" width="40" height="40" fill="#1D3557"/>
+</svg>

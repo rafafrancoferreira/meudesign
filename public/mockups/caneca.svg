@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <filter id="ca-sh" x="-12%" y="-8%" width="130%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="#000" flood-opacity="0.13"/>
+    </filter>
+    <linearGradient id="ca-fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#bbb" stop-opacity="0.18"/>
+      <stop offset="28%"  stop-color="#bbb" stop-opacity="0"/>
+      <stop offset="72%"  stop-color="#bbb" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#bbb" stop-opacity="0.22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mug body with print-zone hole (evenodd) + shadow -->
+  <!-- Hole coords: x=110 y=138 w=168 h=152 → CSS top:34.5% left:27.5% w:42% h:38% -->
+  <path fill-rule="evenodd"
+    d="M68 95 A 132 22 0 0 0 332 95 L328 358 C328 372 316 382 302 382 L98 382 C84 382 72 372 72 358 Z
+       M110 138 L278 138 L278 290 L110 290 Z"
+    fill="white" filter="url(#ca-sh)"
+  />
+
+  <!-- Rim top ellipse (opaque, on top) -->
+  <ellipse cx="200" cy="95" rx="132" ry="22" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="1.5"/>
+  <!-- Inner rim ellipse (liquid surface hint) -->
+  <ellipse cx="200" cy="95" rx="110" ry="16" fill="#e8e8e8" stroke="#d8d8d8" stroke-width="1"/>
+
+  <!-- Mug outline -->
+  <path
+    d="M68 95 A 132 22 0 0 0 332 95 L328 358 C328 372 316 382 302 382 L98 382 C84 382 72 372 72 358 Z"
+    fill="none" stroke="#cecece" stroke-width="1.5"
+  />
+
+  <!-- Handle -->
+  <path d="M328 168 C388 168 402 200 402 228 C402 258 384 292 328 296" fill="none" stroke="#d0d0d0" stroke-width="10" stroke-linecap="round"/>
+  <path d="M328 168 C388 168 402 200 402 228 C402 258 384 292 328 296" fill="none" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <path d="M328 168 C388 168 402 200 402 228 C402 258 384 292 328 296" fill="none" stroke="#e0e0e0" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Shading overlay -->
+  <path
+    d="M68 95 A 132 22 0 0 0 332 95 L328 358 C328 372 316 382 302 382 L98 382 C84 382 72 372 72 358 Z"
+    fill="url(#ca-fade)"
+  />
+</svg>

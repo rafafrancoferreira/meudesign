@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="transparent"/>
+  <!-- Outer hexagon -->
+  <polygon points="200,30 354,115 354,285 200,370 46,285 46,115" fill="#1A0030" stroke="#9B5DE5" stroke-width="2.5"/>
+  <!-- Mid hexagon -->
+  <polygon points="200,70 320,135 320,265 200,330 80,265 80,135" fill="none" stroke="#F15BB5" stroke-width="2"/>
+  <!-- Inner hexagon -->
+  <polygon points="200,110 286,158 286,242 200,290 114,242 114,158" fill="none" stroke="#FEE440" stroke-width="1.5"/>
+  <!-- Star of David triangles -->
+  <polygon points="200,80 310,260 90,260" fill="none" stroke="#9B5DE5" stroke-width="1.5" opacity="0.6"/>
+  <polygon points="200,320 90,140 310,140" fill="none" stroke="#F15BB5" stroke-width="1.5" opacity="0.6"/>
+  <!-- Center flower -->
+  <circle cx="200" cy="200" r="50" fill="#9B5DE5" opacity="0.3"/>
+  <circle cx="200" cy="200" r="30" fill="#9B5DE5" opacity="0.6"/>
+  <circle cx="200" cy="200" r="14" fill="#FEE440"/>
+  <!-- Petal circles -->
+  <circle cx="200" cy="155" r="22" fill="#F15BB5" opacity="0.7"/>
+  <circle cx="238" cy="178" r="22" fill="#F15BB5" opacity="0.7"/>
+  <circle cx="238" cy="222" r="22" fill="#F15BB5" opacity="0.7"/>
+  <circle cx="200" cy="245" r="22" fill="#F15BB5" opacity="0.7"/>
+  <circle cx="162" cy="222" r="22" fill="#F15BB5" opacity="0.7"/>
+  <circle cx="162" cy="178" r="22" fill="#F15BB5" opacity="0.7"/>
+  <!-- Center dot -->
+  <circle cx="200" cy="200" r="8" fill="#FEE440"/>
+</svg>

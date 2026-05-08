@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <filter id="po-sh" x="-8%" y="-8%" width="116%" height="116%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity="0.16"/>
+    </filter>
+    <linearGradient id="po-fade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#bbb" stop-opacity="0.1"/>
+      <stop offset="50%"  stop-color="#bbb" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#bbb" stop-opacity="0.08"/>
+    </linearGradient>
+  </defs>
+
+  <!-- White poster with transparent print-zone hole (evenodd) + shadow -->
+  <!-- Hole coords: x=30 y=30 w=340 h=340 → CSS top:7.5% left:7.5% w:85% h:85% -->
+  <path fill-rule="evenodd"
+    d="M20 20 L380 20 L380 380 L20 380 Z M30 30 L370 30 L370 370 L30 370 Z"
+    fill="white" filter="url(#po-sh)"
+  />
+
+  <!-- Outer border -->
+  <rect x="20" y="20" width="360" height="360" rx="3" fill="none" stroke="#c8c8c8" stroke-width="1.5"/>
+
+  <!-- Inner mat line -->
+  <rect x="30" y="30" width="340" height="340" fill="none" stroke="#e0e0e0" stroke-width="0.75"/>
+
+  <!-- Corner alignment marks -->
+  <polyline points="20,34 20,20 34,20"   fill="none" stroke="#b8b8b8" stroke-width="1"/>
+  <polyline points="366,20 380,20 380,34" fill="none" stroke="#b8b8b8" stroke-width="1"/>
+  <polyline points="20,366 20,380 34,380" fill="none" stroke="#b8b8b8" stroke-width="1"/>
+  <polyline points="366,380 380,380 380,366" fill="none" stroke="#b8b8b8" stroke-width="1"/>
+
+  <!-- Shading overlay -->
+  <rect x="20" y="20" width="360" height="360" rx="3" fill="url(#po-fade)"/>
+</svg>

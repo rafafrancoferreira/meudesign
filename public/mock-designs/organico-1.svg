@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="transparent"/>
+  <!-- Background blob -->
+  <path d="M200 30 C290 30 370 90 370 190 C370 290 320 370 210 375 C100 380 30 300 30 200 C30 100 110 30 200 30Z" fill="#FF9F1C" opacity="0.15"/>
+  <!-- Large organic blob 1 -->
+  <path d="M160 80 C220 60 300 100 320 160 C340 220 310 300 250 330 C190 360 110 320 80 260 C50 200 70 120 160 80Z" fill="#FF9F1C"/>
+  <!-- Blob 2 -->
+  <path d="M200 120 C250 110 300 150 305 200 C310 255 270 310 215 315 C160 320 110 275 110 220 C110 165 150 130 200 120Z" fill="#FFBF69"/>
+  <!-- Inner blob -->
+  <path d="M200 155 C230 148 265 170 268 200 C271 232 248 262 218 265 C188 268 158 242 158 210 C158 178 170 162 200 155Z" fill="#FF9F1C"/>
+  <!-- Center -->
+  <circle cx="205" cy="205" r="42" fill="#CBF3F0"/>
+  <circle cx="205" cy="205" r="22" fill="#FF9F1C"/>
+  <!-- Floating accent blobs -->
+  <ellipse cx="100" cy="310" rx="45" ry="35" fill="#FFBF69" opacity="0.6" transform="rotate(-20, 100, 310)"/>
+  <ellipse cx="320" cy="110" rx="35" ry="28" fill="#CBF3F0" opacity="0.7" transform="rotate(15, 320, 110)"/>
+  <ellipse cx="330" cy="320" rx="28" ry="22" fill="#FF9F1C" opacity="0.5" transform="rotate(-10, 330, 320)"/>
+</svg>

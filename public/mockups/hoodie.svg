@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- White fill with transparent print-zone hole (evenodd) -->
+  <!-- Hole: x=136 y=160 w=128 h=114 → CSS top:40% left:34% w:32% h:28.5% -->
+  <path fill-rule="evenodd"
+    d="M200 18 C228 18 252 42 248 84 L294 70 L368 106 L348 166 L288 142 L288 378 L112 378 L112 142 L52 166 L32 106 L106 70 L152 84 C148 42 172 18 200 18 Z
+       M136 160 L264 160 L264 274 L136 274 Z"
+    fill="white"
+  />
+  <!-- Outer contour -->
+  <path
+    d="M200 18 C228 18 252 42 248 84 L294 70 L368 106 L348 166 L288 142 L288 378 L112 378 L112 142 L52 166 L32 106 L106 70 L152 84 C148 42 172 18 200 18 Z"
+    fill="none" stroke="#c8c8c8" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"
+  />
+  <!-- Hood seam line -->
+  <path
+    d="M152 84 C162 78 180 74 200 74 C220 74 238 78 248 84"
+    fill="none" stroke="#dedede" stroke-width="1" stroke-linecap="round"
+  />
+</svg>

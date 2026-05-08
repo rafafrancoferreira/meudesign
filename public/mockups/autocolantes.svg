@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <filter id="au-sh" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="5" stdDeviation="12" flood-color="#000" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <!-- White ring with transparent center hole (evenodd) + shadow -->
+  <!-- Outer r=175, Inner hole r=148 → CSS top:13% left:13% w:74% h:74% shape:circle -->
+  <!-- Inner circle top = 200-148 = 52, bottom = 200+148 = 348 -->
+  <path fill-rule="evenodd"
+    d="M200 25 A175 175 0 1 0 200.001 25 Z M200 52 A148 148 0 1 0 200.001 52 Z"
+    fill="white" filter="url(#au-sh)"
+  />
+
+  <!-- Outer border -->
+  <circle cx="200" cy="200" r="175" fill="none" stroke="#d0d0d0" stroke-width="1.5"/>
+
+  <!-- Inner ring guide line -->
+  <circle cx="200" cy="200" r="148" fill="none" stroke="#e0e0e0" stroke-width="0.75" stroke-dasharray="4 6"/>
+
+  <!-- Tiny notch at top (sticker sheet peel indicator) -->
+  <path d="M195 26 L200 18 L205 26" fill="#e0e0e0" stroke="#d0d0d0" stroke-width="0.8"/>
+</svg>
