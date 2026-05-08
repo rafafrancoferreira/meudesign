@@ -4,16 +4,18 @@ import Image from 'next/image';
 import { Minus, Plus, X } from 'lucide-react';
 import { type CartItem, useCartStore } from '@/lib/store-cart';
 import { getProductBySlug, formatPrice } from '@/lib/products';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export function CartItemRow({ item }: { item: CartItem }) {
   const remove = useCartStore((s) => s.remove);
   const updateQty = useCartStore((s) => s.updateQty);
   const product = getProductBySlug(item.productSlug);
+  const zone = MOCKUP_PRINT_ZONES[item.productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
 
   const displayName = (product?.name ?? item.productSlug)
+    .replace(' personalizados', '')
     .replace(' personalizada', '')
     .replace(' personalizado', '')
-    .replace(' personalizados', '')
     .replace(' decorativo', '');
 
   function decrement() {
@@ -23,28 +25,41 @@ export function CartItemRow({ item }: { item: CartItem }) {
 
   return (
     <div className="flex gap-4 py-6 border-b border-border">
-      {/* Mockup + design thumbnails */}
-      <div className="flex gap-2 shrink-0">
-        <div className="w-16 h-16 bg-surface border border-border rounded-xl overflow-hidden flex items-center justify-center p-2">
-          {product && (
-            <Image
-              src={product.mockup}
-              alt={displayName}
-              width={48}
-              height={48}
-              className="object-contain invert opacity-60 w-full h-full"
-            />
-          )}
-        </div>
-        <div className="w-16 h-16 bg-surface border border-border rounded-xl overflow-hidden flex items-center justify-center p-2">
+      {/* Composited thumbnail */}
+      <div className="shrink-0 relative w-20 h-20 rounded-xl overflow-hidden bg-[#f0f0f0] border border-border">
+        {/* Design layer (below) */}
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            top: zone.top,
+            left: zone.left,
+            width: zone.width,
+            height: zone.height,
+            borderRadius: zone.shape === 'circle' ? '50%' : undefined,
+          }}
+        >
           <Image
             src={item.designUrl}
             alt="Design aplicado"
-            width={48}
-            height={48}
-            className="object-contain w-full h-full"
+            fill
+            className="object-contain"
+            sizes="80px"
+            unoptimized={item.designUrl.startsWith('/')}
           />
         </div>
+        {/* Mockup layer (above) */}
+        {product && (
+          <div className="absolute inset-0">
+            <Image
+              src={product.mockup}
+              alt={displayName}
+              fill
+              className="object-contain"
+              sizes="80px"
+              unoptimized
+            />
+          </div>
+        )}
       </div>
 
       {/* Info */}

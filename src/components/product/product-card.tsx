@@ -8,9 +8,9 @@ import { type Product, formatPrice } from '@/lib/products';
 
 export function ProductCard({ product }: { product: Product }) {
   const displayName = product.name
+    .replace(' personalizados', '')
     .replace(' personalizada', '')
     .replace(' personalizado', '')
-    .replace(' personalizados', '')
     .replace(' decorativo', '');
 
   return (
@@ -29,7 +29,8 @@ export function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={200}
             height={200}
-            className="object-contain invert opacity-60 w-full h-full"
+            className="object-contain opacity-70 w-full h-full"
+            unoptimized
           />
         </div>
 
@@ -40,7 +41,8 @@ export function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             width={200}
             height={200}
-            className="object-contain invert opacity-80 w-full h-full scale-105 transition-transform duration-500"
+            className="object-contain opacity-90 w-full h-full scale-105 transition-transform duration-500"
+            unoptimized
           />
         </div>
 

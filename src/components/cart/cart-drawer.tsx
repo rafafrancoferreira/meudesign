@@ -6,6 +6,7 @@ import { X, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCartStore } from '@/lib/store-cart';
 import { getProductBySlug, formatPrice } from '@/lib/products';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 interface CartDrawerProps {
   open: boolean;
@@ -88,36 +89,50 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <div className="space-y-4">
                   {items.map((item) => {
                     const product = getProductBySlug(item.productSlug);
+                    const zone = MOCKUP_PRINT_ZONES[item.productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
                     const displayName = (product?.name ?? item.productSlug)
+                      .replace(' personalizados', '')
                       .replace(' personalizada', '')
                       .replace(' personalizado', '')
-                      .replace(' personalizados', '')
                       .replace(' decorativo', '');
 
                     return (
                       <div key={item.id} className="flex gap-3 py-3 border-b border-border last:border-0">
-                        {/* Thumbs */}
-                        <div className="flex gap-1.5 shrink-0">
-                          <div className="w-12 h-12 bg-background border border-border rounded-lg overflow-hidden flex items-center justify-center p-1.5">
-                            {product && (
-                              <Image
-                                src={product.mockup}
-                                alt={displayName}
-                                width={36}
-                                height={36}
-                                className="object-contain invert opacity-60 w-full h-full"
-                              />
-                            )}
-                          </div>
-                          <div className="w-12 h-12 bg-background border border-border rounded-lg overflow-hidden flex items-center justify-center p-1.5">
+                        {/* Composited thumbnail */}
+                        <div className="shrink-0 relative w-14 h-14 rounded-lg overflow-hidden bg-[#f0f0f0] border border-border">
+                          {/* Design layer (below) */}
+                          <div
+                            className="absolute overflow-hidden"
+                            style={{
+                              top: zone.top,
+                              left: zone.left,
+                              width: zone.width,
+                              height: zone.height,
+                              borderRadius: zone.shape === 'circle' ? '50%' : undefined,
+                            }}
+                          >
                             <Image
                               src={item.designUrl}
                               alt="Design"
-                              width={36}
-                              height={36}
-                              className="object-contain w-full h-full"
+                              fill
+                              className="object-contain"
+                              sizes="56px"
+                              unoptimized={item.designUrl.startsWith('/')}
                             />
                           </div>
+                          {/* Mockup layer (above) */}
+                          {product && (
+                            <div className="absolute inset-0">
+                              <Image
+                                src={product.mockup}
+                                alt={displayName}
+                                fill
+                                className="object-contain"
+                                sizes="56px"
+                                unoptimized
+                              />
+                            </div>
+                          )}
                         </div>
 
                         {/* Info */}

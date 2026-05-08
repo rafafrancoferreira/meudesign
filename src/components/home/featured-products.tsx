@@ -80,7 +80,8 @@ export function FeaturedProducts() {
                       alt={product.name}
                       width={160}
                       height={160}
-                      className="object-contain invert opacity-60 w-full h-full"
+                      className="object-contain opacity-70 w-full h-full"
+                      unoptimized
                     />
                   </div>
 
@@ -99,7 +100,8 @@ export function FeaturedProducts() {
                         alt=""
                         width={160}
                         height={160}
-                        className="object-contain invert opacity-20 mix-blend-overlay w-full h-full"
+                        className="object-contain opacity-30 w-full h-full"
+                        unoptimized
                       />
                     </div>
                   </div>
@@ -118,7 +120,7 @@ export function FeaturedProducts() {
                 <div className="px-1">
                   <div className="flex items-center justify-between mb-0.5">
                     <h3 className="text-sm font-mono uppercase tracking-wide text-foreground group-hover:text-accent transition-colors leading-tight">
-                      {product.name.replace(' personalizada', '').replace(' personalizado', '').replace(' personalizados', '').replace(' decorativo', '')}
+                      {product.name.replace(' personalizados', '').replace(' personalizada', '').replace(' personalizado', '').replace(' decorativo', '')}
                     </h3>
                     <span className="text-sm font-mono text-muted-foreground">
                       {formatPrice(product.price)}

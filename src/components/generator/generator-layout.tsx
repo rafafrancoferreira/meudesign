@@ -236,6 +236,7 @@ export function GeneratorLayout() {
                         width={40}
                         height={40}
                         className="object-contain"
+                        unoptimized
                       />
                     </div>
                     <span
@@ -243,7 +244,7 @@ export function GeneratorLayout() {
                         selectedProduct === product.slug ? 'text-accent' : 'text-muted'
                       }`}
                     >
-                      {product.name.replace(' personalizada', '').replace(' personalizado', '').replace(' personalizados', '').replace(' decorativo', '')}
+                      {product.name.replace(' personalizados', '').replace(' personalizada', '').replace(' personalizado', '').replace(' decorativo', '')}
                     </span>
                   </button>
                 ))}
@@ -254,7 +255,7 @@ export function GeneratorLayout() {
             <button
               onClick={generate}
               disabled={!prompt.trim() || state === 'loading'}
-              className="w-full flex items-center justify-center gap-3 bg-accent text-accent-foreground font-mono font-semibold uppercase tracking-widest py-4 rounded-lg text-sm transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-3 bg-[#dafe22] text-[#0a0a0a] font-mono font-semibold uppercase tracking-widest py-4 rounded-lg text-sm transition-all hover:opacity-90 disabled:opacity-20 disabled:cursor-not-allowed"
             >
               {state === 'loading' ? (
                 <>
@@ -315,6 +316,7 @@ export function GeneratorLayout() {
                       width={64}
                       height={64}
                       className="object-contain w-full h-full"
+                      unoptimized
                     />
                   </div>
                   <p className="text-muted text-sm font-mono">
