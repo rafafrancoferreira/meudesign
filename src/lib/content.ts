@@ -28,7 +28,7 @@ export const contactInfo = {
   instagram: { label: '@meudesign.pt', url: 'https://instagram.com/meudesign.pt' },
   tiktok: { label: '@meudesign', url: 'https://tiktok.com/@meudesign' },
   address: {
-    institution: 'IPAG — Instituto Português de Administração e Gestão',
+    institution: 'ISAG — Instituto Superior de Administração e Gestão',
     street: 'Rua Tomás Ribeiro, 50',
     postalCode: '1050-225 Lisboa',
     country: 'Portugal',
@@ -38,7 +38,7 @@ export const contactInfo = {
 // ── About ─────────────────────────────────────────────────────────────────
 
 export const aboutText = [
-  'O MeuDesign nasceu de uma pergunta simples: e se qualquer pessoa pudesse ter um design único, sem saber desenhar? Somos três estudantes do IPAG — Rafael, Martim e Guilherme — e desenvolvemos esta plataforma no âmbito da UC Plataformas Digitais e E-Commerce.',
+  'O MeuDesign nasceu de uma pergunta simples: e se qualquer pessoa pudesse ter um design único, sem saber desenhar? Somos três estudantes do ISAG — Rafael, Martim e Guilherme — e desenvolvemos esta plataforma no âmbito da UC Plataformas Digitais e E-Commerce.',
   'O problema é real: criar algo visualmente apelativo costuma exigir anos de prática ou centenas de euros num designer. A nossa solução é uma IA generativa que transforma uma descrição em texto num design pronto a imprimir, aplicado em segundos num produto à tua escolha.',
   'A missão é clara: democratizar o design. Queremos que qualquer pessoa — seja para oferecer, para usar ou simplesmente para se expressar — consiga criar algo de que se orgulhe, sem barreiras técnicas nem orçamentos impossíveis.',
 ];
@@ -152,8 +152,8 @@ Para iniciar qualquer processo, envia email para meudesign@ipag.pt com o número
 export const privacyPolicy = `
 ## Responsável pelo tratamento
 
-MeuDesign (projeto académico) — IPAG, Lisboa
-Contacto: meudesign@ipag.pt
+MeuDesign (projeto académico) — ISAG, Lisboa
+Contacto: meudesign@isag.pt
 
 ## Dados recolhidos e finalidade
 

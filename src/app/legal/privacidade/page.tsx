@@ -96,7 +96,7 @@ export default function PrivacidadePage() {
           {/* Intro */}
           <section>
             <p>
-              O MeuDesign (projeto académico desenvolvido no IPAG) compromete-se a proteger a
+              O MeuDesign (projeto académico desenvolvido no ISAG) compromete-se a proteger a
               privacidade dos utilizadores da plataforma meudesign.pt. Esta política descreve, de
               forma transparente, como tratamos os dados pessoais em conformidade com o{' '}
               <strong className="text-foreground">
@@ -115,8 +115,8 @@ export default function PrivacidadePage() {
               </h2>
             </div>
             <div className="bg-surface border border-border rounded-xl p-5 space-y-1 font-mono text-xs">
-              <p className="text-foreground">MeuDesign (Projeto Académico IPAG)</p>
-              <p>IPAG — Instituto Português de Administração e Gestão</p>
+              <p className="text-foreground">MeuDesign (Projeto Académico ISAG)</p>
+              <p>ISAG — Instituto Superior de Administração e Gestão</p>
               <p>Rua Tomás Ribeiro, 50 · 1050-225 Lisboa · Portugal</p>
               <a href="mailto:info@meudesign.pt" className="text-accent hover:underline underline-offset-4">
                 info@meudesign.pt

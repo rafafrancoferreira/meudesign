@@ -95,7 +95,7 @@ export function Footer() {
         {/* Rodapé inferior */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
           <p className="text-xs text-muted">
-            © 2026 MeuDesign — Projeto académico · IPAG, Licenciatura em Gestão de Empresas.
+            © 2026 MeuDesign — Projeto académico · ISAG, Licenciatura em Gestão de Empresas.
           </p>
           <div className="flex items-center gap-6">
             <Link

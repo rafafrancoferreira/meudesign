@@ -6,7 +6,7 @@ import { ArrowRight, GraduationCap } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Sobre | MeuDesign',
   description:
-    'Conhece a equipa por trás do MeuDesign — três estudantes do IPAG com uma missão: democratizar o design com inteligência artificial.',
+    'Conhece a equipa por trás do MeuDesign — três estudantes do ISAG com uma missão: democratizar o design com inteligência artificial.',
   openGraph: {
     title: 'Sobre o MeuDesign',
     description: 'A história, a missão e a equipa do MeuDesign.',
@@ -72,7 +72,7 @@ export default function SobrePage() {
               <div className="mt-6 pt-6 border-t border-border flex items-center gap-2">
                 <GraduationCap className="w-4 h-4 text-muted/50" />
                 <p className="text-[11px] font-mono text-muted/60">
-                  Projeto académico — IPAG, LGE, 2026
+                  Projeto académico — ISAG, LGE, 2026
                 </p>
               </div>
             </div>
@@ -129,7 +129,7 @@ export default function SobrePage() {
                 </p>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-3">
                   Somos honestos quanto ao contexto: o MeuDesign é um projeto académico desenvolvido
-                  no IPAG para a UC <em>Plataformas Digitais e E-Commerce</em>. O site é funcional,
+                  no ISAG para a UC <em>Plataformas Digitais e E-Commerce</em>. O site é funcional,
                   os produtos são reais e o processo de compra está implementado — mas em modo de
                   demonstração.
                 </p>
