@@ -58,6 +58,7 @@ export function GeneratorLayout() {
   const [progress, setProgress] = useState(0);
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
   const [history, setHistory] = useState<SessionItem[]>([]);
+  const [customStyle, setCustomStyle] = useState('');
   const progressRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const msgIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const addToCart = useCartStore((s) => s.add);
@@ -90,13 +91,20 @@ export function GeneratorLayout() {
     }, 900);
 
     try {
+      const effectiveStyle =
+        selectedStyle === '__none__' ? '' :
+        selectedStyle === '__custom__' ? customStyle.trim() :
+        selectedStyle;
       const res = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, style: selectedStyle, productSlug: selectedProduct }),
+        body: JSON.stringify({ prompt, style: effectiveStyle, productSlug: selectedProduct }),
       });
 
-      if (!res.ok) throw new Error('Falha ao gerar design');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(errData.error ?? 'Falha ao gerar design');
+      }
 
       const data: GenerateResult = await res.json();
       stopIntervals();
@@ -111,7 +119,7 @@ export function GeneratorLayout() {
               id: `${data.seed}-${Date.now()}`,
               imageUrl: data.imageUrl,
               prompt: prompt.slice(0, 60),
-              style: selectedStyle,
+              style: effectiveStyle,
               productSlug: selectedProduct,
             },
             ...prev,
@@ -123,7 +131,7 @@ export function GeneratorLayout() {
       setError(e instanceof Error ? e.message : 'Erro desconhecido');
       setState('error');
     }
-  }, [prompt, selectedStyle, selectedProduct, state, stopIntervals]);
+  }, [prompt, selectedStyle, selectedProduct, state, stopIntervals, customStyle]);
 
   const handleAddToCart = useCallback(() => {
     if (!result) return;
@@ -136,12 +144,23 @@ export function GeneratorLayout() {
     });
   }, [result, selectedProduct, prompt, currentProduct, addToCart]);
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (!result) return;
-    const a = document.createElement('a');
-    a.href = result.imageUrl;
-    a.download = `meudesign-preview-${result.seed}.png`;
-    a.click();
+    const filename = `meudesign-${result.seed}.png`;
+    try {
+      const resp = await fetch(result.imageUrl);
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      window.open(result.imageUrl, '_blank');
+    }
   }, [result]);
 
   const handleHistoryClick = useCallback((item: SessionItem) => {
@@ -210,7 +229,37 @@ export function GeneratorLayout() {
                     {style.label}
                   </button>
                 ))}
+                <button
+                  onClick={() => setSelectedStyle('__none__')}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded border transition-all ${
+                    selectedStyle === '__none__'
+                      ? 'bg-accent text-accent-foreground border-accent'
+                      : 'bg-surface border-border text-muted hover:border-border-strong hover:text-foreground'
+                  }`}
+                >
+                  Já escrevi no prompt
+                </button>
+                <button
+                  onClick={() => setSelectedStyle('__custom__')}
+                  className={`px-3 py-1.5 text-xs font-mono uppercase tracking-wider rounded border transition-all ${
+                    selectedStyle === '__custom__'
+                      ? 'bg-accent text-accent-foreground border-accent'
+                      : 'bg-surface border-border text-muted hover:border-border-strong hover:text-foreground'
+                  }`}
+                >
+                  Outro
+                </button>
               </div>
+              {selectedStyle === '__custom__' && (
+                <input
+                  type="text"
+                  value={customStyle}
+                  onChange={(e) => setCustomStyle(e.target.value)}
+                  placeholder="ex: cyberpunk, aguarela, pixel art..."
+                  className="mt-2 w-full bg-surface border border-border rounded px-3 py-2 text-xs font-mono text-foreground placeholder:text-muted focus:outline-none focus:border-border-strong transition-colors"
+                  autoFocus
+                />
+              )}
             </div>
 
             {/* Product picker */}
@@ -353,7 +402,7 @@ export function GeneratorLayout() {
 
                     <div className="font-mono text-[10px] text-muted/50 space-y-1">
                       <div>PROMPT: {prompt.slice(0, 40)}{prompt.length > 40 ? '...' : ''}</div>
-                      <div>STYLE: {selectedStyle.toUpperCase()}</div>
+                      <div>STYLE: {selectedStyle === '__none__' ? 'SEM ESTILO EXTRA' : selectedStyle === '__custom__' ? (customStyle.trim().toUpperCase() || 'PERSONALIZADO') : selectedStyle.toUpperCase()}</div>
                       <div>PRODUCT: {selectedProduct.toUpperCase()}</div>
                     </div>
                   </div>

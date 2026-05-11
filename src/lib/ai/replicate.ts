@@ -4,20 +4,36 @@ import { buildPrompt } from './prompts';
 export async function generateReplicate({ prompt, style }: GenerateParams): Promise<GenerateResult> {
   const fullPrompt = buildPrompt(prompt, style);
 
-  const response = await fetch(
-    'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.AI_API_KEY}`,
-        'Content-Type': 'application/json',
-        Prefer: 'wait',
-      },
-      body: JSON.stringify({
-        input: { prompt: fullPrompt, num_outputs: 1, output_format: 'png', aspect_ratio: '1:1' },
-      }),
-    }
-  );
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
+
+  let response: Response;
+  try {
+    response = await fetch(
+      'https://api.replicate.com/v1/models/black-forest-labs/flux-schnell/predictions',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.AI_API_KEY}`,
+          'Content-Type': 'application/json',
+          Prefer: 'wait',
+        },
+        body: JSON.stringify({
+          input: {
+            prompt: fullPrompt,
+            num_outputs: 1,
+            aspect_ratio: '1:1',
+            output_format: 'png',
+            output_quality: 100,
+            megapixels: '1',
+          },
+        }),
+        signal: controller.signal,
+      }
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
 
   if (!response.ok) throw new Error(`Replicate error: ${response.status}`);
 
