@@ -1,74 +1,50 @@
 [
   {
-    "file": "abstract-1.svg",
-    "tags": ["abstract", "circles", "bold", "colorful", "dynamic", "geometric", "overlap"],
-    "style": "abstrato",
-    "palette": ["#FF6B35", "#F7C59F", "#1A1A2E"]
-  },
-  {
-    "file": "abstract-2.svg",
-    "tags": ["abstract", "lines", "diagonal", "blocks", "contrast", "bold", "graphic"],
-    "style": "abstrato",
-    "palette": ["#E63946", "#457B9D", "#F1FAEE"]
-  },
-  {
-    "file": "nature-1.svg",
-    "tags": ["nature", "mountain", "sun", "landscape", "minimal", "outdoor", "adventure"],
-    "style": "minimalista",
-    "palette": ["#2D6A4F", "#74C69D", "#D9ED92"]
-  },
-  {
-    "file": "nature-2.svg",
-    "tags": ["nature", "leaf", "botanical", "plant", "organic", "green", "forest", "flora"],
-    "style": "organico",
-    "palette": ["#40916C", "#B7E4C7", "#1B4332"]
-  },
-  {
-    "file": "retro-1.svg",
-    "tags": ["retro", "sun", "vintage", "badge", "rays", "70s", "groovy", "classic"],
+    "file": "retro-1.png",
+    "tags": ["retro", "sun", "vintage", "badge", "rays", "70s", "groovy", "classic", "warm"],
     "style": "retro",
     "palette": ["#E9C46A", "#F4A261", "#264653"]
   },
   {
-    "file": "retro-2.svg",
-    "tags": ["retro", "wave", "surf", "vintage", "80s", "stripes", "sunset", "neon"],
+    "file": "retro-2.png",
+    "tags": ["retro", "wave", "surf", "vintage", "80s", "stripes", "sunset", "neon", "ocean"],
     "style": "retro",
     "palette": ["#FF6B6B", "#4ECDC4", "#45B7D1"]
   },
   {
-    "file": "futuristic-1.svg",
-    "tags": ["futuristic", "tech", "geometric", "polygon", "cyber", "digital", "sci-fi", "mask"],
+    "file": "futurista-1.png",
+    "tags": ["futuristic", "tech", "geometric", "polygon", "cyber", "digital", "sci-fi", "mask", "cyberpunk"],
     "style": "futurista",
     "palette": ["#00F5FF", "#7B2FBE", "#0A0A0A"]
   },
   {
-    "file": "futuristic-2.svg",
-    "tags": ["futuristic", "circuit", "grid", "nodes", "tech", "network", "digital", "cyber", "lines"],
+    "file": "futurista-2.png",
+    "tags": ["futuristic", "circuit", "grid", "nodes", "tech", "network", "digital", "cyber", "lines", "neon"],
     "style": "futurista",
     "palette": ["#00FF88", "#0A0A0A", "#1A1A2E"]
   },
   {
-    "file": "geometric-1.svg",
-    "tags": ["geometric", "hexagon", "pattern", "tessellation", "sacred", "mandala", "symmetry"],
+    "file": "geometrico-1.png",
+    "tags": ["geometric", "hexagon", "pattern", "tessellation", "sacred", "mandala", "symmetry", "bold"],
     "style": "geométrico",
     "palette": ["#9B5DE5", "#F15BB5", "#FEE440"]
   },
   {
-    "file": "geometric-2.svg",
-    "tags": ["geometric", "triangle", "isometric", "cube", "3d", "pattern", "grid", "angular"],
-    "style": "geométrico",
-    "palette": ["#0077B6", "#00B4D8", "#90E0EF"]
+    "file": "abstrato-1.png",
+    "tags": ["abstract", "circles", "bold", "colorful", "dynamic", "geometric", "overlap", "composition"],
+    "style": "abstrato",
+    "palette": ["#FF6B35", "#F7C59F", "#1A1A2E"]
   },
   {
-    "file": "organico-1.svg",
-    "tags": ["organic", "blob", "fluid", "flowing", "abstract", "soft", "morph", "liquid"],
+    "file": "organico-1.png",
+    "tags": ["organic", "blob", "fluid", "flowing", "abstract", "soft", "morph", "liquid", "nature"],
     "style": "organico",
     "palette": ["#FF9F1C", "#FFBF69", "#CBF3F0"]
   },
   {
-    "file": "minimalista-1.svg",
-    "tags": ["minimal", "minimalist", "clean", "simple", "circle", "line", "single", "focus", "zen"],
-    "style": "minimalista",
-    "palette": ["#FAFAFA", "#1A1A1A", "#DAFE22"]
+    "file": "organico-2.png",
+    "tags": ["organic", "botanical", "plant", "natural", "leaf", "flora", "green", "flowing", "earth"],
+    "style": "organico",
+    "palette": ["#40916C", "#B7E4C7", "#1B4332"]
   }
 ]

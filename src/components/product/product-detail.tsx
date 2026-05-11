@@ -9,18 +9,14 @@ import { type Product, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
 
 const DESIGN_GALLERY = [
-  { src: '/mock-designs/retro-1.svg', label: 'Retro', prompt: 'sol retro com cara sorridente, estilo anos 70, fundo escuro' },
-  { src: '/mock-designs/abstract-1.svg', label: 'Abstrato', prompt: 'círculos sobrepostos em laranja e creme, dinâmico' },
-  { src: '/mock-designs/futuristic-1.svg', label: 'Futurista', prompt: 'máscara geométrica cyberpunk, cyan e violeta' },
-  { src: '/mock-designs/nature-1.svg', label: 'Natureza', prompt: 'paisagem montanhosa ao pôr do sol, tons quentes' },
-  { src: '/mock-designs/geometric-1.svg', label: 'Geométrico', prompt: 'mandala sagrada com hexágonos, violeta e dourado' },
-  { src: '/mock-designs/retro-2.svg', label: 'Retro', prompt: 'pôr do sol sobre o oceano, vibe surfista 80s' },
-  { src: '/mock-designs/futuristic-2.svg', label: 'Futurista', prompt: 'rede de nodos em grelha futurista verde-néon' },
-  { src: '/mock-designs/organico-1.svg', label: 'Orgânico', prompt: 'formas orgânicas fluidas, laranja quente e cyan frio' },
-  { src: '/mock-designs/nature-2.svg', label: 'Botânico', prompt: 'folha botânica detalhada em tons de verde floresta' },
-  { src: '/mock-designs/geometric-2.svg', label: 'Geométrico', prompt: 'cubos isométricos em perspetiva, azul e ciano' },
-  { src: '/mock-designs/abstract-2.svg', label: 'Abstrato', prompt: 'blocos diagonais com padrão de losangos, preto e branco' },
-  { src: '/mock-designs/minimalista-1.svg', label: 'Minimalista', prompt: 'círculo sólido com detalhe em lime, composição mínima' },
+  { src: '/mock-designs/retro-1.png', label: 'Retro', prompt: 'sol retro com cara sorridente, estilo anos 70, fundo escuro' },
+  { src: '/mock-designs/retro-2.png', label: 'Retro', prompt: 'pôr do sol sobre o oceano, vibe surfista 80s' },
+  { src: '/mock-designs/futurista-1.png', label: 'Futurista', prompt: 'máscara geométrica cyberpunk, cyan e violeta' },
+  { src: '/mock-designs/futurista-2.png', label: 'Futurista', prompt: 'rede de nodos em grelha futurista verde-néon' },
+  { src: '/mock-designs/geometrico-1.png', label: 'Geométrico', prompt: 'mandala geométrica tons violeta e dourado' },
+  { src: '/mock-designs/abstrato-1.png', label: 'Abstrato', prompt: 'composição abstrata dinâmica com formas sobrepostas e cor intensa' },
+  { src: '/mock-designs/organico-1.png', label: 'Orgânico', prompt: 'formas orgânicas fluidas, laranja quente e cyan frio' },
+  { src: '/mock-designs/organico-2.png', label: 'Orgânico', prompt: 'composição orgânica fluida, tons quentes e naturais' },
 ];
 
 type DesignEntry = (typeof DESIGN_GALLERY)[0];

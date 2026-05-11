@@ -8,11 +8,11 @@ import { products, formatPrice } from '@/lib/products';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
 const DESIGN_PREVIEWS: Record<string, string> = {
-  'tshirt': '/mock-designs/retro-1.svg',
-  't-shirt': '/mock-designs/retro-1.svg',
-  hoodie: '/mock-designs/geometric-1.svg',
-  poster: '/mock-designs/nature-1.svg',
-  caneca: '/mock-designs/minimalista-1.svg',
+  'tshirt': '/mock-designs/retro-1.png',
+  't-shirt': '/mock-designs/retro-1.png',
+  hoodie: '/mock-designs/geometrico-1.png',
+  poster: '/mock-designs/organico-2.png',
+  caneca: '/mock-designs/abstrato-1.png',
 };
 
 const container = {
@@ -88,7 +88,7 @@ export function FeaturedProducts() {
                   {/* Design preview (visible on hover) */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400">
                     <Image
-                      src={DESIGN_PREVIEWS[product.slug] ?? '/mock-designs/abstract-1.svg'}
+                      src={DESIGN_PREVIEWS[product.slug] ?? '/mock-designs/abstrato-1.png'}
                       alt={`Design exemplo — ${product.name}`}
                       fill
                       className="object-contain p-6"

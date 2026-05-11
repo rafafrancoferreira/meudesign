@@ -126,7 +126,7 @@ export function Hero() {
               {/* Main card */}
               <div className="relative bg-surface border border-border rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
                 <Image
-                  src="/mock-designs/geometric-1.svg"
+                  src="/mock-designs/geometrico-1.png"
                   alt="Exemplo de design gerado por IA"
                   width={240}
                   height={240}
