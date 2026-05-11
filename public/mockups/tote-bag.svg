@@ -1,27 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
   <!-- Handles (drawn first, behind body) -->
-  <path d="M138 16 C138 16 125 16 120 28 L120 108" fill="none" stroke="#4b5563" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M262 16 C262 16 275 16 280 28 L280 108" fill="none" stroke="#4b5563" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M138 16 C138 16 125 16 120 28 L120 108" fill="none" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
-  <path d="M262 16 C262 16 275 16 280 28 L280 108" fill="none" stroke="#1e1e1e" stroke-width="4" stroke-linecap="round"/>
+  <path d="M138 16 C138 16 125 16 120 28 L120 108" fill="none" stroke="#9ca3af" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M262 16 C262 16 275 16 280 28 L280 108" fill="none" stroke="#9ca3af" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M138 16 C138 16 125 16 120 28 L120 108" fill="none" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
+  <path d="M262 16 C262 16 275 16 280 28 L280 108" fill="none" stroke="#1f2937" stroke-width="4" stroke-linecap="round"/>
 
   <!-- Bag body with print-zone hole (evenodd) -->
-  <!-- Hole coords: x=100 y=140 w=200 h=185 → CSS top:35% left:25% w:50% h:46.25% -->
+  <!-- Hole: x=100 y=140 w=200 h=185 → CSS top:35% left:25% w:50% h:46.25% -->
   <path fill-rule="evenodd"
     d="M48 108 L55 370 C55 384 66 393 80 393 L320 393 C334 393 345 384 345 370 L352 108 Z
        M100 140 L300 140 L300 325 L100 325 Z"
-    fill="#1e1e1e"
+    fill="#1f2937"
   />
 
   <!-- Bag outline -->
   <path
     d="M48 108 L55 370 C55 384 66 393 80 393 L320 393 C334 393 345 384 345 370 L352 108 Z"
-    fill="none" stroke="#4b5563" stroke-width="1.5" stroke-linejoin="round"
+    fill="none" stroke="#9ca3af" stroke-width="2" stroke-linejoin="round"
   />
 
   <!-- Top hem fold -->
-  <line x1="52" y1="120" x2="348" y2="120" stroke="#374151" stroke-width="1"/>
+  <line x1="52" y1="120" x2="348" y2="120" stroke="#6b7280" stroke-width="1.5"/>
 
   <!-- Center seam (vertical dashed) -->
-  <line x1="200" y1="108" x2="200" y2="393" stroke="#374151" stroke-width="0.75" stroke-dasharray="5 6"/>
+  <line x1="200" y1="108" x2="200" y2="393" stroke="#6b7280" stroke-width="1" stroke-dasharray="5 6"/>
 </svg>

@@ -21,27 +21,19 @@ export function ProductCard({ product }: { product: Product }) {
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
       >
       {/* Image container */}
-      <div className="relative bg-surface border border-border rounded-xl overflow-hidden aspect-square mb-3 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.07)]">
-        {/* Mockup */}
-        <div className="absolute inset-0 flex items-center justify-center p-8 transition-opacity duration-400 group-hover:opacity-0">
+      <div
+        className="relative border border-border rounded-xl overflow-hidden aspect-square mb-3 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.07)]"
+        style={{ background: 'rgba(255,255,255,0.04)' }}
+      >
+        {/* Mockup — always visible, brightens on hover */}
+        <div className="absolute inset-0 flex items-center justify-center p-8">
           <Image
             src={product.mockup}
             alt={product.name}
             width={200}
             height={200}
-            className="object-contain opacity-70 w-full h-full"
-            unoptimized
-          />
-        </div>
-
-        {/* Hover: category tint + scale */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex items-center justify-center p-8">
-          <Image
-            src={product.mockup}
-            alt={product.name}
-            width={200}
-            height={200}
-            className="object-contain opacity-90 w-full h-full scale-105 transition-transform duration-500"
+            className="object-contain w-full h-full transition-opacity duration-300"
+            style={{ opacity: 0.85 }}
             unoptimized
           />
         </div>

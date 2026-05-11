@@ -7,12 +7,29 @@ import { ArrowRight } from 'lucide-react';
 import { products, formatPrice } from '@/lib/products';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
+
 const DESIGN_PREVIEWS: Record<string, string> = {
-  'tshirt': '/mock-designs/retro-1.png',
-  't-shirt': '/mock-designs/retro-1.png',
-  hoodie: '/mock-designs/geometrico-1.png',
-  poster: '/mock-designs/organico-2.png',
-  caneca: '/mock-designs/abstrato-1.png',
+  'tshirt':        '/mock-designs/retro-1.png',
+  't-shirt':       '/mock-designs/retro-1.png',
+  hoodie:          '/mock-designs/geometrico-1.png',
+  poster:          '/mock-designs/organico-2.png',
+  caneca:          '/mock-designs/abstrato-1.png',
+  'tote-bag':      '/mock-designs/futurista-1.png',
+  'capa-telemovel':'/mock-designs/futurista-2.png',
+  autocolantes:    '/mock-designs/organico-1.png',
+  quadro:          '/mock-designs/retro-2.png',
+};
+
+// Print-zone overlay: top edge position + square size, both relative to the card
+const PRINT_ZONES: Record<string, { top: string; size: string }> = {
+  't-shirt':        { top: '31%', size: '42%' },
+  hoodie:           { top: '34%', size: '38%' },
+  poster:           { top: '17%', size: '66%' },
+  caneca:           { top: '28%', size: '50%' },
+  'tote-bag':       { top: '32%', size: '48%' },
+  'capa-telemovel': { top: '34%', size: '40%' },
+  autocolantes:     { top: '21%', size: '58%' },
+  quadro:           { top: '19%', size: '62%' },
 };
 
 const container = {
@@ -69,41 +86,45 @@ export function FeaturedProducts() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {featured.map((product) => (
+          {featured.map((product) => {
+            const zone = PRINT_ZONES[product.slug] ?? { top: '31%', size: '44%' };
+            return (
             <motion.div key={product.slug} variants={item}>
               <Link href={`/produto/${product.slug}`} className="group block">
-                <div className="relative bg-surface border border-border rounded-xl overflow-hidden aspect-square mb-4">
-                  {/* Mockup (always visible) */}
-                  <div className="absolute inset-0 flex items-center justify-center p-8 transition-opacity duration-400 group-hover:opacity-0">
+                <div
+                  className="relative border border-border rounded-xl overflow-hidden aspect-square mb-4 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.06)]"
+                  style={{ background: 'rgba(255,255,255,0.04)' }}
+                >
+                  {/* Mockup — always visible */}
+                  <div className="absolute inset-0 flex items-center justify-center p-8">
                     <Image
                       src={product.mockup}
                       alt={product.name}
                       width={160}
                       height={160}
-                      className="object-contain opacity-70 w-full h-full"
+                      className="object-contain w-full h-full"
+                      style={{ opacity: 0.85 }}
                       unoptimized
                     />
                   </div>
 
-                  {/* Design preview (visible on hover) */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                  {/* Design preview — fades in over the print zone only */}
+                  <div
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+                    style={{
+                      left: '50%',
+                      top: zone.top,
+                      width: zone.size,
+                      aspectRatio: '1 / 1',
+                      transform: 'translateX(-50%)',
+                    }}
+                  >
                     <Image
                       src={DESIGN_PREVIEWS[product.slug] ?? '/mock-designs/abstrato-1.png'}
-                      alt={`Design exemplo — ${product.name}`}
+                      alt={`Design — ${product.name}`}
                       fill
-                      className="object-contain p-6"
+                      className="object-contain"
                     />
-                    {/* Overlay mockup on top */}
-                    <div className="absolute inset-0 flex items-center justify-center p-8 pointer-events-none">
-                      <Image
-                        src={product.mockup}
-                        alt=""
-                        width={160}
-                        height={160}
-                        className="object-contain opacity-30 w-full h-full"
-                        unoptimized
-                      />
-                    </div>
                   </div>
 
                   {/* Hover CTA chip */}
@@ -114,7 +135,7 @@ export function FeaturedProducts() {
                   </div>
 
                   {/* Border hover */}
-                  <div className="absolute inset-0 rounded-xl border border-transparent group-hover:border-border-strong transition-colors pointer-events-none" />
+                  <div className="absolute inset-0 rounded-xl border border-transparent group-hover:border-accent/30 transition-colors pointer-events-none" />
                 </div>
 
                 <div className="px-1">
@@ -132,7 +153,8 @@ export function FeaturedProducts() {
                 </div>
               </Link>
             </motion.div>
-          ))}
+          );
+          })}
         </motion.div>
       </div>
     </section>
