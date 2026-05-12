@@ -6,15 +6,9 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Sparkles, Loader2 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
+import { useLang } from '@/lib/i18n';
 
 type DemoState = 'idle' | 'loading' | 'success';
-
-const EXAMPLE_PROMPTS = [
-  'lobo geométrico em tons de azul e prata',
-  'sol retro estilo anos 70, tons terra',
-  'astronauta flutuando entre plantas tropicais',
-  'dragão minimalista traço único, preto e lima',
-];
 
 function asciiBar(p: number, w = 10) {
   const f = Math.round((p / 100) * w);
@@ -22,6 +16,7 @@ function asciiBar(p: number, w = 10) {
 }
 
 export function LiveDemo() {
+  const { t } = useLang();
   const [prompt, setPrompt] = useState('');
   const [state, setState] = useState<DemoState>('idle');
   const [result, setResult] = useState<string | null>(null);
@@ -73,16 +68,16 @@ export function LiveDemo() {
           className="text-center mb-12"
         >
           <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-3">
-            Experimenta agora
+            {t.home.liveTagline}
           </p>
           <h2
             className="font-display font-black uppercase leading-none text-foreground"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', letterSpacing: '-0.02em' }}
           >
-            Vê a IA em ação.
+            {t.home.liveTitle}
           </h2>
           <p className="text-muted-foreground text-sm mt-3 font-sans max-w-sm mx-auto">
-            Escreve uma ideia e carrega em gerar. Uma geração gratuita, sem conta.
+            {t.home.liveSubtitle}
           </p>
         </motion.div>
 
@@ -95,7 +90,7 @@ export function LiveDemo() {
           {/* Example prompts */}
           {!used && (
             <div className="flex flex-wrap gap-2 justify-center mb-4">
-              {EXAMPLE_PROMPTS.map((p) => (
+              {t.home.examplePrompts.map((p) => (
                 <button
                   key={p}
                   onClick={() => handleExampleClick(p)}
@@ -114,7 +109,7 @@ export function LiveDemo() {
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && generate()}
-              placeholder="Descreve o teu design..."
+              placeholder={t.home.livePlaceholder}
               disabled={state === 'loading' || used}
               className="flex-1 bg-surface border border-border rounded-lg px-4 py-3.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:border-border-strong transition-colors font-sans disabled:opacity-50"
             />
@@ -128,7 +123,7 @@ export function LiveDemo() {
               ) : (
                 <Sparkles className="w-4 h-4" />
               )}
-              {state === 'loading' ? 'A gerar' : 'Gerar'}
+              {state === 'loading' ? t.home.liveGenerating : t.home.liveGenerate}
             </button>
           </div>
 
@@ -146,7 +141,7 @@ export function LiveDemo() {
                   <div className="w-10 h-10 rounded-full border border-border flex items-center justify-center mx-auto mb-3">
                     <Sparkles className="w-4 h-4 text-muted" />
                   </div>
-                  <p className="text-sm text-muted font-mono">O teu design aparece aqui</p>
+                  <p className="text-sm text-muted font-mono">{t.home.liveCanvasIdle}</p>
                 </motion.div>
               )}
 
@@ -167,7 +162,7 @@ export function LiveDemo() {
                     }}
                   />
                   <p className="font-mono text-xs uppercase tracking-widest">
-                    <ScrambledText text="A interpretar o teu prompt..." isActive className="text-accent" />
+                    <ScrambledText text={t.home.liveScrambledText} isActive className="text-accent" />
                   </p>
                   <p className="font-mono text-sm text-foreground/50">{asciiBar(progress)}</p>
                 </motion.div>
@@ -196,13 +191,13 @@ export function LiveDemo() {
               className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4 text-center"
             >
               <p className="text-sm text-muted-foreground font-sans">
-                Gostaste? No criador podes regenerar, escolher estilos e adicionar ao carrinho.
+                {t.home.livePostGenText}
               </p>
               <Link
                 href="/criar"
                 className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-mono font-semibold uppercase tracking-wider px-5 py-2.5 rounded-md hover:opacity-90 transition-opacity text-xs whitespace-nowrap"
               >
-                Ir para o criador
+                {t.home.livePostGenCta}
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </motion.div>

@@ -3,8 +3,11 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { useLang } from '@/lib/i18n';
 
 export function FinalCta() {
+  const { t } = useLang();
+
   return (
     <section className="px-4 py-28 border-t border-border overflow-hidden">
       <div className="max-w-7xl mx-auto relative">
@@ -25,7 +28,7 @@ export function FinalCta() {
             transition={{ duration: 0.6 }}
             className="text-xs font-mono uppercase tracking-[0.3em] text-muted mb-6"
           >
-            Começa agora · gratuito · sem conta
+            {t.home.ctaTagline}
           </motion.p>
 
           {/* Big text with blur ghost */}
@@ -48,7 +51,7 @@ export function FinalCta() {
                 lineHeight: 0.9,
               }}
             >
-              Pronto para criar?
+              {t.home.ctaGhost}
             </span>
             <h2
               className="relative font-display font-black uppercase text-foreground leading-none"
@@ -57,10 +60,10 @@ export function FinalCta() {
                 letterSpacing: '-0.025em',
               }}
             >
-              Pronto
+              {t.home.ctaTitle1}
               <br />
-              para{' '}
-              <span className="text-accent">criar?</span>
+              {t.home.ctaTitle2}
+              <span className="text-accent">{t.home.ctaTitle2Accent}</span>
             </h2>
           </motion.div>
 
@@ -71,8 +74,7 @@ export function FinalCta() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-muted-foreground text-base md:text-lg max-w-md mx-auto mb-10 font-sans leading-relaxed"
           >
-            Descreve a tua ideia, a IA cria o design e tu recebes o produto em casa.
-            Sem habilidades artísticas necessárias.
+            {t.home.ctaDescription}
           </motion.p>
 
           <motion.div
@@ -86,14 +88,14 @@ export function FinalCta() {
               href="/criar"
               className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-mono font-semibold uppercase tracking-wider px-8 py-4 rounded-md hover:opacity-90 transition-opacity text-sm"
             >
-              Criar o meu design
+              {t.home.ctaBtn1}
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/loja"
               className="inline-flex items-center border border-border-strong text-foreground font-mono uppercase tracking-wider px-8 py-4 rounded-md hover:border-foreground/40 transition-colors text-sm"
             >
-              Explorar a loja
+              {t.home.ctaBtn2}
             </Link>
           </motion.div>
 
@@ -106,11 +108,9 @@ export function FinalCta() {
             className="mt-20 border-t border-border pt-8 overflow-hidden"
           >
             <div className="flex gap-8 whitespace-nowrap text-[11px] font-mono uppercase tracking-[0.2em] text-muted/30 justify-center flex-wrap">
-              {['T-shirts', 'Hoodies', 'Posters', 'Canecas', 'Capas', 'Autocolantes', 'Tote Bags', 'Quadros', 'IA Generativa', 'Design Único'].map(
-                (label) => (
-                  <span key={label}>{label}</span>
-                )
-              )}
+              {t.home.marqueeItems.map((label) => (
+                <span key={label}>{label}</span>
+              ))}
             </div>
           </motion.div>
         </div>

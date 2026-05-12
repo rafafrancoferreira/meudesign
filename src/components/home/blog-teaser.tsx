@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { ArrowRight, Clock } from 'lucide-react';
 import { blogPosts } from '@/lib/content';
+import { useLang } from '@/lib/i18n';
 
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('pt-PT', {
+function formatDate(dateStr: string, locale: string) {
+  return new Date(dateStr).toLocaleDateString(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -30,6 +31,8 @@ const item = {
 };
 
 export function BlogTeaser() {
+  const { t } = useLang();
+
   return (
     <section className="px-4 py-24 border-t border-border">
       <div className="max-w-7xl mx-auto">
@@ -43,22 +46,22 @@ export function BlogTeaser() {
         >
           <div>
             <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-3">
-              Do blogue
+              {t.home.blogTagline}
             </p>
             <h2
               className="font-display font-black uppercase leading-none text-foreground"
               style={{ fontSize: 'clamp(2.2rem, 6vw, 4.5rem)', letterSpacing: '-0.02em' }}
             >
-              Aprende mais
+              {t.home.blogTitle}
               <br />
-              <span className="text-accent">sobre design.</span>
+              <span className="text-accent">{t.home.blogTitleAccent}</span>
             </h2>
           </div>
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-wider text-muted hover:text-foreground transition-colors group whitespace-nowrap"
           >
-            Ver todos os artigos
+            {t.home.blogViewAll}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
@@ -109,10 +112,10 @@ export function BlogTeaser() {
                   {/* Footer */}
                   <div className="flex items-center justify-between mt-6 pt-5 border-t border-border">
                     <time className="text-[11px] font-mono text-muted/60">
-                      {formatDate(post.date)}
+                      {formatDate(post.date, t.home.blogDateLocale)}
                     </time>
                     <span className="inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-wider text-muted group-hover:text-accent transition-colors">
-                      Ler
+                      {t.home.blogRead}
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </div>

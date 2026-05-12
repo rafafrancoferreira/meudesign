@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'motion/react';
+import { useLang } from '@/lib/i18n';
 
 interface GalleryItem {
   src: string;
@@ -76,6 +77,8 @@ const item = {
 };
 
 export function CommunityGallery() {
+  const { t } = useLang();
+
   return (
     <section className="px-4 py-24 border-t border-border bg-surface/30">
       <div className="max-w-7xl mx-auto">
@@ -88,15 +91,15 @@ export function CommunityGallery() {
           className="mb-14"
         >
           <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-3">
-            Feitos pela comunidade
+            {t.home.galleryTagline}
           </p>
           <h2
             className="font-display font-black uppercase leading-none text-foreground"
             style={{ fontSize: 'clamp(2.2rem, 6vw, 4.5rem)', letterSpacing: '-0.02em' }}
           >
-            Designs reais,
+            {t.home.galleryTitle}
             <br />
-            <span className="text-accent">prompts reais.</span>
+            <span className="text-accent">{t.home.galleryTitleAccent}</span>
           </h2>
         </motion.div>
 
@@ -154,7 +157,7 @@ export function CommunityGallery() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center text-xs font-mono text-muted/50 mt-8 uppercase tracking-wider"
         >
-          Designs gerados pela nossa IA · os prompts são dos utilizadores
+          {t.home.galleryFootnote}
         </motion.p>
       </div>
     </section>

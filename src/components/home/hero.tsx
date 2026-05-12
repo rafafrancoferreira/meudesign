@@ -4,10 +4,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { ArrowRight, Sparkles } from 'lucide-react';
+import { useLang } from '@/lib/i18n';
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 export function Hero() {
+  const { t } = useLang();
+
   return (
     <section className="relative min-h-[92vh] flex items-center px-4 overflow-hidden">
       {/* Accent glow behind title */}
@@ -33,7 +36,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.25em] text-muted border border-border rounded-full px-3 py-1.5 mb-8"
             >
               <Sparkles className="w-3 h-3 text-accent" />
-              IA generativa · produtos únicos
+              {t.home.heroTagline}
             </motion.p>
 
             {/* Oversized title with motion-blur ghost */}
@@ -90,7 +93,7 @@ export function Hero() {
               transition={{ delay: 0.5, duration: 0.7 }}
               className="text-lg md:text-xl text-muted-foreground max-w-md leading-relaxed mb-10 font-sans"
             >
-              Design inteligente, feito por si.
+              {t.home.heroSubtitle}
             </motion.p>
 
             <motion.div
@@ -103,14 +106,14 @@ export function Hero() {
                 href="/criar"
                 className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-mono font-semibold uppercase tracking-wider px-7 py-3.5 rounded-md hover:opacity-90 transition-opacity text-sm"
               >
-                Criar agora
+                {t.home.heroCta1}
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
                 href="/loja"
                 className="inline-flex items-center border border-border-strong text-foreground font-mono uppercase tracking-wider px-7 py-3.5 rounded-md hover:border-foreground/40 transition-colors text-sm"
               >
-                Ver produtos
+                {t.home.heroCta2}
               </Link>
             </motion.div>
           </motion.div>
@@ -150,10 +153,10 @@ export function Hero() {
                 className="absolute -bottom-5 -left-8 bg-surface-2 border border-border rounded-xl px-4 py-3 max-w-[180px] shadow-xl"
               >
                 <p className="text-[9px] font-mono text-muted uppercase tracking-widest mb-1">
-                  Prompt
+                  {t.home.heroPromptLabel}
                 </p>
                 <p className="text-xs text-muted-foreground leading-snug">
-                  mandala geométrica tons violeta e dourado
+                  {t.home.heroSamplePrompt}
                 </p>
               </motion.div>
 
@@ -164,7 +167,7 @@ export function Hero() {
                 transition={{ delay: 1.1, duration: 0.5, type: 'spring', stiffness: 200 }}
                 className="absolute -top-3 -right-5 bg-accent text-accent-foreground rounded-full px-3.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider"
               >
-                IA gerou ✓
+                {t.home.heroAiBadge}
               </motion.div>
 
               {/* Small floating time badge */}
