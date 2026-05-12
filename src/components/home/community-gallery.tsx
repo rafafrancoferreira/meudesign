@@ -115,34 +115,36 @@ export function CommunityGallery() {
             <motion.div
               key={`${entry.src}-${i}`}
               variants={item}
-              className="break-inside-avoid mb-4 group"
+              className="break-inside-avoid mb-4"
             >
-              <div
-                className="relative bg-surface border border-border rounded-xl overflow-hidden"
-                style={{ aspectRatio: entry.tall ? '3/4' : '1/1' }}
-              >
-                <Image
-                  src={entry.src}
-                  alt={entry.prompt}
-                  fill
-                  className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                />
-                {/* Hover caption overlay */}
-                <div className="absolute inset-0 bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-accent mb-1">
-                    {entry.style}
-                  </p>
-                  <p className="text-xs text-foreground leading-snug line-clamp-3 font-sans">
-                    &ldquo;{entry.prompt}&rdquo;
-                  </p>
-                  <p className="text-[10px] font-mono text-muted mt-2">@{entry.user}</p>
+              <div className="bg-[#141414] border border-white/10 rounded-xl overflow-hidden">
+                {/* Image section — white bg so designs render naturally */}
+                <div
+                  className="relative bg-white"
+                  style={{ aspectRatio: entry.tall ? '3/4' : '1/1' }}
+                >
+                  <Image
+                    src={entry.src}
+                    alt={entry.prompt}
+                    fill
+                    className="object-contain"
+                    unoptimized
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  />
+                  {/* Style tag — always visible */}
+                  <div className="absolute top-2.5 left-2.5 bg-black/50 backdrop-blur-sm border border-white/20 rounded-full px-2 py-0.5">
+                    <span className="text-[9px] font-mono uppercase tracking-wider text-white/90">
+                      {entry.style}
+                    </span>
+                  </div>
                 </div>
 
-                {/* Always-visible style tag */}
-                <div className="absolute top-2.5 left-2.5 bg-background/70 backdrop-blur-sm border border-border rounded-full px-2 py-0.5">
-                  <span className="text-[9px] font-mono uppercase tracking-wider text-muted">
-                    {entry.style}
-                  </span>
+                {/* Text section — dark */}
+                <div className="px-3 py-2.5 border-t border-white/[0.06]">
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    &ldquo;{entry.prompt}&rdquo;
+                  </p>
+                  <p className="text-[10px] font-mono text-muted/60 mt-1.5">@{entry.user}</p>
                 </div>
               </div>
             </motion.div>

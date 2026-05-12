@@ -127,20 +127,20 @@ export function Hero() {
           >
             <div className="relative mx-auto w-64 xl:w-72">
               {/* Main card */}
-              <div className="relative bg-surface border border-border rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
+              <div className="relative bg-white border border-border rounded-2xl overflow-hidden aspect-square">
                 <Image
                   src="/mock-designs/geometrico-1.png"
                   alt="Exemplo de design gerado por IA"
-                  width={240}
-                  height={240}
-                  className="object-contain p-6"
+                  fill
+                  className="object-contain p-8"
+                  unoptimized
                 />
                 {/* Scanline overlay */}
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     backgroundImage:
-                      'repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(255,255,255,0.012) 4px, rgba(255,255,255,0.012) 5px)',
+                      'repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 5px)',
                   }}
                 />
               </div>
