@@ -13,12 +13,12 @@ export interface PrintZone {
  * Design is clipped by overflow:hidden on the container div.
  */
 export const MOCKUP_PRINT_ZONES: Record<string, PrintZone> = {
-  't-shirt':        { top: '28%',  left: '31.5%', width: '37%',  height: '35%'   },
-  'hoodie':         { top: '35%',  left: '32.5%', width: '35%',  height: '28%'   },
-  'poster':         { top: '7.5%', left: '7.5%',  width: '85%',  height: '85%'   },
-  'capa-telemovel': { top: '15%',  left: '20%',   width: '60%',  height: '70%',  borderRadius: '8%' },
-  'caneca':         { top: '32%',  left: '29%',   width: '42%',  height: '38%'   },
-  'autocolantes':   { top: '13%',  left: '13%',   width: '74%',  height: '74%',  shape: 'circle' },
-  'tote-bag':       { top: '28%',  left: '27.5%', width: '45%',  height: '44%'   },
-  'quadro':         { top: '12.5%',left: '12.5%', width: '75%',  height: '75%'   },
+  't-shirt':        { top: '28%',  left: '30%',   width: '40%',  height: '35%'   },
+  'hoodie':         { top: '32%',  left: '28%',   width: '44%',  height: '32%'   },
+  'poster':         { top: '10%',  left: '10%',   width: '80%',  height: '80%'   },
+  'capa-telemovel': { top: '20%',  left: '15%',   width: '70%',  height: '55%',  borderRadius: '8%' },
+  'caneca':         { top: '25%',  left: '20%',   width: '45%',  height: '50%'   },
+  'autocolantes':   { top: '15%',  left: '15%',   width: '70%',  height: '70%',  shape: 'circle' },
+  'tote-bag':       { top: '25%',  left: '22%',   width: '56%',  height: '45%'   },
+  'quadro':         { top: '12%',  left: '12%',   width: '76%',  height: '76%'   },
 };

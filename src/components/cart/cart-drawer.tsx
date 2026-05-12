@@ -99,7 +99,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     return (
                       <div key={item.id} className="flex gap-3 py-3 border-b border-border last:border-0">
                         {/* Composited thumbnail */}
-                        <div className="shrink-0 relative w-14 h-14 rounded-lg overflow-hidden bg-[#f0f0f0] border border-border">
+                        <div className="shrink-0 relative w-14 h-14 rounded-lg overflow-hidden bg-white border border-border">
                           {/* Design layer (below) */}
                           <div
                             className="absolute overflow-hidden"
@@ -108,7 +108,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                               left: zone.left,
                               width: zone.width,
                               height: zone.height,
-                              borderRadius: zone.shape === 'circle' ? '50%' : undefined,
+                              borderRadius: zone.shape === 'circle' ? '50%' : (zone.borderRadius ?? undefined),
+                              mixBlendMode: 'multiply',
                             }}
                           >
                             <Image

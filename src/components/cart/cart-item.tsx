@@ -26,7 +26,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
   return (
     <div className="flex gap-4 py-6 border-b border-border">
       {/* Composited thumbnail */}
-      <div className="shrink-0 relative w-20 h-20 rounded-xl overflow-hidden bg-[#f0f0f0] border border-border">
+      <div className="shrink-0 relative w-20 h-20 rounded-xl overflow-hidden bg-white border border-border">
         {/* Design layer (below) */}
         <div
           className="absolute overflow-hidden"
@@ -35,7 +35,8 @@ export function CartItemRow({ item }: { item: CartItem }) {
             left: zone.left,
             width: zone.width,
             height: zone.height,
-            borderRadius: zone.shape === 'circle' ? '50%' : undefined,
+            borderRadius: zone.shape === 'circle' ? '50%' : (zone.borderRadius ?? undefined),
+            mixBlendMode: 'multiply',
           }}
         >
           <Image

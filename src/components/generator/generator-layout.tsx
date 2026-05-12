@@ -349,7 +349,7 @@ export function GeneratorLayout() {
             </label>
 
             {/* Canvas container */}
-            <div className={`relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center transition-colors duration-500 ${state === 'success' ? 'bg-[#f2f2f2]' : 'bg-surface'}`} style={{ isolation: 'isolate' }}>
+            <div className={`relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center transition-colors duration-500 ${state === 'success' ? 'bg-white' : 'bg-surface'}`} style={{ isolation: 'isolate' }}>
               {/* ── IDLE ── */}
               {state === 'idle' && (
                 <div className="text-center px-8">
@@ -418,6 +418,7 @@ export function GeneratorLayout() {
                       height: printZone.height,
                       borderRadius: printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? undefined),
                       zIndex: 1,
+                      mixBlendMode: 'multiply',
                     }}
                   >
                     <Image
