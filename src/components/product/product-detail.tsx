@@ -9,14 +9,14 @@ import { type Product, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
 
 const DESIGN_GALLERY = [
-  { src: '/mock-designs/retro-1.png', label: 'Retro', prompt: 'sol retro com cara sorridente, estilo anos 70, fundo escuro' },
-  { src: '/mock-designs/retro-2.png', label: 'Retro', prompt: 'pôr do sol sobre o oceano, vibe surfista 80s' },
-  { src: '/mock-designs/futurista-1.png', label: 'Futurista', prompt: 'máscara geométrica cyberpunk, cyan e violeta' },
-  { src: '/mock-designs/futurista-2.png', label: 'Futurista', prompt: 'rede de nodos em grelha futurista verde-néon' },
-  { src: '/mock-designs/geometrico-1.png', label: 'Geométrico', prompt: 'mandala geométrica tons violeta e dourado' },
-  { src: '/mock-designs/abstrato-1.png', label: 'Abstrato', prompt: 'composição abstrata dinâmica com formas sobrepostas e cor intensa' },
-  { src: '/mock-designs/organico-1.png', label: 'Orgânico', prompt: 'formas orgânicas fluidas, laranja quente e cyan frio' },
-  { src: '/mock-designs/organico-2.png', label: 'Orgânico', prompt: 'composição orgânica fluida, tons quentes e naturais' },
+  { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
+  { src: '/mock-designs/futurista-1.png',   label: 'Futurista',   prompt: 'capacete de astronauta futurista com reflexo de galáxia, linhas neon azul e ciano' },
+  { src: '/mock-designs/geometrico-1.png',  label: 'Geométrico',  prompt: 'lobo feito de triângulos geométricos, tons azul-marinho e prata, olhos dourados' },
+  { src: '/mock-designs/organico-1.png',    label: 'Orgânico',    prompt: 'árvore bonsai japonesa com raízes em círculo, verde esmeralda e dourado' },
+  { src: '/mock-designs/abstrato-1.png',    label: 'Abstrato',    prompt: 'explosão de tinta líquida coral, magenta e dourado sobre fundo preto, textura metálica' },
+  { src: '/mock-designs/minimalista-1.png', label: 'Minimalista', prompt: 'montanha minimalista com lua cheia, silhueta branca e dourado, reflexo em lago' },
+  { src: '/mock-designs/tipografico-1.png', label: 'Tipográfico', prompt: 'letra M monumental 3D art déco, dourado metalizado, ornamentos geométricos' },
+  { src: '/mock-designs/ilustrado-1.png',   label: 'Ilustrado',   prompt: 'dragão oriental chinês em espiral, escamas vermelho e dourado, nuvens estilizadas' },
 ];
 
 type DesignEntry = (typeof DESIGN_GALLERY)[0];

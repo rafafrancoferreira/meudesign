@@ -13,12 +13,12 @@ const DESIGN_PREVIEWS: Record<string, string> = {
   'tshirt':        '/mock-designs/retro-1.png',
   't-shirt':       '/mock-designs/retro-1.png',
   hoodie:          '/mock-designs/geometrico-1.png',
-  poster:          '/mock-designs/organico-2.png',
+  poster:          '/mock-designs/minimalista-1.png',
   caneca:          '/mock-designs/abstrato-1.png',
   'tote-bag':      '/mock-designs/futurista-1.png',
-  'capa-telemovel':'/mock-designs/futurista-2.png',
+  'capa-telemovel':'/mock-designs/tipografico-1.png',
   autocolantes:    '/mock-designs/organico-1.png',
-  quadro:          '/mock-designs/retro-2.png',
+  quadro:          '/mock-designs/ilustrado-1.png',
 };
 
 // Print-zone overlay: top edge position + square size, both relative to the card

@@ -1,50 +1,58 @@
 [
   {
     "file": "retro-1.png",
-    "tags": ["retro", "sun", "vintage", "badge", "rays", "70s", "groovy", "classic", "warm"],
+    "prompt": "sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda, fundo preto",
+    "tags": ["retro", "sun", "vintage", "rays", "70s", "geometric", "warm", "orange", "yellow"],
     "style": "retro",
-    "palette": ["#E9C46A", "#F4A261", "#264653"]
-  },
-  {
-    "file": "retro-2.png",
-    "tags": ["retro", "wave", "surf", "vintage", "80s", "stripes", "sunset", "neon", "ocean"],
-    "style": "retro",
-    "palette": ["#FF6B6B", "#4ECDC4", "#45B7D1"]
+    "palette": ["#CC5500", "#E8B400", "#0A0A0A"]
   },
   {
     "file": "futurista-1.png",
-    "tags": ["futuristic", "tech", "geometric", "polygon", "cyber", "digital", "sci-fi", "mask", "cyberpunk"],
+    "prompt": "capacete de astronauta futurista com reflexo de galáxia, linhas neon azul e ciano, fundo preto",
+    "tags": ["futuristic", "astronaut", "helmet", "galaxy", "neon", "cyber", "sci-fi", "space", "blue", "cyan"],
     "style": "futurista",
-    "palette": ["#00F5FF", "#7B2FBE", "#0A0A0A"]
-  },
-  {
-    "file": "futurista-2.png",
-    "tags": ["futuristic", "circuit", "grid", "nodes", "tech", "network", "digital", "cyber", "lines", "neon"],
-    "style": "futurista",
-    "palette": ["#00FF88", "#0A0A0A", "#1A1A2E"]
+    "palette": ["#00BFFF", "#00FFFF", "#0A0A0A"]
   },
   {
     "file": "geometrico-1.png",
-    "tags": ["geometric", "hexagon", "pattern", "tessellation", "sacred", "mandala", "symmetry", "bold"],
+    "prompt": "lobo feito de triângulos geométricos, tons azul-marinho e prata, olhos dourados, fundo preto",
+    "tags": ["geometric", "wolf", "triangle", "polygon", "navy", "silver", "gold", "animal", "low-poly"],
     "style": "geométrico",
-    "palette": ["#9B5DE5", "#F15BB5", "#FEE440"]
-  },
-  {
-    "file": "abstrato-1.png",
-    "tags": ["abstract", "circles", "bold", "colorful", "dynamic", "geometric", "overlap", "composition"],
-    "style": "abstrato",
-    "palette": ["#FF6B35", "#F7C59F", "#1A1A2E"]
+    "palette": ["#1B2A4A", "#C0C0C0", "#FFD700"]
   },
   {
     "file": "organico-1.png",
-    "tags": ["organic", "blob", "fluid", "flowing", "abstract", "soft", "morph", "liquid", "nature"],
+    "prompt": "árvore bonsai japonesa com raízes em círculo, verde esmeralda e dourado, fundo preto",
+    "tags": ["organic", "bonsai", "tree", "japanese", "nature", "roots", "circle", "green", "gold"],
     "style": "organico",
-    "palette": ["#FF9F1C", "#FFBF69", "#CBF3F0"]
+    "palette": ["#50C878", "#FFD700", "#0A0A0A"]
   },
   {
-    "file": "organico-2.png",
-    "tags": ["organic", "botanical", "plant", "natural", "leaf", "flora", "green", "flowing", "earth"],
-    "style": "organico",
-    "palette": ["#40916C", "#B7E4C7", "#1B4332"]
+    "file": "abstrato-1.png",
+    "prompt": "explosão de tinta líquida coral, magenta e dourado sobre fundo preto, textura metálica",
+    "tags": ["abstract", "ink", "splash", "liquid", "coral", "magenta", "gold", "metallic", "explosion"],
+    "style": "abstrato",
+    "palette": ["#FF6B6B", "#FF00FF", "#FFD700"]
+  },
+  {
+    "file": "minimalista-1.png",
+    "prompt": "montanha minimalista com lua cheia, silhueta branca e dourado, reflexo em lago, fundo preto",
+    "tags": ["minimal", "mountain", "moon", "silhouette", "lake", "reflection", "white", "gold", "nature"],
+    "style": "minimalista",
+    "palette": ["#FFFFFF", "#FFD700", "#0A0A0A"]
+  },
+  {
+    "file": "tipografico-1.png",
+    "prompt": "letra M monumental 3D art déco, dourado metalizado, ornamentos geométricos, fundo preto",
+    "tags": ["typographic", "letter", "3d", "art-deco", "gold", "ornament", "geometric", "monogram", "metallic"],
+    "style": "tipográfico",
+    "palette": ["#FFD700", "#B8860B", "#0A0A0A"]
+  },
+  {
+    "file": "ilustrado-1.png",
+    "prompt": "dragão oriental chinês em espiral, escamas vermelho e dourado, nuvens estilizadas, fundo preto",
+    "tags": ["illustrated", "dragon", "oriental", "chinese", "spiral", "red", "gold", "clouds", "mythical"],
+    "style": "ilustrado",
+    "palette": ["#CC0000", "#FFD700", "#0A0A0A"]
   }
 ]

@@ -75,7 +75,7 @@ const PT = {
     heroCta2: 'Ver produtos',
     heroAiBadge: 'IA gerou ✓',
     heroPromptLabel: 'Prompt',
-    heroSamplePrompt: 'mandala geométrica tons violeta e dourado',
+    heroSamplePrompt: 'lobo feito de triângulos geométricos, tons azul-marinho e prata, olhos dourados',
     // how it works
     process: 'O processo',
     howItWorksTitle: 'Três passos.',
@@ -109,10 +109,10 @@ const PT = {
     livePostGenText: 'Gostaste? No criador podes regenerar, escolher estilos e adicionar ao carrinho.',
     livePostGenCta: 'Ir para o criador',
     examplePrompts: [
-      'lobo geométrico em tons de azul e prata',
-      'sol retro estilo anos 70, tons terra',
-      'astronauta flutuando entre plantas tropicais',
-      'dragão minimalista traço único, preto e lima',
+      'sol retro estilo anos 70, laranja queimado e mostarda',
+      'lobo geométrico azul-marinho, prata e olhos dourados',
+      'explosão de tinta coral e magenta, textura metálica',
+      'dragão oriental em espiral, vermelho e dourado',
     ],
     // featured products
     catalog: 'O catálogo',
@@ -274,7 +274,7 @@ const EN = {
     heroCta2: 'See products',
     heroAiBadge: 'AI generated ✓',
     heroPromptLabel: 'Prompt',
-    heroSamplePrompt: 'geometric mandala in violet and gold tones',
+    heroSamplePrompt: 'wolf made of geometric triangles, navy blue and silver, golden eyes',
     // how it works
     process: 'The process',
     howItWorksTitle: 'Three steps.',
@@ -308,10 +308,10 @@ const EN = {
     livePostGenText: 'Like it? In the creator you can regenerate, choose styles and add to cart.',
     livePostGenCta: 'Go to creator',
     examplePrompts: [
-      'geometric wolf in blue and silver tones',
-      'retro sun style 70s, earthy tones',
-      'astronaut floating among tropical plants',
-      'minimalist dragon single stroke, black and lime',
+      'retro sun 70s style, burnt orange and mustard',
+      'geometric wolf navy blue, silver and golden eyes',
+      'coral and magenta ink explosion, metallic texture',
+      'oriental dragon in spiral, red and gold',
     ],
     // featured products
     catalog: 'The catalogue',
