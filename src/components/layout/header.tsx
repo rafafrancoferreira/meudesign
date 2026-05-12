@@ -1,24 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/lib/store-cart";
+import { useLang } from "@/lib/i18n";
 import { NavMobile } from "./nav-mobile";
 import { CartDrawer } from "@/components/cart/cart-drawer";
-
-const NAV_LINKS = [
-  { href: "/criar", label: "Criar" },
-  { href: "/loja", label: "Loja" },
-  { href: "/sobre", label: "Sobre" },
-  { href: "/contactos", label: "Contactos" },
-];
+import { LoginModal } from "@/components/auth/login-modal";
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
   const items = useCartStore((s) => s.items);
   const qty = items.reduce((sum, i) => sum + i.quantity, 0);
+  const { lang, setLang, t } = useLang();
+
+  const navLinks = [
+    { href: "/criar", label: t.nav.criar },
+    { href: "/loja", label: t.nav.loja },
+    { href: "/sobre", label: t.nav.sobre },
+    { href: "/contactos", label: t.nav.contactos },
+  ];
 
   return (
     <>
@@ -35,7 +39,7 @@ export function Header() {
 
           {/* Desktop nav */}
           <nav aria-label="Navegação principal" className="hidden items-center gap-8 md:flex">
-            {NAV_LINKS.map((link) => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -46,12 +50,40 @@ export function Header() {
             ))}
           </nav>
 
-          {/* Ações direita */}
+          {/* Right actions */}
           <div className="flex items-center gap-3">
-            {/* Carrinho */}
+            {/* Language toggle — desktop only */}
+            <div className="hidden md:flex items-center gap-1 text-xs font-mono tracking-wider">
+              <button
+                onClick={() => setLang('pt')}
+                className={`transition-colors ${lang === 'pt' ? 'text-foreground font-semibold' : 'text-muted hover:text-muted-foreground'}`}
+                aria-label="Mudar para Português"
+              >
+                PT
+              </button>
+              <span className="text-muted/40 select-none">|</span>
+              <button
+                onClick={() => setLang('en')}
+                className={`transition-colors ${lang === 'en' ? 'text-foreground font-semibold' : 'text-muted hover:text-muted-foreground'}`}
+                aria-label="Switch to English"
+              >
+                EN
+              </button>
+            </div>
+
+            {/* Sign in button */}
+            <button
+              onClick={() => setLoginOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted hover:text-foreground transition-colors border border-border rounded-md px-3 py-1.5 hover:border-border-strong"
+            >
+              <User className="w-3.5 h-3.5" />
+              {t.nav.iniciarSessao}
+            </button>
+
+            {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
-              aria-label={`Carrinho — ${qty} ${qty === 1 ? "item" : "itens"}`}
+              aria-label={t.nav.cartLabel(qty)}
               className="relative text-muted-foreground transition-colors hover:text-foreground"
             >
               <ShoppingCart className="h-5 w-5" />
@@ -65,7 +97,7 @@ export function Header() {
               )}
             </button>
 
-            {/* Hamburger — só mobile */}
+            {/* Hamburger — mobile only */}
             <button
               aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={mobileOpen}
@@ -85,10 +117,14 @@ export function Header() {
       <NavMobile
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        links={NAV_LINKS}
+        links={navLinks}
+        onLogin={() => { setMobileOpen(false); setLoginOpen(true); }}
+        loginLabel={t.nav.iniciarSessao}
+        langToggle={{ lang, setLang }}
       />
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );
 }

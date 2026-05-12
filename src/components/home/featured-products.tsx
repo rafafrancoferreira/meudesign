@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { products, formatPrice } from '@/lib/products';
+import { useLang } from '@/lib/i18n';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
 
@@ -43,6 +44,7 @@ const item = {
 };
 
 export function FeaturedProducts() {
+  const { t } = useLang();
   const featured = FEATURED_SLUGS.map((s) => products.find((p) => p.slug === s)).filter(Boolean) as typeof products;
 
   return (
@@ -58,22 +60,22 @@ export function FeaturedProducts() {
         >
           <div>
             <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-3">
-              O catálogo
+              {t.home.catalog}
             </p>
             <h2
               className="font-display font-black uppercase leading-none text-foreground"
               style={{ fontSize: 'clamp(2.2rem, 6vw, 4.5rem)', letterSpacing: '-0.02em' }}
             >
-              Produtos em
+              {t.home.featured}
               <br />
-              <span className="text-accent">destaque</span>
+              <span className="text-accent">{t.home.featuredAccent}</span>
             </h2>
           </div>
           <Link
             href="/loja"
             className="inline-flex items-center gap-2 text-sm font-mono uppercase tracking-wider text-muted hover:text-foreground transition-colors group whitespace-nowrap"
           >
-            Ver todos os produtos
+            {t.home.viewAll}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </motion.div>
@@ -130,7 +132,7 @@ export function FeaturedProducts() {
                   {/* Hover CTA chip */}
                   <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
                     <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full whitespace-nowrap">
-                      Personalizar
+                      {t.home.customize}
                     </span>
                   </div>
 

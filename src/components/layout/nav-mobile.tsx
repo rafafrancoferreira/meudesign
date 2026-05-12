@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Lang } from "@/lib/i18n";
 
 type NavLink = { href: string; label: string };
 
@@ -9,9 +11,12 @@ interface NavMobileProps {
   open: boolean;
   onClose: () => void;
   links: NavLink[];
+  onLogin?: () => void;
+  loginLabel?: string;
+  langToggle?: { lang: Lang; setLang: (l: Lang) => void };
 }
 
-export function NavMobile({ open, onClose, links }: NavMobileProps) {
+export function NavMobile({ open, onClose, links, onLogin, loginLabel, langToggle }: NavMobileProps) {
   return (
     <div
       className={cn(
@@ -50,6 +55,38 @@ export function NavMobile({ open, onClose, links }: NavMobileProps) {
             </li>
           ))}
         </ul>
+
+        {/* Footer row: login + language */}
+        {(onLogin || langToggle) && (
+          <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+            {onLogin && (
+              <button
+                onClick={onLogin}
+                className="flex items-center gap-2 text-sm font-mono uppercase tracking-wider text-muted hover:text-foreground transition-colors"
+              >
+                <User className="w-4 h-4" />
+                {loginLabel}
+              </button>
+            )}
+            {langToggle && (
+              <div className="flex items-center gap-2 text-sm font-mono tracking-wider ml-auto">
+                <button
+                  onClick={() => langToggle.setLang('pt')}
+                  className={`transition-colors ${langToggle.lang === 'pt' ? 'text-foreground font-semibold' : 'text-muted'}`}
+                >
+                  PT
+                </button>
+                <span className="text-muted/40 select-none">|</span>
+                <button
+                  onClick={() => langToggle.setLang('en')}
+                  className={`transition-colors ${langToggle.lang === 'en' ? 'text-foreground font-semibold' : 'text-muted'}`}
+                >
+                  EN
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
     </div>
   );

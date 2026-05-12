@@ -1,55 +1,11 @@
-import Link from "next/link";
+'use client';
 
-const COLUMNS = [
-  {
-    title: "Categorias",
-    links: [
-      { label: "Vestuário", href: "/loja?categoria=vestuario" },
-      { label: "Decoração", href: "/loja?categoria=decoracao" },
-      { label: "Acessórios", href: "/loja?categoria=acessorios" },
-    ],
-  },
-  {
-    title: "Coleções",
-    links: [
-      { label: "T-shirt personalizada", href: "/produto/t-shirt" },
-      { label: "Hoodie personalizada", href: "/produto/hoodie" },
-      { label: "Poster personalizado", href: "/produto/poster" },
-      { label: "Ver tudo", href: "/loja" },
-    ],
-  },
-  {
-    title: "Sobre Nós",
-    links: [
-      { label: "A nossa história", href: "/sobre" },
-      { label: "Como funciona", href: "/#como-funciona" },
-      { label: "Galeria", href: "/#galeria" },
-    ],
-  },
-  {
-    title: "Contratos",
-    links: [
-      { label: "Entregas e Devoluções", href: "/legal/entregas-devolucoes" },
-      { label: "Política de Privacidade", href: "/legal/privacidade" },
-    ],
-  },
-  {
-    title: "Ajuda",
-    links: [
-      { label: "Contactos", href: "/contactos" },
-      { label: "FAQ", href: "/contactos#faq" },
-    ],
-  },
-  {
-    title: "Minha Conta",
-    links: [
-      { label: "Carrinho", href: "/carrinho" },
-      { label: "Finalizar compra", href: "/checkout" },
-    ],
-  },
-];
+import Link from "next/link";
+import { useLang } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useLang();
+
   return (
     <footer className="mt-auto border-t bg-surface">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8">
@@ -66,12 +22,12 @@ export function Footer() {
               MEUDESIGN
             </Link>
             <p className="mt-3 max-w-[200px] text-sm text-muted-foreground">
-              Design inteligente, feito por si.
+              {t.footer.tagline}
             </p>
           </div>
 
           {/* Colunas */}
-          {COLUMNS.map((col) => (
+          {t.footer.columns.map((col) => (
             <div key={col.title}>
               <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-foreground">
                 {col.title}
@@ -95,20 +51,20 @@ export function Footer() {
         {/* Rodapé inferior */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
           <p className="text-xs text-muted">
-            © 2026 MeuDesign — Projeto académico · ISAG, Licenciatura em Gestão de Empresas.
+            {t.footer.copyright}
           </p>
           <div className="flex items-center gap-6">
             <Link
               href="/legal/privacidade"
               className="text-xs text-muted transition-colors hover:text-muted-foreground"
             >
-              Privacidade
+              {t.footer.privacy}
             </Link>
             <Link
               href="/legal/entregas-devolucoes"
               className="text-xs text-muted transition-colors hover:text-muted-foreground"
             >
-              Entregas
+              {t.footer.deliveries}
             </Link>
           </div>
         </div>

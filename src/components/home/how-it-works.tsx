@@ -2,30 +2,10 @@
 
 import { motion } from 'motion/react';
 import { PenLine, Wand2, Package } from 'lucide-react';
+import { useLang } from '@/lib/i18n';
 
-const steps = [
-  {
-    number: '01',
-    icon: PenLine,
-    title: 'Descreves',
-    description:
-      'Escreves a tua ideia em português — pode ser simples como "gato astronauta retro" ou elaborada com cores, estilo e referências específicas.',
-  },
-  {
-    number: '02',
-    icon: Wand2,
-    title: 'A IA gera',
-    description:
-      'Em segundos, o modelo de IA interpreta o teu prompt e cria um design único, pronto a aplicar no produto que escolheres.',
-  },
-  {
-    number: '03',
-    icon: Package,
-    title: 'Receves em casa',
-    description:
-      'Aprovado o design, tratamos da produção e do envio. Em poucos dias úteis, o produto chega à tua porta.',
-  },
-];
+const STEP_ICONS = [PenLine, Wand2, Package];
+const STEP_NUMBERS = ['01', '02', '03'];
 
 const container = {
   hidden: {},
@@ -38,6 +18,8 @@ const item = {
 };
 
 export function HowItWorks() {
+  const { t } = useLang();
+
   return (
     <section className="px-4 py-24 border-t border-border">
       <div className="max-w-7xl mx-auto">
@@ -50,15 +32,15 @@ export function HowItWorks() {
           className="mb-16"
         >
           <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-3">
-            O processo
+            {t.home.process}
           </p>
           <h2
             className="font-display font-black uppercase leading-none text-foreground"
             style={{ fontSize: 'clamp(2.2rem, 6vw, 4.5rem)', letterSpacing: '-0.02em' }}
           >
-            Três passos.
+            {t.home.howItWorksTitle}
             <br />
-            <span className="text-accent">Design pronto.</span>
+            <span className="text-accent">{t.home.howItWorksAccent}</span>
           </h2>
         </motion.div>
 
@@ -70,11 +52,11 @@ export function HowItWorks() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid md:grid-cols-3 gap-px bg-border"
         >
-          {steps.map((step) => {
-            const Icon = step.icon;
+          {t.home.steps.map((step, i) => {
+            const Icon = STEP_ICONS[i];
             return (
               <motion.div
-                key={step.number}
+                key={STEP_NUMBERS[i]}
                 variants={item}
                 className="bg-background p-8 xl:p-12 group"
               >
@@ -84,7 +66,7 @@ export function HowItWorks() {
                     className="font-display font-black text-foreground/10 leading-none select-none"
                     style={{ fontSize: 'clamp(3rem, 7vw, 5rem)', letterSpacing: '-0.03em' }}
                   >
-                    {step.number}
+                    {STEP_NUMBERS[i]}
                   </span>
                   <div className="w-10 h-10 border border-border rounded-lg flex items-center justify-center group-hover:border-accent group-hover:bg-accent/5 transition-colors">
                     <Icon className="w-5 h-5 text-muted group-hover:text-accent transition-colors" />

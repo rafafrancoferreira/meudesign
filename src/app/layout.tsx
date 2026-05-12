@@ -5,6 +5,7 @@ import { Bricolage_Grotesque } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Grain } from "@/components/effects/grain";
+import { ClientProviders } from "@/components/layout/client-providers";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -47,10 +48,12 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable} ${display.variable} h-full`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground antialiased">
-        <Grain />
-        <Header />
-        {children}
-        <Footer />
+        <ClientProviders>
+          <Grain />
+          <Header />
+          {children}
+          <Footer />
+        </ClientProviders>
       </body>
     </html>
   );
