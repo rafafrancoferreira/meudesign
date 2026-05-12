@@ -22,15 +22,15 @@ const DESIGN_PREVIEWS: Record<string, string> = {
 };
 
 // Print-zone overlay: top edge position + square size, both relative to the card
-const PRINT_ZONES: Record<string, { top: string; size: string }> = {
-  't-shirt':        { top: '31%', size: '42%' },
-  hoodie:           { top: '34%', size: '38%' },
+const PRINT_ZONES: Record<string, { top: string; size: string; borderRadius?: string }> = {
+  't-shirt':        { top: '28%', size: '37%' },
+  hoodie:           { top: '35%', size: '35%' },
   poster:           { top: '17%', size: '66%' },
-  caneca:           { top: '28%', size: '50%' },
-  'tote-bag':       { top: '32%', size: '48%' },
-  'capa-telemovel': { top: '34%', size: '40%' },
-  autocolantes:     { top: '21%', size: '58%' },
-  quadro:           { top: '19%', size: '62%' },
+  caneca:           { top: '32%', size: '42%' },
+  'tote-bag':       { top: '28%', size: '45%' },
+  'capa-telemovel': { top: '15%', size: '60%', borderRadius: '8%' },
+  autocolantes:     { top: '13%', size: '74%' },
+  quadro:           { top: '12%', size: '75%' },
 };
 
 const container = {
@@ -112,13 +112,14 @@ export function FeaturedProducts() {
 
                   {/* Design preview — fades in over the print zone only */}
                   <div
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none overflow-hidden"
                     style={{
                       left: '50%',
                       top: zone.top,
                       width: zone.size,
                       aspectRatio: '1 / 1',
                       transform: 'translateX(-50%)',
+                      borderRadius: zone.borderRadius,
                     }}
                   >
                     <Image

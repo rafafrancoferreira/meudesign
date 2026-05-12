@@ -416,7 +416,7 @@ export function GeneratorLayout() {
                       left: printZone.left,
                       width: printZone.width,
                       height: printZone.height,
-                      borderRadius: printZone.shape === 'circle' ? '50%' : undefined,
+                      borderRadius: printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? undefined),
                       zIndex: 1,
                     }}
                   >
