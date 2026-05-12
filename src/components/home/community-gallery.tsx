@@ -120,14 +120,14 @@ export function CommunityGallery() {
               <div className="bg-[#141414] border border-white/10 rounded-xl overflow-hidden">
                 {/* Image section — white bg so designs render naturally */}
                 <div
-                  className="relative bg-white"
+                  className="relative bg-black"
                   style={{ aspectRatio: entry.tall ? '3/4' : '1/1' }}
                 >
                   <Image
                     src={entry.src}
                     alt={entry.prompt}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                     unoptimized
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
