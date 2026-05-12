@@ -9,30 +9,6 @@ import { useLang } from '@/lib/i18n';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
 
-const DESIGN_PREVIEWS: Record<string, string> = {
-  'tshirt':        '/mock-designs/retro-1.png',
-  't-shirt':       '/mock-designs/retro-1.png',
-  hoodie:          '/mock-designs/geometrico-1.png',
-  poster:          '/mock-designs/minimalista-1.png',
-  caneca:          '/mock-designs/abstrato-1.png',
-  'tote-bag':      '/mock-designs/futurista-1.png',
-  'capa-telemovel':'/mock-designs/tipografico-1.png',
-  autocolantes:    '/mock-designs/organico-1.png',
-  quadro:          '/mock-designs/ilustrado-1.png',
-};
-
-// Print-zone overlay: top edge position + square size, both relative to the card
-const PRINT_ZONES: Record<string, { top: string; size: string; borderRadius?: string }> = {
-  't-shirt':        { top: '28%', size: '37%' },
-  hoodie:           { top: '35%', size: '35%' },
-  poster:           { top: '17%', size: '66%' },
-  caneca:           { top: '32%', size: '42%' },
-  'tote-bag':       { top: '28%', size: '45%' },
-  'capa-telemovel': { top: '15%', size: '60%', borderRadius: '8%' },
-  autocolantes:     { top: '13%', size: '74%' },
-  quadro:           { top: '12%', size: '75%' },
-};
-
 const container = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
@@ -88,16 +64,14 @@ export function FeaturedProducts() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {featured.map((product) => {
-            const zone = PRINT_ZONES[product.slug] ?? { top: '31%', size: '44%' };
-            return (
+          {featured.map((product) => (
             <motion.div key={product.slug} variants={item}>
               <Link href={`/produto/${product.slug}`} className="group block">
                 <div
-                  className="relative border border-border rounded-xl overflow-hidden aspect-square mb-4 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.06)]"
+                  className="relative border border-border group-hover:border-[var(--border-strong)] rounded-xl overflow-hidden aspect-square mb-4 transition-all duration-300 group-hover:scale-[1.02]"
                   style={{ background: 'rgba(255,255,255,0.04)' }}
                 >
-                  {/* Mockup — always visible */}
+                  {/* Mockup */}
                   <div className="absolute inset-0 flex items-center justify-center p-8">
                     <Image
                       src={product.mockup}
@@ -105,40 +79,16 @@ export function FeaturedProducts() {
                       width={160}
                       height={160}
                       className="object-contain w-full h-full"
-                      style={{ opacity: 0.85 }}
                       unoptimized
                     />
                   </div>
 
-                  {/* Design preview — fades in over the print zone only */}
-                  <div
-                    className="absolute opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none overflow-hidden"
-                    style={{
-                      left: '50%',
-                      top: zone.top,
-                      width: zone.size,
-                      aspectRatio: '1 / 1',
-                      transform: 'translateX(-50%)',
-                      borderRadius: zone.borderRadius,
-                    }}
-                  >
-                    <Image
-                      src={DESIGN_PREVIEWS[product.slug] ?? '/mock-designs/abstrato-1.png'}
-                      alt={`Design — ${product.name}`}
-                      fill
-                      className="object-contain"
-                    />
-                  </div>
-
-                  {/* Hover CTA chip */}
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+                  {/* Hover CTA */}
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full whitespace-nowrap">
                       {t.home.customize}
                     </span>
                   </div>
-
-                  {/* Border hover */}
-                  <div className="absolute inset-0 rounded-xl border border-transparent group-hover:border-accent/30 transition-colors pointer-events-none" />
                 </div>
 
                 <div className="px-1">
@@ -156,8 +106,7 @@ export function FeaturedProducts() {
                 </div>
               </Link>
             </motion.div>
-          );
-          })}
+          ))}
         </motion.div>
       </div>
     </section>
