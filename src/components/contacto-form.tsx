@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Check, Send } from 'lucide-react';
+import { useLang } from '@/lib/i18n';
 
-const schema = z.object({
-  nome: z.string().min(2, 'Nome obrigatório'),
-  email: z.string().email('Email inválido'),
-  assunto: z.string().min(3, 'Assunto obrigatório'),
-  mensagem: z.string().min(10, 'Mensagem demasiado curta (mínimo 10 caracteres)'),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  nome: string;
+  email: string;
+  assunto: string;
+  mensagem: string;
+};
 
 const inputClass = (hasError?: boolean) =>
   `w-full bg-background border rounded-xl px-4 py-3 text-sm font-mono text-foreground placeholder:text-muted/40 outline-none transition-colors focus:border-accent/60 resize-none ${
@@ -21,8 +20,21 @@ const inputClass = (hasError?: boolean) =>
   }`;
 
 export function ContactoForm() {
+  const { t } = useLang();
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      z.object({
+        nome: z.string().min(2, t.contactoForm.nomeRequired),
+        email: z.string().email(t.contactoForm.emailInvalid),
+        assunto: z.string().min(3, t.contactoForm.assuntoRequired),
+        mensagem: z.string().min(10, t.contactoForm.mensagemTooShort),
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [t.contactoForm.nomeRequired]
+  );
 
   const {
     register,
@@ -47,17 +59,15 @@ export function ContactoForm() {
         </div>
         <div>
           <p className="text-sm font-mono uppercase tracking-wider text-foreground mb-2">
-            Mensagem recebida
+            {t.contactoForm.messageSent}
           </p>
-          <p className="text-xs font-mono text-muted-foreground">
-            Responderemos em breve para o teu email.
-          </p>
+          <p className="text-xs font-mono text-muted-foreground">{t.contactoForm.replyEmail}</p>
         </div>
         <button
           onClick={() => setSent(false)}
           className="text-xs font-mono uppercase tracking-wide text-accent hover:underline underline-offset-4"
         >
-          Enviar outra mensagem
+          {t.contactoForm.sendAnother}
         </button>
       </div>
     );
@@ -68,11 +78,11 @@ export function ContactoForm() {
       <div className="grid sm:grid-cols-2 gap-5">
         <div>
           <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-            Nome *
+            {t.contactoForm.nome} *
           </label>
           <input
             {...register('nome')}
-            placeholder="Rafael Ferreira"
+            placeholder={t.contactoForm.nomePlaceholder}
             autoComplete="name"
             className={inputClass(!!errors.nome)}
           />
@@ -82,12 +92,12 @@ export function ContactoForm() {
         </div>
         <div>
           <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-            Email *
+            {t.contactoForm.email} *
           </label>
           <input
             {...register('email')}
             type="email"
-            placeholder="rafael@exemplo.com"
+            placeholder={t.contactoForm.emailPlaceholder}
             autoComplete="email"
             className={inputClass(!!errors.email)}
           />
@@ -99,11 +109,11 @@ export function ContactoForm() {
 
       <div>
         <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-          Assunto *
+          {t.contactoForm.assunto} *
         </label>
         <input
           {...register('assunto')}
-          placeholder="Ex: Dúvida sobre encomenda, Problema com design…"
+          placeholder={t.contactoForm.assuntoPlaceholder}
           className={inputClass(!!errors.assunto)}
         />
         {errors.assunto && (
@@ -113,12 +123,12 @@ export function ContactoForm() {
 
       <div>
         <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-          Mensagem *
+          {t.contactoForm.mensagem} *
         </label>
         <textarea
           {...register('mensagem')}
           rows={6}
-          placeholder="Descreve a tua questão com o maior detalhe possível…"
+          placeholder={t.contactoForm.mensagemPlaceholder}
           className={inputClass(!!errors.mensagem)}
         />
         {errors.mensagem && (
@@ -132,18 +142,16 @@ export function ContactoForm() {
         className="flex items-center justify-center gap-2 w-full sm:w-auto bg-accent text-accent-foreground font-mono font-bold uppercase tracking-widest text-sm px-8 py-4 rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-60"
       >
         {loading ? (
-          <span>A enviar…</span>
+          <span>{t.contactoForm.sending}</span>
         ) : (
           <>
             <Send className="w-4 h-4" />
-            Enviar mensagem
+            {t.contactoForm.sendButton}
           </>
         )}
       </button>
 
-      <p className="text-[10px] font-mono text-muted/50">
-        Demo: nenhuma mensagem é efetivamente enviada.
-      </p>
+      <p className="text-[10px] font-mono text-muted/50">{t.contactoForm.demoNote}</p>
     </form>
   );
 }

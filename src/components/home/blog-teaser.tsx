@@ -16,8 +16,11 @@ function formatDate(dateStr: string, locale: string) {
 
 const CATEGORY_COLORS: Record<string, string> = {
   Guia: 'text-accent border-accent/30 bg-accent/5',
+  Guide: 'text-accent border-accent/30 bg-accent/5',
   Inspiração: 'text-sky-400 border-sky-400/30 bg-sky-400/5',
+  Inspiration: 'text-sky-400 border-sky-400/30 bg-sky-400/5',
   Tecnologia: 'text-violet-400 border-violet-400/30 bg-violet-400/5',
+  Technology: 'text-violet-400 border-violet-400/30 bg-violet-400/5',
 };
 
 const container = {
@@ -31,7 +34,7 @@ const item = {
 };
 
 export function BlogTeaser() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   return (
     <section className="px-4 py-24 border-t border-border">
@@ -81,9 +84,9 @@ export function BlogTeaser() {
                   {/* Category + read time */}
                   <div className="flex items-center gap-2 mb-5">
                     <span
-                      className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 ${CATEGORY_COLORS[post.category] ?? 'text-muted border-border'}`}
+                      className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 ${CATEGORY_COLORS[post.category[lang]] ?? 'text-muted border-border'}`}
                     >
-                      {post.category}
+                      {post.category[lang]}
                     </span>
                     <span className="flex items-center gap-1 text-[10px] font-mono text-muted/60 uppercase tracking-wider">
                       <Clock className="w-2.5 h-2.5" />
@@ -101,12 +104,12 @@ export function BlogTeaser() {
 
                   {/* Title */}
                   <h3 className="font-display font-black uppercase text-foreground text-xl xl:text-2xl leading-tight mb-4 group-hover:text-accent transition-colors">
-                    {post.title}
+                    {post.title[lang]}
                   </h3>
 
                   {/* Excerpt */}
                   <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">
-                    {post.excerpt}
+                    {post.excerpt[lang]}
                   </p>
 
                   {/* Footer */}

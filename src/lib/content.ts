@@ -1,23 +1,36 @@
+// ── Types ─────────────────────────────────────────────────────────────────
+
+export type BilingualText = { pt: string; en: string };
+
 // ── Team ──────────────────────────────────────────────────────────────────
 
 export const teamMembers = [
   {
     name: 'Rafael Ferreira',
-    role: 'Desenvolvimento & Produto',
+    role: { pt: 'Desenvolvimento & Produto', en: 'Development & Product' },
     initials: 'RF',
-    bio: 'Responsável pela arquitetura técnica e desenvolvimento da plataforma. Apaixonado por produto digital, UX e por resolver problemas de forma elegante.',
+    bio: {
+      pt: 'Responsável pela arquitetura técnica e desenvolvimento da plataforma. Apaixonado por produto digital, UX e por resolver problemas de forma elegante.',
+      en: 'Responsible for the technical architecture and platform development. Passionate about digital product, UX and solving problems elegantly.',
+    },
   },
   {
     name: 'Martim Garcez',
-    role: 'Design & Identidade Visual',
+    role: { pt: 'Design & Identidade Visual', en: 'Design & Visual Identity' },
     initials: 'MG',
-    bio: 'Define a identidade visual do MeuDesign e garante consistência estética em todos os pontos de contacto — da homepage ao packaging.',
+    bio: {
+      pt: 'Define a identidade visual do MeuDesign e garante consistência estética em todos os pontos de contacto — da homepage ao packaging.',
+      en: "Defines MeuDesign's visual identity and ensures aesthetic consistency across all touchpoints — from homepage to packaging.",
+    },
   },
   {
     name: 'Guilherme Almeida',
-    role: 'Negócio & Operações',
+    role: { pt: 'Negócio & Operações', en: 'Business & Operations' },
     initials: 'GA',
-    bio: 'Lidera a estratégia de negócio, as parcerias com produtores e o plano de divulgação. Mantém o projeto ancorado na realidade do mercado.',
+    bio: {
+      pt: 'Lidera a estratégia de negócio, as parcerias com produtores e o plano de divulgação. Mantém o projeto ancorado na realidade do mercado.',
+      en: 'Leads the business strategy, manufacturer partnerships and the marketing plan. Keeps the project grounded in market reality.',
+    },
   },
 ];
 
@@ -37,48 +50,70 @@ export const contactInfo = {
 
 // ── About ─────────────────────────────────────────────────────────────────
 
-export const aboutText = [
-  'O MeuDesign nasceu de uma pergunta simples: e se qualquer pessoa pudesse ter um design único, sem saber desenhar? Somos três estudantes do ISAG — Rafael, Martim e Guilherme — e desenvolvemos esta plataforma no âmbito da UC Plataformas Digitais e E-Commerce.',
-  'O problema é real: criar algo visualmente apelativo costuma exigir anos de prática ou centenas de euros num designer. A nossa solução é uma IA generativa que transforma uma descrição em texto num design pronto a imprimir, aplicado em segundos num produto à tua escolha.',
-  'A missão é clara: democratizar o design. Queremos que qualquer pessoa — seja para oferecer, para usar ou simplesmente para se expressar — consiga criar algo de que se orgulhe, sem barreiras técnicas nem orçamentos impossíveis.',
-];
+export const aboutText = {
+  pt: [
+    'O MeuDesign nasceu de uma pergunta simples: e se qualquer pessoa pudesse ter um design único, sem saber desenhar? Somos três estudantes do ISAG — Rafael, Martim e Guilherme — e desenvolvemos esta plataforma no âmbito da UC Plataformas Digitais e E-Commerce.',
+    'O problema é real: criar algo visualmente apelativo costuma exigir anos de prática ou centenas de euros num designer. A nossa solução é uma IA generativa que transforma uma descrição em texto num design pronto a imprimir, aplicado em segundos num produto à tua escolha.',
+    'A missão é clara: democratizar o design. Queremos que qualquer pessoa — seja para oferecer, para usar ou simplesmente para se expressar — consiga criar algo de que se orgulhe, sem barreiras técnicas nem orçamentos impossíveis.',
+  ],
+  en: [
+    'MeuDesign was born from a simple question: what if anyone could have a unique design, without knowing how to draw? We are three ISAG students — Rafael, Martim and Guilherme — and we developed this platform as part of the Digital Platforms and E-Commerce course.',
+    'The problem is real: creating something visually appealing usually requires years of practice or hundreds of euros for a designer. Our solution is a generative AI that transforms a text description into a print-ready design, applied in seconds to a product of your choice.',
+    "The mission is clear: democratise design. We want anyone — whether for a gift, for personal use, or simply to express themselves — to be able to create something they're proud of, without technical barriers or impossible budgets.",
+  ],
+};
 
 export interface BlogPost {
   slug: string;
-  title: string;
-  excerpt: string;
+  title: BilingualText;
+  excerpt: BilingualText;
   date: string;
   readTime: string;
-  category: string;
+  category: BilingualText;
 }
 
 export const blogPosts: BlogPost[] = [
   {
     slug: 'como-escrever-um-bom-prompt',
-    title: 'Como escrever um bom prompt para o teu design',
-    excerpt:
-      'A qualidade do teu design começa no texto que escreves. Descobre as técnicas para descrever a tua ideia de forma clara e obteres resultados que te surpreendem — desde a escolha das palavras certas até à especificação de paletas de cor.',
+    title: {
+      pt: 'Como escrever um bom prompt para o teu design',
+      en: 'How to write a good prompt for your design',
+    },
+    excerpt: {
+      pt: 'A qualidade do teu design começa no texto que escreves. Descobre as técnicas para descrever a tua ideia de forma clara e obteres resultados que te surpreendem — desde a escolha das palavras certas até à especificação de paletas de cor.',
+      en: 'The quality of your design starts with the text you write. Discover techniques for describing your idea clearly and getting results that surprise you — from choosing the right words to specifying colour palettes.',
+    },
     date: '2026-04-28',
     readTime: '5 min',
-    category: 'Guia',
+    category: { pt: 'Guia', en: 'Guide' },
   },
   {
     slug: '5-estilos-visuais-para-t-shirt',
-    title: '5 estilos visuais que funcionam sempre numa t-shirt',
-    excerpt:
-      'Do minimalismo ao retro, há estilos que simplesmente resultam em produtos impressos. Exploramos os cinco que mais se destacam, com exemplos reais gerados pela nossa IA e dicas para os reproduzires.',
+    title: {
+      pt: '5 estilos visuais que funcionam sempre numa t-shirt',
+      en: '5 visual styles that always work on a t-shirt',
+    },
+    excerpt: {
+      pt: 'Do minimalismo ao retro, há estilos que simplesmente resultam em produtos impressos. Exploramos os cinco que mais se destacam, com exemplos reais gerados pela nossa IA e dicas para os reproduzires.',
+      en: 'From minimalism to retro, there are styles that simply work great on printed products. We explore the five that stand out most, with real examples generated by our AI and tips to recreate them.',
+    },
     date: '2026-05-02',
     readTime: '4 min',
-    category: 'Inspiração',
+    category: { pt: 'Inspiração', en: 'Inspiration' },
   },
   {
     slug: 'por-tras-da-ia',
-    title: 'Por trás da IA: como o MeuDesign cria os teus designs',
-    excerpt:
-      'Uma visão técnica — mas acessível — do modelo de inteligência artificial que transforma palavras em imagens únicas. Que dados usou para aprender? O que é um diffusion model? Respondemos sem jargão.',
+    title: {
+      pt: 'Por trás da IA: como o MeuDesign cria os teus designs',
+      en: 'Behind the AI: how MeuDesign creates your designs',
+    },
+    excerpt: {
+      pt: 'Uma visão técnica — mas acessível — do modelo de inteligência artificial que transforma palavras em imagens únicas. Que dados usou para aprender? O que é um diffusion model? Respondemos sem jargão.',
+      en: 'A technical — but accessible — view of the AI model that transforms words into unique images. What data did it learn from? What is a diffusion model? We answer without jargon.',
+    },
     date: '2026-05-06',
     readTime: '7 min',
-    category: 'Tecnologia',
+    category: { pt: 'Tecnologia', en: 'Technology' },
   },
 ];
 
