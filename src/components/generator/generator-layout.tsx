@@ -418,7 +418,6 @@ export function GeneratorLayout() {
                       height: printZone.height,
                       borderRadius: printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? undefined),
                       zIndex: 1,
-                      mixBlendMode: 'multiply',
                     }}
                   >
                     <Image
