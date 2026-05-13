@@ -418,13 +418,14 @@ export function GeneratorLayout() {
                       height: printZone.height,
                       borderRadius: printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? undefined),
                       zIndex: 1,
+                      background: '#000',
                     }}
                   >
                     <Image
                       src={result.imageUrl}
                       alt="Design gerado"
                       fill
-                      className="object-contain"
+                      className="object-cover"
                       sizes="(max-width: 768px) 50vw, 25vw"
                       unoptimized={result.imageUrl.startsWith('/')}
                     />
