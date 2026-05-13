@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ShoppingCart, Menu, X, User } from "lucide-react";
+import { ShoppingCart, Menu, X, User, Instagram } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/lib/store-cart";
 import { useLang } from "@/lib/i18n";
@@ -70,6 +70,17 @@ export function Header() {
                 EN
               </button>
             </div>
+
+            {/* Instagram */}
+            <a
+              href="https://www.instagram.com/meudesign.isag/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram MeuDesign"
+              className="text-muted-foreground hover:text-accent transition-colors"
+            >
+              <Instagram className="h-5 w-5" />
+            </a>
 
             {/* Sign in button */}
             <button
