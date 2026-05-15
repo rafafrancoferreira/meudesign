@@ -18,7 +18,7 @@ export const products: Product[] = [
     name: "T-shirt personalizada",
     price: 19.9,
     category: "vestuário",
-    mockup: "/mockups/t-shirt.svg",
+    mockup: "/mockups/t-shirt.jpg",
     description:
       "Usa um design único que só tu tens. Feita em algodão orgânico de alta gramagem, oferece um toque suave e durabilidade lavagem após lavagem. O teu design é impresso com tinta de base aquosa, segura para a pele e com cores vibrantes que não desbotam. Corte unissexo que assenta bem em qualquer silhueta.",
     materials: "100% algodão orgânico penteado, 180 g/m², corte regular unissexo",
@@ -30,7 +30,7 @@ export const products: Product[] = [
     name: "Hoodie personalizada",
     price: 39.9,
     category: "vestuário",
-    mockup: "/mockups/hoodie.svg",
+    mockup: "/mockups/hoodie.jpg",
     description:
       "Conforto máximo com estilo exclusivo. O peso premium do tecido garante que este hoodie dure anos sem perder a forma. Ideal para os dias mais frescos, com o teu design aplicado por impressão DTG de alta definição que preserva todos os detalhes. Interior suave e felpudo para um aconchego que não passa de moda.",
     materials:
@@ -43,7 +43,7 @@ export const products: Product[] = [
     name: "Poster personalizado",
     price: 14.9,
     category: "decoração",
-    mockup: "/mockups/poster.svg",
+    mockup: "/mockups/poster.jpg",
     description:
       "Transforma uma parede em algo teu. Impresso em papel fotográfico de alta gramagem com acabamento mate, o teu design ganha vida com cores profundas e contrastes nítidos. Perfeito para quartos, escritórios ou como prenda original. Bordas brancas incluídas para facilitar o emolduramento.",
     materials:
@@ -56,7 +56,7 @@ export const products: Product[] = [
     name: "Capa de telemóvel personalizada",
     price: 17.9,
     category: "acessórios",
-    mockup: "/mockups/capa-telemovel.svg",
+    mockup: "/mockups/capa-telemovel.jpg",
     description:
       "Protege o teu telemóvel com um design que é só teu. A impressão UV de última geração garante cores brilhantes e resistência a riscos do dia a dia. Encaixa perfeitamente no teu modelo e mantém acesso a todos os botões, entradas e câmaras. Ligeira e resistente em simultâneo.",
     materials:
@@ -77,7 +77,7 @@ export const products: Product[] = [
     name: "Caneca personalizada",
     price: 12.9,
     category: "acessórios",
-    mockup: "/mockups/caneca.svg",
+    mockup: "/mockups/caneca.jpg",
     description:
       "O teu café da manhã merece uma caneca com personalidade. O design envolve toda a superfície em 360° e resiste a centenas de lavagens sem desbotar ou descascar. Uma prenda com utilidade garantida, que as pessoas usam todos os dias e nunca esquecem de onde veio.",
     materials:
@@ -89,7 +89,7 @@ export const products: Product[] = [
     name: "Autocolantes personalizados",
     price: 7.9,
     category: "acessórios",
-    mockup: "/mockups/autocolantes.svg",
+    mockup: "/mockups/autocolantes.jpg",
     description:
       "Pequenos detalhes que fazem a diferença. Pack com 6 autocolantes em vinil de alta qualidade, resistentes à água, ao sol e ao uso diário. Colam em portáteis, garrafas, cadernos ou onde quiseres — e saem sem deixar rasto. Corte de precisão para acabamento profissional.",
     materials:
@@ -101,7 +101,7 @@ export const products: Product[] = [
     name: "Tote bag personalizada",
     price: 16.9,
     category: "acessórios",
-    mockup: "/mockups/tote-bag.svg",
+    mockup: "/mockups/tote-bag.jpg",
     description:
       "Substituí os sacos de plástico com estilo. Em algodão natural resistente, aguenta até 15 kg e sobrevive ao uso diário sem deformar. O design é aplicado em serigrafia de alta definição, com cores que se mantêm vivas mesmo depois de muitas lavagens à máquina.",
     materials:
@@ -113,7 +113,7 @@ export const products: Product[] = [
     name: "Quadro decorativo personalizado",
     price: 29.9,
     category: "decoração",
-    mockup: "/mockups/quadro.svg",
+    mockup: "/mockups/quadro.jpg",
     description:
       "Arte genuína nas tuas paredes. O teu design é impresso em tela de algodão com tintas de arquivo e esticado à mão sobre uma armação de madeira de pinho. Pronto a pendurar, com suporte já incluído no verso. Uma peça decorativa com presença real que dura décadas.",
     materials:
