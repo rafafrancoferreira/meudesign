@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { Maximize2, AlignCenter } from 'lucide-react';
+import { Maximize2, AlignCenter, Wand2 } from 'lucide-react';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export interface DesignTransform {
@@ -30,6 +30,44 @@ export function defaultDesignTransform(slug: string): DesignTransform {
   return { cx: left + w / 2, cy: top + h / 2, w, h };
 }
 
+/** Canvas API: remove near-black and near-white pixels with soft feathering. */
+async function removeImageBackground(src: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width  = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) { reject(new Error('no ctx')); return; }
+      ctx.drawImage(img, 0, 0);
+      try {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const d = imageData.data;
+        for (let i = 0; i < d.length; i += 4) {
+          const r = d[i], g = d[i + 1], b = d[i + 2];
+          const maxCh = Math.max(r, g, b); // low = near black
+          const minCh = Math.min(r, g, b); // high = near white
+          if (maxCh < 70) {
+            // Near-black: feather from fully transparent (0) to opaque (70)
+            d[i + 3] = Math.round((maxCh / 70) * d[i + 3]);
+          } else if (minCh > 185) {
+            // Near-white: feather from opaque (185) to fully transparent (255)
+            d[i + 3] = Math.round(((255 - minCh) / 70) * d[i + 3]);
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        resolve(canvas.toDataURL('image/png'));
+      } catch {
+        reject(new Error('tainted canvas'));
+      }
+    };
+    img.onerror = () => reject(new Error('load failed'));
+    img.src = src;
+  });
+}
+
 interface DesignCanvasProps {
   mockupSrc: string;
   designSrc: string;
@@ -50,10 +88,15 @@ export function DesignCanvas({
 }: DesignCanvasProps) {
   const [designTx, setDesignTx] = useState<DesignTransform>(() => defaultDesignTransform(productSlug));
   const [sizeScale, setSizeScale] = useState(1.0);
+  const [processedSrc, setProcessedSrc] = useState<string | null>(null);
+  const [bgRemoving, setBgRemoving] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef   = useRef<DragState | null>(null);
 
-  // Reset transform when product or key changes
+  // The image actually rendered — processed version if available, else original
+  const effectiveSrc = processedSrc ?? designSrc;
+
+  // Reset transform when product changes
   useEffect(() => {
     setSizeScale(1.0);
     setDesignTx(defaultDesignTransform(productSlug));
@@ -65,6 +108,26 @@ export function DesignCanvas({
     setDesignTx({ cx: base.cx, cy: base.cy, w: base.w * sizeScale, h: base.h * sizeScale });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeScale]);
+
+  // Auto-remove background for light mockups (multiply blend needs transparency)
+  useEffect(() => {
+    setProcessedSrc(null);
+    if (!isDarkMockup) {
+      setBgRemoving(true);
+      removeImageBackground(designSrc)
+        .then(setProcessedSrc)
+        .catch(() => {}) // silently ignore CORS / tainted-canvas errors
+        .finally(() => setBgRemoving(false));
+    }
+  }, [designSrc, isDarkMockup]);
+
+  const handleRemoveBg = useCallback(() => {
+    setBgRemoving(true);
+    removeImageBackground(designSrc)
+      .then(setProcessedSrc)
+      .catch(() => {})
+      .finally(() => setBgRemoving(false));
+  }, [designSrc]);
 
   const pctFromEvent = useCallback((clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
@@ -142,7 +205,8 @@ export function DesignCanvas({
   }, [productSlug, sizeScale]);
 
   const printZone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '0');
+  // Use 4px radius as minimum so post-removal pixel fringe is clipped at corners
+  const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '4px');
 
   const cornerClass: Record<ResizeCorner, string> = {
     nw: 'top-0 left-0 cursor-nw-resize',
@@ -184,7 +248,7 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image src={effectiveSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
               {(['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
                 <div key={c} className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${cornerClass[c]}`} style={{ transform: cornerTransform[c] }} onMouseDown={(e) => startDrag(e, c)} onTouchStart={(e) => startDrag(e, c)} />
               ))}
@@ -206,7 +270,7 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image src={effectiveSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
               {(['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
                 <div key={c} className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${cornerClass[c]}`} style={{ transform: cornerTransform[c] }} onMouseDown={(e) => startDrag(e, c)} onTouchStart={(e) => startDrag(e, c)} />
               ))}
@@ -231,6 +295,14 @@ export function DesignCanvas({
             className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors"
           >
             <AlignCenter className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleRemoveBg}
+            disabled={bgRemoving}
+            title="Remover fundo"
+            className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors disabled:opacity-40"
+          >
+            <Wand2 className={`w-3.5 h-3.5 ${bgRemoving ? 'animate-pulse' : ''}`} />
           </button>
         </div>
       )}
