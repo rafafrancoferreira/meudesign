@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useId } from 'react';
 import Image from 'next/image';
 import { Maximize2, AlignCenter } from 'lucide-react';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
@@ -56,6 +56,7 @@ export function DesignCanvas({
   const dragRef   = useRef<DragState | null>(null);
 
   const showHandles = isHovered || isDragging;
+  const uid = useId().replace(/:/g, '');
 
   // Reset transform when product changes
   useEffect(() => {
@@ -224,8 +225,16 @@ export function DesignCanvas({
             </div>
           </>
         ) : (
-          /* ── LIGHT MOCKUP: design as a styled patch + mockup with multiply on top ── */
+          /* ── LIGHT MOCKUP: SVG feColorMatrix makes black px transparent; multiply mockup adds fabric texture ── */
           <>
+            {/* alpha = 5R+5G+5B−0.3 → pure black (0,0,0) → alpha 0 (transparent); colored content → alpha 1 */}
+            <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+              <defs>
+                <filter id={`rbg-${uid}`} colorInterpolationFilters="sRGB">
+                  <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  5 5 5 0 -0.3" />
+                </filter>
+              </defs>
+            </svg>
             <div
               className="absolute cursor-move touch-none overflow-hidden"
               style={{
@@ -234,7 +243,6 @@ export function DesignCanvas({
                 width:  `${designTx.w}%`,
                 height: `${designTx.h}%`,
                 borderRadius: designBorderRadius,
-                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                 zIndex: 1,
               }}
               onMouseEnter={() => setIsHovered(true)}
@@ -242,7 +250,16 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image
+                src={designSrc}
+                alt="Design"
+                fill
+                style={{ filter: `url(#rbg-${uid})` }}
+                className="object-contain pointer-events-none"
+                sizes="400px"
+                unoptimized={designSrc.startsWith('/')}
+                draggable={false}
+              />
               {designOverlay}
             </div>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2, mixBlendMode: 'multiply' }}>
