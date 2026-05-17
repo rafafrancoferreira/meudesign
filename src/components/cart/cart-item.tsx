@@ -4,6 +4,16 @@ import Image from 'next/image';
 import { Minus, Plus, X } from 'lucide-react';
 import { type CartItem, useCartStore } from '@/lib/store-cart';
 import { getProductBySlug, formatPrice } from '@/lib/products';
+
+function getVariantMockup(productSlug: string, color?: string): string | undefined {
+  const product = getProductBySlug(productSlug);
+  if (!product) return undefined;
+  if (color && product.variants) {
+    const v = product.variants.find((v) => v.color === color);
+    if (v) return v.mockup;
+  }
+  return product.mockup;
+}
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export function CartItemRow({ item }: { item: CartItem }) {
@@ -11,6 +21,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
   const updateQty = useCartStore((s) => s.updateQty);
   const product = getProductBySlug(item.productSlug);
   const zone = MOCKUP_PRINT_ZONES[item.productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
+  const variantMockup = getVariantMockup(item.productSlug, item.color);
 
   const displayName = (product?.name ?? item.productSlug)
     .replace(' personalizados', '')
@@ -49,10 +60,10 @@ export function CartItemRow({ item }: { item: CartItem }) {
           />
         </div>
         {/* Mockup layer (above) */}
-        {product && (
+        {variantMockup && (
           <div className="absolute inset-0">
             <Image
-              src={product.mockup}
+              src={variantMockup}
               alt={displayName}
               fill
               className="object-contain"
@@ -70,6 +81,11 @@ export function CartItemRow({ item }: { item: CartItem }) {
             <p className="text-sm font-mono uppercase tracking-wide text-foreground">
               {displayName}
             </p>
+            {item.color && (
+              <p className="text-[11px] font-mono uppercase tracking-wider text-muted mt-0.5">
+                Cor: {item.color}
+              </p>
+            )}
             {item.size && (
               <p className="text-[11px] font-mono uppercase tracking-wider text-muted mt-0.5">
                 Tamanho: {item.size}

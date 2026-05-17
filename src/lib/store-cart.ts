@@ -8,6 +8,7 @@ export type CartItem = {
   designPrompt: string;
   quantity: number;
   size?: string;
+  color?: string;
   price: number;
 };
 

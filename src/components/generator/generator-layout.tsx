@@ -9,7 +9,7 @@ import {
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
 import { useLang } from '@/lib/i18n';
-import { products } from '@/lib/products';
+import { products, type ProductVariant } from '@/lib/products';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 type GenerationState = 'idle' | 'loading' | 'success' | 'error';
@@ -84,6 +84,9 @@ export function GeneratorLayout() {
   const [customStyle, setCustomStyle] = useState('');
   const [designTx, setDesignTx] = useState<DesignTransform>(() => defaultTransform('t-shirt'));
   const [sizeScale, setSizeScale] = useState(1.0);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    () => products.find((p) => p.slug === 't-shirt')?.variants?.[0] ?? null
+  );
 
   const progressRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const msgIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -94,12 +97,15 @@ export function GeneratorLayout() {
   const { t } = useLang();
 
   const currentProduct = products.find((p) => p.slug === selectedProduct) ?? products[0];
+  const activeMockup = selectedVariant?.mockup ?? currentProduct.mockup;
 
-  // Reset design position + scale when product changes
+  // Reset design position + scale + variant when product changes
   useEffect(() => {
     const tx = defaultTransform(selectedProduct);
     setSizeScale(1.0);
     setDesignTx(tx);
+    const p = products.find((pr) => pr.slug === selectedProduct);
+    setSelectedVariant(p?.variants?.[0] ?? null);
   }, [selectedProduct]);
 
   // Apply size slider to designTx
@@ -263,6 +269,7 @@ export function GeneratorLayout() {
       designPrompt: prompt,
       price: currentProduct.price,
       size: currentProduct.sizes?.[0],
+      color: selectedVariant?.color,
     });
   }, [result, selectedProduct, prompt, currentProduct, addToCart]);
 
@@ -434,6 +441,36 @@ export function GeneratorLayout() {
               </div>
             </div>
 
+            {/* Color picker — only for products with multiple variants */}
+            {currentProduct.variants && currentProduct.variants.length > 1 && (
+              <div>
+                <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-3">
+                  Cor
+                </label>
+                <div className="flex gap-2">
+                  {currentProduct.variants.map((v) => (
+                    <button
+                      key={v.color}
+                      onClick={() => setSelectedVariant(v)}
+                      title={v.color}
+                      aria-label={v.color}
+                      className={`w-7 h-7 rounded-full border-2 transition-all ${
+                        selectedVariant?.color === v.color
+                          ? 'border-accent scale-110'
+                          : 'border-border hover:border-border-strong'
+                      } ${v.hex === 'transparent' ? 'border-dashed' : ''}`}
+                      style={v.hex && v.hex !== 'transparent' ? { backgroundColor: v.hex } : { backgroundColor: 'rgba(255,255,255,0.08)' }}
+                    />
+                  ))}
+                  {selectedVariant && (
+                    <span className="text-xs font-mono text-muted self-center ml-1">
+                      {selectedVariant.color}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Generate button */}
             <button
               onClick={generate}
@@ -500,7 +537,7 @@ export function GeneratorLayout() {
                 <div className="text-center px-8">
                   <div className="w-16 h-16 mx-auto mb-6 opacity-30">
                     <Image
-                      src={currentProduct.mockup}
+                      src={activeMockup}
                       alt={currentProduct.name}
                       width={64}
                       height={64}
@@ -599,7 +636,7 @@ export function GeneratorLayout() {
                     style={{ zIndex: 2, mixBlendMode: 'multiply' }}
                   >
                     <Image
-                      src={currentProduct.mockup}
+                      src={activeMockup}
                       alt={currentProduct.name}
                       fill
                       className="object-contain"

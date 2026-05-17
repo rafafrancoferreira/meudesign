@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'motion/react';
@@ -7,6 +8,9 @@ import { ArrowRight } from 'lucide-react';
 import { type Product, formatPrice } from '@/lib/products';
 
 export function ProductCard({ product }: { product: Product }) {
+  const defaultMockup = product.variants?.[0]?.mockup ?? product.mockup;
+  const [activeMockup, setActiveMockup] = useState(defaultMockup);
+
   const displayName = product.name
     .replace(' personalizados', '')
     .replace(' personalizada', '')
@@ -28,7 +32,7 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Mockup — always visible, brightens on hover */}
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <Image
-            src={product.mockup}
+            src={activeMockup}
             alt={product.name}
             width={200}
             height={200}
@@ -67,9 +71,33 @@ export function ProductCard({ product }: { product: Product }) {
             {formatPrice(product.price)}
           </span>
         </div>
-        <p className="text-[11px] font-mono uppercase tracking-wider text-muted/60">
-          {product.category}
-        </p>
+
+        {/* Color swatches */}
+        {product.variants && product.variants.length > 1 ? (
+          <div className="flex items-center gap-1.5 mt-1.5">
+            {product.variants.map((v) => (
+              <button
+                key={v.color}
+                title={v.color}
+                aria-label={v.color}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveMockup(v.mockup);
+                }}
+                className={`w-3.5 h-3.5 rounded-full border transition-all ${
+                  activeMockup === v.mockup
+                    ? 'border-accent scale-125'
+                    : 'border-border/60 hover:border-border-strong'
+                } ${v.hex === 'transparent' ? 'border-dashed' : ''}`}
+                style={v.hex && v.hex !== 'transparent' ? { backgroundColor: v.hex } : { backgroundColor: 'rgba(255,255,255,0.1)' }}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-[11px] font-mono uppercase tracking-wider text-muted/60">
+            {product.category}
+          </p>
+        )}
       </div>
       </motion.div>
     </Link>

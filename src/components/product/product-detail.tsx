@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Wand2, ChevronDown, ChevronUp, Check, ArrowLeft, Clock, Package } from 'lucide-react';
-import { type Product, formatPrice } from '@/lib/products';
+import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
 
 const DESIGN_GALLERY = [
@@ -26,8 +26,13 @@ export function ProductDetail({ product }: { product: Product }) {
   const [selectedSize, setSelectedSize] = useState<string>(
     product.sizes ? product.sizes[product.sizes.length > 3 ? 2 : 0] : ''
   );
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
+    product.variants?.[0] ?? null
+  );
   const [showDesigns, setShowDesigns] = useState(false);
   const [added, setAdded] = useState(false);
+
+  const activeMockup = selectedVariant?.mockup ?? product.mockup;
 
   const addToCart = useCartStore((s) => s.add);
   const isDesignSelected = selectedDesign !== null;
@@ -40,6 +45,7 @@ export function ProductDetail({ product }: { product: Product }) {
       designPrompt: selectedDesign.prompt,
       price: product.price,
       size: selectedSize || undefined,
+      color: selectedVariant?.color,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
@@ -97,7 +103,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   {/* Mockup overlay */}
                   <div className="absolute inset-0 flex items-center justify-center p-8 pointer-events-none">
                     <Image
-                      src={product.mockup}
+                      src={activeMockup}
                       alt=""
                       width={300}
                       height={300}
@@ -121,7 +127,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   className="absolute inset-0 flex items-center justify-center p-14"
                 >
                   <Image
-                    src={product.mockup}
+                    src={activeMockup}
                     alt={product.name}
                     width={320}
                     height={320}
@@ -152,7 +158,7 @@ export function ProductDetail({ product }: { product: Product }) {
               }`}
             >
               <Image
-                src={product.mockup}
+                src={activeMockup}
                 alt="Produto"
                 fill
                 className="object-contain p-3 invert opacity-50"
@@ -207,6 +213,31 @@ export function ProductDetail({ product }: { product: Product }) {
           <p className="text-3xl font-mono font-bold text-foreground mb-6">
             {formatPrice(product.price)}
           </p>
+
+          {/* Color picker */}
+          {product.variants && product.variants.length > 1 && (
+            <div className="mb-6">
+              <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted mb-3">
+                Cor — {selectedVariant?.color}
+              </p>
+              <div className="flex gap-2">
+                {product.variants.map((v) => (
+                  <button
+                    key={v.color}
+                    onClick={() => setSelectedVariant(v)}
+                    title={v.color}
+                    aria-label={v.color}
+                    className={`w-8 h-8 rounded-full border-2 transition-all ${
+                      selectedVariant?.color === v.color
+                        ? 'border-accent scale-110'
+                        : 'border-border hover:border-border-strong'
+                    } ${v.hex === 'transparent' ? 'border-dashed' : ''}`}
+                    style={v.hex && v.hex !== 'transparent' ? { backgroundColor: v.hex } : { backgroundColor: 'rgba(255,255,255,0.08)' }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Description */}
           <p className="text-sm text-muted-foreground leading-relaxed mb-7">
