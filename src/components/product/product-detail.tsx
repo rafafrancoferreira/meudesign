@@ -38,7 +38,16 @@ function CompositedMockup({
   const zone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
   return (
     <div className={`relative w-full h-full ${className}`}>
-      {/* Design layer — behind mockup */}
+      {/* Mockup base layer */}
+      <Image
+        src={mockupSrc}
+        alt={alt}
+        fill
+        className="object-contain"
+        sizes="400px"
+        unoptimized
+      />
+      {/* Design layer — on top, in print zone */}
       {designSrc && (
         <div
           className="absolute overflow-hidden"
@@ -48,7 +57,7 @@ function CompositedMockup({
             width: zone.width,
             height: zone.height,
             borderRadius: zone.shape === 'circle' ? '50%' : (zone.borderRadius ?? undefined),
-            mixBlendMode: 'multiply',
+            mixBlendMode: 'screen',
           }}
         >
           <Image
@@ -61,15 +70,6 @@ function CompositedMockup({
           />
         </div>
       )}
-      {/* Mockup layer — on top */}
-      <Image
-        src={mockupSrc}
-        alt={alt}
-        fill
-        className="object-contain"
-        sizes="400px"
-        unoptimized
-      />
     </div>
   );
 }
