@@ -47,13 +47,11 @@ async function removeImageBackground(src: string): Promise<string> {
         const d = imageData.data;
         for (let i = 0; i < d.length; i += 4) {
           const r = d[i], g = d[i + 1], b = d[i + 2];
-          const maxCh = Math.max(r, g, b); // low = near black
-          const minCh = Math.min(r, g, b); // high = near white
+          const maxCh = Math.max(r, g, b);
+          const minCh = Math.min(r, g, b);
           if (maxCh < 70) {
-            // Near-black: feather from fully transparent (0) to opaque (70)
             d[i + 3] = Math.round((maxCh / 70) * d[i + 3]);
           } else if (minCh > 185) {
-            // Near-white: feather from opaque (185) to fully transparent (255)
             d[i + 3] = Math.round(((255 - minCh) / 70) * d[i + 3]);
           }
         }
@@ -90,11 +88,14 @@ export function DesignCanvas({
   const [sizeScale, setSizeScale] = useState(1.0);
   const [processedSrc, setProcessedSrc] = useState<string | null>(null);
   const [bgRemoving, setBgRemoving] = useState(false);
+  // Handle visibility: only shown on hover or active drag
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef   = useRef<DragState | null>(null);
 
-  // The image actually rendered — processed version if available, else original
   const effectiveSrc = processedSrc ?? designSrc;
+  const showHandles = isHovered || isDragging;
 
   // Reset transform when product changes
   useEffect(() => {
@@ -116,7 +117,7 @@ export function DesignCanvas({
       setBgRemoving(true);
       removeImageBackground(designSrc)
         .then(setProcessedSrc)
-        .catch(() => {}) // silently ignore CORS / tainted-canvas errors
+        .catch(() => {})
         .finally(() => setBgRemoving(false));
     }
   }, [designSrc, isDarkMockup]);
@@ -145,6 +146,8 @@ export function DesignCanvas({
       const { clientX, clientY } = 'touches' in e
         ? { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }
         : { clientX: (e as React.MouseEvent).clientX, clientY: (e as React.MouseEvent).clientY };
+
+      setIsDragging(true);
 
       dragRef.current = {
         mode,
@@ -184,6 +187,7 @@ export function DesignCanvas({
       };
 
       const onUp = () => {
+        setIsDragging(false);
         dragRef.current = null;
         window.removeEventListener('mousemove', onMove);
         window.removeEventListener('touchmove', onMove);
@@ -205,7 +209,6 @@ export function DesignCanvas({
   }, [productSlug, sizeScale]);
 
   const printZone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  // Use 4px radius as minimum so post-removal pixel fringe is clipped at corners
   const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '4px');
 
   const cornerClass: Record<ResizeCorner, string> = {
@@ -220,6 +223,33 @@ export function DesignCanvas({
     sw: 'translate(-50%,50%)',
     se: 'translate(50%,50%)',
   };
+
+  /** Shared design overlay — handles + dashed border shown only on hover/drag */
+  const designOverlay = (
+    <>
+      {/* Dashed selection border */}
+      {showHandles && (
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            border: '1.5px dashed rgba(218,254,34,0.5)',
+            borderRadius: designBorderRadius,
+            zIndex: 10,
+          }}
+        />
+      )}
+      {/* Corner resize handles */}
+      {showHandles && (['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
+        <div
+          key={c}
+          className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${cornerClass[c]}`}
+          style={{ transform: cornerTransform[c] }}
+          onMouseDown={(e) => startDrag(e, c)}
+          onTouchStart={(e) => startDrag(e, c)}
+        />
+      ))}
+    </>
+  );
 
   return (
     <div className={className}>
@@ -245,13 +275,13 @@ export function DesignCanvas({
                 mixBlendMode: 'screen',
                 zIndex: 2,
               }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
               <Image src={effectiveSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
-              {(['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
-                <div key={c} className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${cornerClass[c]}`} style={{ transform: cornerTransform[c] }} onMouseDown={(e) => startDrag(e, c)} onTouchStart={(e) => startDrag(e, c)} />
-              ))}
+              {designOverlay}
             </div>
           </>
         ) : (
@@ -267,13 +297,13 @@ export function DesignCanvas({
                 borderRadius: designBorderRadius,
                 zIndex: 1,
               }}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
               <Image src={effectiveSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
-              {(['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
-                <div key={c} className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${cornerClass[c]}`} style={{ transform: cornerTransform[c] }} onMouseDown={(e) => startDrag(e, c)} onTouchStart={(e) => startDrag(e, c)} />
-              ))}
+              {designOverlay}
             </div>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2, mixBlendMode: 'multiply' }}>
               <Image src={mockupSrc} alt="Mockup" fill className="object-contain" sizes="500px" unoptimized />
