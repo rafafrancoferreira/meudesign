@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Wand2, ChevronDown, ChevronUp, Check, ArrowLeft, Clock, Package } from 'lucide-react';
 import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
+import { useLang, getProductMeta } from '@/lib/i18n';
 import { DesignCanvas } from '@/components/product/design-canvas';
 
 const DESIGN_GALLERY = [
@@ -55,6 +56,13 @@ export function ProductDetail({ product }: { product: Product }) {
   const isDesignSelected = selectedDesign !== null;
 
   const addToCart = useCartStore((s) => s.add);
+  const { t } = useLang();
+  const meta = getProductMeta(product.slug, t);
+  const categoryLabel = ({
+    vestuário: t.loja.clothing,
+    decoração: t.loja.decoration,
+    acessórios: t.loja.accessories,
+  } as Record<string, string>)[product.category] ?? product.category;
 
   function handleAddToCart() {
     if (!selectedDesign) return;
@@ -85,10 +93,10 @@ export function ProductDetail({ product }: { product: Product }) {
           className="hover:text-foreground transition-colors flex items-center gap-1.5"
         >
           <ArrowLeft className="w-3 h-3" />
-          Loja
+          {t.nav.loja}
         </Link>
         <span>/</span>
-        <span className="text-foreground truncate">{product.name}</span>
+        <span className="text-foreground truncate">{meta?.name ?? product.name}</span>
       </nav>
 
       {/* Two-column layout */}
@@ -148,7 +156,7 @@ export function ProductDetail({ product }: { product: Product }) {
             {/* Base mockup thumb */}
             <button
               onClick={() => setSelectedDesign(null)}
-              aria-label="Mostrar produto sem design"
+              aria-label={t.produto.showWithoutDesign}
               className={`relative aspect-square rounded-xl overflow-hidden border transition-all hover:scale-[1.02] ${
                 !isDesignSelected ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-border-strong'
               }`}
@@ -158,11 +166,11 @@ export function ProductDetail({ product }: { product: Product }) {
                 <CompositedMockup
                   mockupSrc={activeMockup}
                   productSlug={product.slug}
-                  alt="Produto"
+                  alt={meta?.name ?? product.name}
                 />
               </div>
               <div className="absolute bottom-0 inset-x-0 bg-background/80 py-1 text-[8px] font-mono uppercase tracking-wider text-center text-muted">
-                Produto
+                {t.produto.productLabel}
               </div>
             </button>
 
@@ -201,7 +209,7 @@ export function ProductDetail({ product }: { product: Product }) {
         <div className="flex flex-col">
           {/* Category tag */}
           <p className="text-xs font-mono uppercase tracking-[0.25em] text-accent mb-3">
-            {product.category}
+            {categoryLabel}
           </p>
 
           {/* Name */}
@@ -209,7 +217,7 @@ export function ProductDetail({ product }: { product: Product }) {
             className="font-display font-black uppercase leading-none text-foreground mb-3"
             style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.8rem)', letterSpacing: '-0.02em' }}
           >
-            {product.name}
+            {meta?.name ?? product.name}
           </h1>
 
           {/* Price */}
@@ -221,7 +229,7 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.variants && product.variants.length > 1 && (
             <div className="mb-6">
               <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted mb-3">
-                Cor — {selectedVariant?.color}
+                {t.produto.colorLabel} — {selectedVariant?.color}
               </p>
               <div className="flex gap-2">
                 {product.variants.map((v) => (
@@ -244,14 +252,14 @@ export function ProductDetail({ product }: { product: Product }) {
 
           {/* Description */}
           <p className="text-sm text-muted-foreground leading-relaxed mb-7">
-            {product.description}
+            {meta?.description ?? product.description}
           </p>
 
           {/* Size selector */}
           {product.sizes && product.sizes.length > 0 && (
             <div className="mb-6">
               <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted mb-3">
-                Tamanho
+                {t.produto.sizeLabel}
               </p>
               <div className="flex flex-wrap gap-2">
                 {product.sizes.map((size) => (
@@ -275,22 +283,22 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="bg-surface border border-border rounded-xl p-4 mb-7 space-y-3 text-xs">
             <div>
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                Materiais
+                {t.produto.materials}
               </p>
               <p className="text-muted-foreground leading-relaxed">{product.materials}</p>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-muted">
-                <Clock className="w-3 h-3" /> Produção
+                <Clock className="w-3 h-3" /> {t.produto.production}
               </span>
-              <span className="font-mono text-accent">{product.productionTime}</span>
+              <span className="font-mono text-accent">{meta?.productionTime ?? product.productionTime}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-muted">
-                <Package className="w-3 h-3" /> Envio
+                <Package className="w-3 h-3" /> {t.produto.shipping}
               </span>
-              <span className="font-mono text-muted-foreground">CTT · 2–4 dias úteis</span>
+              <span className="font-mono text-muted-foreground">{t.produto.shippingValue}</span>
             </div>
           </div>
 
@@ -302,7 +310,7 @@ export function ProductDetail({ product }: { product: Product }) {
               className="flex items-center justify-center gap-2 w-full bg-accent text-accent-foreground font-mono font-bold uppercase tracking-widest text-sm px-6 py-4 rounded-xl hover:bg-accent/90 transition-colors"
             >
               <Wand2 className="w-4 h-4" />
-              Personalizar com IA
+              {t.produto.customizeWithAI}
             </Link>
 
             {/* Secondary: choose existing design */}
@@ -310,7 +318,7 @@ export function ProductDetail({ product }: { product: Product }) {
               onClick={() => setShowDesigns((o) => !o)}
               className="flex items-center justify-center gap-2 w-full border border-border text-foreground font-mono font-bold uppercase tracking-widest text-sm px-6 py-4 rounded-xl hover:border-border-strong transition-colors"
             >
-              Escolher design existente
+              {t.produto.chooseExisting}
               {showDesigns ? (
                 <ChevronUp className="w-4 h-4" />
               ) : (
@@ -336,12 +344,12 @@ export function ProductDetail({ product }: { product: Product }) {
                   {added ? (
                     <>
                       <Check className="w-4 h-4" />
-                      Adicionado ao carrinho
+                      {t.produto.addedToCart}
                     </>
                   ) : (
                     <>
                       <ShoppingCart className="w-4 h-4" />
-                      Adicionar ao carrinho
+                      {t.produto.addToCart}
                     </>
                   )}
                 </motion.button>
@@ -364,18 +372,18 @@ export function ProductDetail({ product }: { product: Product }) {
             <div className="border-t border-border pt-12 pb-4">
               <div className="mb-8">
                 <p className="text-xs font-mono uppercase tracking-[0.25em] text-muted mb-2">
-                  Designs disponíveis
+                  {t.produto.availableDesigns}
                 </p>
                 <h2 className="text-2xl font-display font-black uppercase text-foreground mb-2">
-                  Escolhe um design
+                  {t.produto.chooseDesign}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Designs criados pela nossa IA. Preferes algo único?{' '}
+                  {t.produto.designsAIIntro}{' '}
                   <Link
                     href={`/criar?product=${product.slug}`}
                     className="text-accent hover:underline underline-offset-4"
                   >
-                    Cria o teu próprio.
+                    {t.produto.createYourOwn}
                   </Link>
                 </p>
               </div>
