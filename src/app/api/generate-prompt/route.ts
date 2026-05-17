@@ -72,7 +72,7 @@ REGRAS ABSOLUTAS:
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
-      max_tokens: 120,
+      max_tokens: 85,
       messages: [{ role: 'user', content: messageContent }],
     }),
   });
@@ -85,14 +85,14 @@ REGRAS ABSOLUTAS:
 
   const data = await response.json() as { content: { type: string; text: string }[] };
   let text = data.content.find((c) => c.type === 'text')?.text?.trim() ?? '';
+  console.log('[generate-prompt] raw length:', text.length);
 
-  // Safety truncation: if model exceeds 400 chars, cut at last comma/space before limit
+  // Hard truncation at 400 chars — cut at last comma before the limit
   if (text.length > 400) {
     const cut = text.slice(0, 400);
     const lastComma = cut.lastIndexOf(',');
-    const lastSpace = cut.lastIndexOf(' ');
-    const breakAt = lastComma > 350 ? lastComma : lastSpace > 350 ? lastSpace : 400;
-    text = cut.slice(0, breakAt);
+    text = lastComma > 300 ? cut.slice(0, lastComma) : cut;
+    console.log('[generate-prompt] truncated to:', text.length);
   }
 
   return NextResponse.json({ prompt: text });
