@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Wand2, ChevronDown, ChevronUp, Check, ArrowLeft, Clock, Package } from 'lucide-react';
 import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 const DESIGN_GALLERY = [
   { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
@@ -21,6 +22,58 @@ const DESIGN_GALLERY = [
 
 type DesignEntry = (typeof DESIGN_GALLERY)[0];
 
+function CompositedMockup({
+  mockupSrc,
+  designSrc,
+  productSlug,
+  alt,
+  className = '',
+}: {
+  mockupSrc: string;
+  designSrc?: string;
+  productSlug: string;
+  alt: string;
+  className?: string;
+}) {
+  const zone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
+  return (
+    <div className={`relative w-full h-full ${className}`}>
+      {/* Design layer — behind mockup */}
+      {designSrc && (
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            top: zone.top,
+            left: zone.left,
+            width: zone.width,
+            height: zone.height,
+            borderRadius: zone.shape === 'circle' ? '50%' : (zone.borderRadius ?? undefined),
+            mixBlendMode: 'multiply',
+          }}
+        >
+          <Image
+            src={designSrc}
+            alt="Design aplicado"
+            fill
+            className="object-contain"
+            sizes="400px"
+            unoptimized={designSrc.startsWith('/')}
+          />
+        </div>
+      )}
+      {/* Mockup layer — on top */}
+      <Image
+        src={mockupSrc}
+        alt={alt}
+        fill
+        className="object-contain"
+        sizes="400px"
+        unoptimized
+      />
+    </div>
+  );
+}
+
 export function ProductDetail({ product }: { product: Product }) {
   const [selectedDesign, setSelectedDesign] = useState<DesignEntry | null>(null);
   const [selectedSize, setSelectedSize] = useState<string>(
@@ -33,9 +86,9 @@ export function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
 
   const activeMockup = selectedVariant?.mockup ?? product.mockup;
+  const isDesignSelected = selectedDesign !== null;
 
   const addToCart = useCartStore((s) => s.add);
-  const isDesignSelected = selectedDesign !== null;
 
   function handleAddToCart() {
     if (!selectedDesign) return;
@@ -77,67 +130,38 @@ export function ProductDetail({ product }: { product: Product }) {
         {/* ── Left: Image gallery ── */}
         <div className="space-y-4">
           {/* Main preview */}
-          <div className="relative bg-surface border border-border rounded-2xl overflow-hidden aspect-square">
-            {/* Design image layer */}
+          <div
+            className="relative rounded-2xl overflow-hidden aspect-square border border-border"
+            style={{ background: '#1a1a1a' }}
+          >
             <AnimatePresence mode="wait">
-              {isDesignSelected ? (
-                <motion.div
-                  key={selectedDesign.src}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute inset-0"
-                >
-                  {/* Design fill */}
-                  <div className="absolute inset-8">
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={selectedDesign.src}
-                        alt={selectedDesign.label}
-                        fill
-                        className="object-contain"
-                      />
-                    </div>
-                  </div>
-                  {/* Mockup overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center p-8 pointer-events-none">
-                    <Image
-                      src={activeMockup}
-                      alt=""
-                      width={300}
-                      height={300}
-                      className="w-full h-full object-contain invert opacity-15 mix-blend-overlay"
-                    />
-                  </div>
-                  {/* Design label */}
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
-                      {selectedDesign.label}
-                    </span>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="mockup-only"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute inset-0 flex items-center justify-center p-14"
-                >
-                  <Image
-                    src={activeMockup}
-                    alt={product.name}
-                    width={320}
-                    height={320}
-                    className="w-full h-full object-contain invert opacity-60"
-                  />
-                </motion.div>
-              )}
+              <motion.div
+                key={selectedDesign?.src ?? 'mockup-only'}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute inset-0 p-10"
+              >
+                <CompositedMockup
+                  mockupSrc={activeMockup}
+                  designSrc={selectedDesign?.src}
+                  productSlug={product.slug}
+                  alt={product.name}
+                />
+              </motion.div>
             </AnimatePresence>
 
-            {/* Prompt hint when design selected */}
+            {/* Design label badge */}
+            {isDesignSelected && (
+              <div className="absolute top-4 left-4">
+                <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+                  {selectedDesign.label}
+                </span>
+              </div>
+            )}
+
+            {/* Prompt hint */}
             {isDesignSelected && (
               <div className="absolute bottom-4 left-4 right-4">
                 <p className="text-[10px] font-mono text-muted/70 truncate">
@@ -153,16 +177,18 @@ export function ProductDetail({ product }: { product: Product }) {
             <button
               onClick={() => setSelectedDesign(null)}
               aria-label="Mostrar produto sem design"
-              className={`relative aspect-square bg-surface border rounded-xl overflow-hidden transition-all hover:scale-[1.02] ${
+              className={`relative aspect-square rounded-xl overflow-hidden border transition-all hover:scale-[1.02] ${
                 !isDesignSelected ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-border-strong'
               }`}
+              style={{ background: '#1a1a1a' }}
             >
-              <Image
-                src={activeMockup}
-                alt="Produto"
-                fill
-                className="object-contain p-3 invert opacity-50"
-              />
+              <div className="absolute inset-0 p-3">
+                <CompositedMockup
+                  mockupSrc={activeMockup}
+                  productSlug={product.slug}
+                  alt="Produto"
+                />
+              </div>
               <div className="absolute bottom-0 inset-x-0 bg-background/80 py-1 text-[8px] font-mono uppercase tracking-wider text-center text-muted">
                 Produto
               </div>
@@ -174,13 +200,21 @@ export function ProductDetail({ product }: { product: Product }) {
                 key={d.src}
                 onClick={() => setSelectedDesign(d)}
                 aria-label={`Design ${d.label}`}
-                className={`relative aspect-square bg-surface border rounded-xl overflow-hidden transition-all hover:scale-[1.02] ${
+                className={`relative aspect-square rounded-xl overflow-hidden border transition-all hover:scale-[1.02] ${
                   selectedDesign?.src === d.src
                     ? 'border-accent ring-1 ring-accent'
                     : 'border-border hover:border-border-strong'
                 }`}
+                style={{ background: '#1a1a1a' }}
               >
-                <Image src={d.src} alt={d.label} fill className="object-contain p-3" />
+                <div className="absolute inset-0 p-3">
+                  <CompositedMockup
+                    mockupSrc={activeMockup}
+                    designSrc={d.src}
+                    productSlug={product.slug}
+                    alt={d.label}
+                  />
+                </div>
                 <div className="absolute bottom-0 inset-x-0 bg-background/80 py-1 text-[8px] font-mono uppercase tracking-wider text-center text-muted">
                   {d.label}
                 </div>
@@ -383,18 +417,21 @@ export function ProductDetail({ product }: { product: Product }) {
                     key={i}
                     onClick={() => handleSelectDesign(design)}
                     aria-label={`Selecionar design: ${design.label}`}
-                    className={`relative aspect-square bg-surface border rounded-xl overflow-hidden transition-all hover:scale-[1.02] group ${
+                    className={`relative aspect-square rounded-xl overflow-hidden border transition-all hover:scale-[1.02] group ${
                       selectedDesign?.src === design.src
                         ? 'border-accent ring-1 ring-accent'
                         : 'border-border hover:border-border-strong'
                     }`}
+                    style={{ background: '#1a1a1a' }}
                   >
-                    <Image
-                      src={design.src}
-                      alt={design.label}
-                      fill
-                      className="object-contain p-3 group-hover:scale-105 transition-transform duration-400"
-                    />
+                    <div className="absolute inset-0 p-2">
+                      <CompositedMockup
+                        mockupSrc={activeMockup}
+                        designSrc={design.src}
+                        productSlug={product.slug}
+                        alt={design.label}
+                      />
+                    </div>
                     <div className="absolute bottom-0 inset-x-0 bg-background/85 py-1.5 text-[9px] font-mono uppercase tracking-wider text-center text-muted">
                       {design.label}
                     </div>
