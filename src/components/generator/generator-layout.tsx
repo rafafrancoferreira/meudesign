@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
-import { useLang, getProductMeta } from '@/lib/i18n';
+import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
 import { products, type ProductVariant } from '@/lib/products';
 import { DesignCanvas, defaultDesignTransform } from '@/components/product/design-canvas';
 
@@ -176,7 +176,7 @@ export function GeneratorLayout() {
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({})) as { error?: string };
-        throw new Error(errData.error ?? 'Falha ao gerar design');
+        throw new Error(errData.error ?? t.generator.errorFailed);
       }
 
       const data: GenerateResult = await res.json();
@@ -192,7 +192,7 @@ export function GeneratorLayout() {
       }, 400);
     } catch (e) {
       stopIntervals();
-      setError(e instanceof Error ? e.message : 'Erro desconhecido');
+      setError(e instanceof Error ? e.message : t.generator.errorUnknown);
       setState('error');
     }
   }, [prompt, selectedStyle, selectedProduct, state, stopIntervals, customStyle, t]);
@@ -426,7 +426,7 @@ export function GeneratorLayout() {
                   ))}
                   {selectedVariant && (
                     <span className="text-xs font-mono text-muted self-center ml-1">
-                      {selectedVariant.color}
+                      {getColorName(selectedVariant.color, t)}
                     </span>
                   )}
                 </div>
@@ -535,7 +535,7 @@ export function GeneratorLayout() {
                       <div className="font-mono text-sm text-foreground/60">{asciiBar(progress)}</div>
                       <div className="font-mono text-[10px] text-muted/50 space-y-1">
                         <div>PROMPT: {prompt.slice(0, 40)}{prompt.length > 40 ? '…' : ''}</div>
-                        <div>STYLE: {selectedStyle === '__none__' ? 'SEM ESTILO' : selectedStyle === '__custom__' ? (customStyle.trim().toUpperCase() || 'PERSONALIZADO') : selectedStyle.toUpperCase()}</div>
+                        <div>STYLE: {selectedStyle === '__none__' ? t.generator.noStyle : selectedStyle === '__custom__' ? (customStyle.trim().toUpperCase() || t.generator.customStyleLabel) : selectedStyle.toUpperCase()}</div>
                         <div>PRODUCT: {selectedProduct.toUpperCase()}</div>
                       </div>
                     </div>

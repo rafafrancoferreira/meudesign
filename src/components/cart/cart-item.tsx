@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { Minus, Plus, X } from 'lucide-react';
 import { type CartItem, useCartStore } from '@/lib/store-cart';
 import { getProductBySlug, formatPrice } from '@/lib/products';
+import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 function getVariantMockup(productSlug: string, color?: string): string | undefined {
   const product = getProductBySlug(productSlug);
@@ -14,7 +16,6 @@ function getVariantMockup(productSlug: string, color?: string): string | undefin
   }
   return product.mockup;
 }
-import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export function CartItemRow({ item }: { item: CartItem }) {
   const remove = useCartStore((s) => s.remove);
@@ -22,8 +23,10 @@ export function CartItemRow({ item }: { item: CartItem }) {
   const product = getProductBySlug(item.productSlug);
   const zone = MOCKUP_PRINT_ZONES[item.productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
   const variantMockup = getVariantMockup(item.productSlug, item.color);
+  const { t } = useLang();
 
-  const displayName = (product?.name ?? item.productSlug)
+  const meta = product ? getProductMeta(product.slug, t) : null;
+  const displayName = meta?.nameShort ?? (product?.name ?? item.productSlug)
     .replace(' personalizados', '')
     .replace(' personalizada', '')
     .replace(' personalizado', '')
@@ -52,7 +55,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
         >
           <Image
             src={item.designUrl}
-            alt="Design aplicado"
+            alt={t.carrinho.designAlt}
             fill
             className="object-contain"
             sizes="80px"
@@ -83,12 +86,12 @@ export function CartItemRow({ item }: { item: CartItem }) {
             </p>
             {item.color && (
               <p className="text-[11px] font-mono uppercase tracking-wider text-muted mt-0.5">
-                Cor: {item.color}
+                {t.carrinho.colorLabel}: {getColorName(item.color, t)}
               </p>
             )}
             {item.size && (
               <p className="text-[11px] font-mono uppercase tracking-wider text-muted mt-0.5">
-                Tamanho: {item.size}
+                {t.carrinho.sizeLabel}: {item.size}
               </p>
             )}
             <p className="text-[11px] font-mono text-muted/50 mt-1 truncate">
@@ -97,7 +100,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
           </div>
           <button
             onClick={() => remove(item.id)}
-            aria-label="Remover item do carrinho"
+            aria-label={t.carrinho.removeItem}
             className="text-muted/40 hover:text-destructive transition-colors shrink-0 mt-0.5"
           >
             <X className="w-4 h-4" />
@@ -109,7 +112,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
           <div className="flex items-center gap-2">
             <button
               onClick={decrement}
-              aria-label="Reduzir quantidade"
+              aria-label={t.carrinho.decreaseQty}
               className="w-7 h-7 border border-border rounded-lg flex items-center justify-center text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
             >
               <Minus className="w-3 h-3" />
@@ -117,7 +120,7 @@ export function CartItemRow({ item }: { item: CartItem }) {
             <span className="text-sm font-mono w-6 text-center tabular-nums">{item.quantity}</span>
             <button
               onClick={() => updateQty(item.id, item.quantity + 1)}
-              aria-label="Aumentar quantidade"
+              aria-label={t.carrinho.increaseQty}
               className="w-7 h-7 border border-border rounded-lg flex items-center justify-center text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors"
             >
               <Plus className="w-3 h-3" />

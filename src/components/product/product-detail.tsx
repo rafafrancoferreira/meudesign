@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Wand2, ChevronDown, ChevronUp, Check, ArrowLeft, Clock, Package } from 'lucide-react';
 import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
-import { useLang, getProductMeta } from '@/lib/i18n';
+import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
 import { DesignCanvas } from '@/components/product/design-canvas';
 
 const DESIGN_GALLERY = [
@@ -229,7 +229,7 @@ export function ProductDetail({ product }: { product: Product }) {
           {product.variants && product.variants.length > 1 && (
             <div className="mb-6">
               <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-muted mb-3">
-                {t.produto.colorLabel} — {selectedVariant?.color}
+                {t.produto.colorLabel} — {selectedVariant ? getColorName(selectedVariant.color, t) : ''}
               </p>
               <div className="flex gap-2">
                 {product.variants.map((v) => (
@@ -285,7 +285,7 @@ export function ProductDetail({ product }: { product: Product }) {
               <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
                 {t.produto.materials}
               </p>
-              <p className="text-muted-foreground leading-relaxed">{product.materials}</p>
+              <p className="text-muted-foreground leading-relaxed">{meta?.materials ?? product.materials}</p>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-center justify-between">

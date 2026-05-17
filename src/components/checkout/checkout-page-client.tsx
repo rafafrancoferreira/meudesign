@@ -9,24 +9,17 @@ import Link from 'next/link';
 import { AlertTriangle, Check, ChevronRight, CreditCard, Lock } from 'lucide-react';
 import { useCartStore } from '@/lib/store-cart';
 import { formatPrice } from '@/lib/products';
+import { useLang } from '@/lib/i18n';
 
-const schema = z.object({
-  nome: z.string().min(2, 'Nome obrigatório'),
-  email: z.string().email('Email inválido'),
-  telefone: z.string().optional(),
-  rua: z.string().min(3, 'Morada obrigatória'),
-  codigoPostal: z.string().min(4, 'Código postal inválido'),
-  cidade: z.string().min(2, 'Cidade obrigatória'),
-  pais: z.string().min(2, 'País obrigatório'),
-});
-
-type FormData = z.infer<typeof schema>;
-
-const STEPS = [
-  { id: 1, label: 'Contacto' },
-  { id: 2, label: 'Morada' },
-  { id: 3, label: 'Pagamento' },
-] as const;
+type FormData = {
+  nome: string;
+  email: string;
+  telefone?: string;
+  rua: string;
+  codigoPostal: string;
+  cidade: string;
+  pais: string;
+};
 
 const STEP_FIELDS: Record<number, (keyof FormData)[]> = {
   1: ['nome', 'email'],
@@ -43,12 +36,23 @@ export function CheckoutPageClient() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { t } = useLang();
 
   const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal);
   const shipping = useCartStore((s) => s.shipping);
   const total = useCartStore((s) => s.total);
   const clear = useCartStore((s) => s.clear);
+
+  const schema = z.object({
+    nome: z.string().min(2, t.checkout.errorName),
+    email: z.string().email(t.checkout.errorEmail),
+    telefone: z.string().optional(),
+    rua: z.string().min(3, t.checkout.errorAddress),
+    codigoPostal: z.string().min(4, t.checkout.errorPostalCode),
+    cidade: z.string().min(2, t.checkout.errorCity),
+    pais: z.string().min(2, t.checkout.errorCountry),
+  });
 
   const {
     register,
@@ -58,6 +62,12 @@ export function CheckoutPageClient() {
     resolver: zodResolver(schema),
     defaultValues: { pais: 'Portugal' },
   });
+
+  const STEPS = [
+    { id: 1, label: t.checkout.stepContact },
+    { id: 2, label: t.checkout.stepAddress },
+    { id: 3, label: t.checkout.stepPayment },
+  ] as const;
 
   async function advance() {
     const fields = STEP_FIELDS[step];
@@ -71,7 +81,6 @@ export function CheckoutPageClient() {
       return;
     }
 
-    // Final submit — simulate processing
     setLoading(true);
     const orderNum = 'MD-' + Math.floor(100000 + Math.random() * 900000);
     await new Promise((r) => setTimeout(r, 1400));
@@ -83,9 +92,9 @@ export function CheckoutPageClient() {
     return (
       <main className="px-4 py-16 min-h-[80vh] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <p className="font-mono uppercase tracking-wider text-muted">Carrinho vazio</p>
+          <p className="font-mono uppercase tracking-wider text-muted">{t.checkout.emptyCart}</p>
           <Link href="/loja" className="block text-accent hover:underline underline-offset-4 font-mono text-sm">
-            Ver produtos →
+            {t.checkout.viewProducts} →
           </Link>
         </div>
       </main>
@@ -99,7 +108,7 @@ export function CheckoutPageClient() {
         <div className="flex items-center gap-3 bg-surface border border-border rounded-xl px-5 py-3.5 mb-10">
           <AlertTriangle className="w-4 h-4 text-accent shrink-0" />
           <p className="text-sm font-mono text-muted-foreground">
-            Versão de demonstração — não será cobrado nada.
+            {t.checkout.demoBanner}
           </p>
         </div>
 
@@ -141,16 +150,16 @@ export function CheckoutPageClient() {
         <div className="grid lg:grid-cols-[1fr_300px] gap-12">
           {/* Form steps */}
           <div>
-            {/* Step 1 — Contacto */}
+            {/* Step 1 — Contact */}
             {step === 1 && (
               <div className="space-y-5">
                 <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-6">
-                  1. Dados de contacto
+                  {t.checkout.contactSectionTitle}
                 </p>
 
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                    Nome completo *
+                    {t.checkout.fullName} *
                   </label>
                   <input
                     {...register('nome')}
@@ -181,7 +190,7 @@ export function CheckoutPageClient() {
 
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                    Telefone
+                    {t.checkout.phone}
                   </label>
                   <input
                     {...register('telefone')}
@@ -194,16 +203,16 @@ export function CheckoutPageClient() {
               </div>
             )}
 
-            {/* Step 2 — Morada */}
+            {/* Step 2 — Address */}
             {step === 2 && (
               <div className="space-y-5">
                 <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-6">
-                  2. Morada de entrega
+                  {t.checkout.addressSectionTitle}
                 </p>
 
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                    Rua e número *
+                    {t.checkout.streetAndNumber} *
                   </label>
                   <input
                     {...register('rua')}
@@ -219,7 +228,7 @@ export function CheckoutPageClient() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                      Código postal *
+                      {t.checkout.postalCode} *
                     </label>
                     <input
                       {...register('codigoPostal')}
@@ -235,7 +244,7 @@ export function CheckoutPageClient() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                      Cidade *
+                      {t.checkout.city} *
                     </label>
                     <input
                       {...register('cidade')}
@@ -251,7 +260,7 @@ export function CheckoutPageClient() {
 
                 <div>
                   <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                    País *
+                    {t.checkout.country} *
                   </label>
                   <input
                     {...register('pais')}
@@ -263,24 +272,24 @@ export function CheckoutPageClient() {
               </div>
             )}
 
-            {/* Step 3 — Pagamento (mock) */}
+            {/* Step 3 — Payment (mock) */}
             {step === 3 && (
               <div className="space-y-5">
                 <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-6">
-                  3. Pagamento
+                  {t.checkout.paymentSectionTitle}
                 </p>
 
                 <div className="bg-surface border border-border rounded-2xl p-6 space-y-5">
                   <div className="flex items-center gap-2">
                     <Lock className="w-3.5 h-3.5 text-muted/50" />
                     <span className="text-[10px] font-mono uppercase tracking-wider text-muted/50">
-                      Pagamento seguro simulado
+                      {t.checkout.securePayment}
                     </span>
                   </div>
 
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                      Número do cartão
+                      {t.checkout.cardNumber}
                     </label>
                     <div className="flex items-center gap-3 bg-background border border-border rounded-xl px-4 py-3 opacity-50">
                       <CreditCard className="w-4 h-4 text-muted/60 shrink-0" />
@@ -295,7 +304,7 @@ export function CheckoutPageClient() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                        Validade
+                        {t.checkout.expiry}
                       </label>
                       <input
                         disabled
@@ -305,7 +314,7 @@ export function CheckoutPageClient() {
                     </div>
                     <div>
                       <label className="block text-[10px] font-mono uppercase tracking-[0.2em] text-muted mb-1.5">
-                        CVV
+                        {t.checkout.cvv}
                       </label>
                       <input
                         disabled
@@ -318,7 +327,7 @@ export function CheckoutPageClient() {
 
                 <div className="flex items-start gap-2 text-[11px] font-mono text-muted/50 px-1">
                   <AlertTriangle className="w-3.5 h-3.5 mt-0.5 text-accent/50 shrink-0" />
-                  Demo: os dados são fictícios e nenhum pagamento será processado.
+                  {t.checkout.demoPaymentNote}
                 </div>
               </div>
             )}
@@ -332,7 +341,7 @@ export function CheckoutPageClient() {
                   disabled={loading}
                   className="flex-1 border border-border text-muted-foreground font-mono text-sm uppercase tracking-widest px-6 py-4 rounded-xl hover:border-border-strong hover:text-foreground transition-colors disabled:opacity-50"
                 >
-                  Voltar
+                  {t.checkout.back}
                 </button>
               )}
               <button
@@ -342,14 +351,14 @@ export function CheckoutPageClient() {
                 className="flex-1 bg-accent text-accent-foreground font-mono font-bold uppercase tracking-widest text-sm px-6 py-4 rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {loading ? (
-                  <span className="font-mono tracking-widest">A processar...</span>
+                  <span className="font-mono tracking-widest">{t.checkout.processing}</span>
                 ) : step < 3 ? (
                   <>
-                    Continuar
+                    {t.checkout.continue}
                     <ChevronRight className="w-4 h-4" />
                   </>
                 ) : (
-                  'Confirmar encomenda'
+                  t.checkout.confirmOrder
                 )}
               </button>
             </div>
@@ -359,21 +368,21 @@ export function CheckoutPageClient() {
           <div className="hidden lg:block">
             <div className="sticky top-24 bg-surface border border-border rounded-2xl p-5 space-y-4">
               <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted">
-                Resumo
+                {t.checkout.summary}
               </p>
               <div className="space-y-2 text-xs font-mono">
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
+                  <span>{t.checkout.subtotal}</span>
                   <span className="tabular-nums">{formatPrice(subtotal())}</span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
-                  <span>Envio</span>
+                  <span>{t.checkout.shipping}</span>
                   <span className={shipping() === 0 ? 'text-accent' : 'tabular-nums'}>
-                    {shipping() === 0 ? 'Grátis' : formatPrice(shipping())}
+                    {shipping() === 0 ? t.checkout.free : formatPrice(shipping())}
                   </span>
                 </div>
                 <div className="flex justify-between text-foreground font-bold text-sm pt-2.5 border-t border-border">
-                  <span>Total</span>
+                  <span>{t.checkout.total}</span>
                   <span className="tabular-nums">{formatPrice(total())}</span>
                 </div>
               </div>

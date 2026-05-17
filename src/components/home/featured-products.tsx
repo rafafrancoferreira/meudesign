@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { products, formatPrice } from '@/lib/products';
-import { useLang } from '@/lib/i18n';
+import { useLang, getProductMeta } from '@/lib/i18n';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
 
@@ -94,14 +94,18 @@ export function FeaturedProducts() {
                 <div className="px-1">
                   <div className="flex items-center justify-between mb-0.5">
                     <h3 className="text-sm font-mono uppercase tracking-wide text-foreground group-hover:text-accent transition-colors leading-tight">
-                      {product.name.replace(' personalizados', '').replace(' personalizada', '').replace(' personalizado', '').replace(' decorativo', '')}
+                      {getProductMeta(product.slug, t)?.nameShort ?? product.name.replace(' personalizados', '').replace(' personalizada', '').replace(' personalizado', '').replace(' decorativo', '')}
                     </h3>
                     <span className="text-sm font-mono text-muted-foreground">
                       {formatPrice(product.price)}
                     </span>
                   </div>
                   <p className="text-[11px] font-mono uppercase tracking-wider text-muted/60">
-                    {product.category}
+                    {({
+                      vestuário: t.loja.clothing,
+                      decoração: t.loja.decoration,
+                      acessórios: t.loja.accessories,
+                    } as Record<string, string>)[product.category] ?? product.category}
                   </p>
                 </div>
               </Link>

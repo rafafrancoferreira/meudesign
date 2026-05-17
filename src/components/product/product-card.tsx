@@ -6,16 +6,25 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { type Product, formatPrice } from '@/lib/products';
+import { useLang, getProductMeta } from '@/lib/i18n';
 
 export function ProductCard({ product }: { product: Product }) {
   const defaultMockup = product.variants?.[0]?.mockup ?? product.mockup;
   const [activeMockup, setActiveMockup] = useState(defaultMockup);
+  const { t } = useLang();
+  const meta = getProductMeta(product.slug, t);
 
-  const displayName = product.name
+  const displayName = meta?.nameShort ?? product.name
     .replace(' personalizados', '')
     .replace(' personalizada', '')
     .replace(' personalizado', '')
     .replace(' decorativo', '');
+
+  const categoryLabel = ({
+    vestuário: t.loja.clothing,
+    decoração: t.loja.decoration,
+    acessórios: t.loja.accessories,
+  } as Record<string, string>)[product.category] ?? product.category;
 
   return (
     <Link href={`/produto/${product.slug}`} className="group block">
@@ -45,14 +54,14 @@ export function ProductCard({ product }: { product: Product }) {
         {/* Category badge */}
         <div className="absolute top-3 left-3">
           <span className="bg-background/80 backdrop-blur-sm border border-border text-[9px] font-mono uppercase tracking-wider text-muted px-2 py-1 rounded-full">
-            {product.category}
+            {categoryLabel}
           </span>
         </div>
 
         {/* Hover CTA chip */}
         <div className="absolute bottom-3 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
           <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full whitespace-nowrap flex items-center gap-1.5">
-            Personalizar
+            {t.home.customize}
             <ArrowRight className="w-3 h-3" />
           </span>
         </div>
@@ -95,7 +104,7 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         ) : (
           <p className="text-[11px] font-mono uppercase tracking-wider text-muted/60">
-            {product.category}
+            {categoryLabel}
           </p>
         )}
       </div>

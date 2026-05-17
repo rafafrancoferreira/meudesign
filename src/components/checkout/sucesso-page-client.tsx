@@ -4,16 +4,24 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Check, Package, Truck } from 'lucide-react';
+import { useLang } from '@/lib/i18n';
 
 function SucessoContent() {
   const searchParams = useSearchParams();
   const order = searchParams.get('order') ?? `MD-${Math.floor(100000 + Math.random() * 900000)}`;
   const [visible, setVisible] = useState(false);
+  const { t } = useLang();
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setVisible(true), 80);
+    return () => clearTimeout(timer);
   }, []);
+
+  const infoItems = [
+    { icon: Check,   text: t.sucesso.confirmationEmail },
+    { icon: Package, text: t.sucesso.production },
+    { icon: Truck,   text: t.sucesso.shipping },
+  ];
 
   return (
     <main className="px-4 py-20 min-h-[80vh] flex items-center justify-center">
@@ -28,42 +36,29 @@ function SucessoContent() {
         </div>
 
         <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-accent mb-3">
-          Encomenda confirmada
+          {t.sucesso.orderConfirmed}
         </p>
         <h1
           className="font-display font-black uppercase text-foreground mb-3"
           style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', letterSpacing: '-0.02em', lineHeight: 1 }}
         >
-          Obrigado!
+          {t.sucesso.thankYou}
         </h1>
         <p className="text-sm font-mono text-muted-foreground mb-10">
-          A tua encomenda está a ser preparada com o maior cuidado.
+          {t.sucesso.preparing}
         </p>
 
         {/* Order number card */}
         <div className="bg-surface border border-border rounded-2xl px-8 py-5 mb-8 inline-block w-full">
           <p className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted mb-2">
-            Número de encomenda
+            {t.sucesso.orderNumber}
           </p>
           <p className="text-3xl font-mono font-bold text-foreground tracking-widest">{order}</p>
         </div>
 
         {/* Info list */}
         <div className="bg-surface border border-border rounded-2xl p-5 mb-10 text-left space-y-4">
-          {[
-            {
-              icon: Check,
-              text: 'Receberás um email de confirmação em breve.',
-            },
-            {
-              icon: Package,
-              text: 'Produção: 3–5 dias úteis consoante o produto.',
-            },
-            {
-              icon: Truck,
-              text: 'Envio via CTT: 2–4 dias úteis após expedição.',
-            },
-          ].map(({ icon: Icon, text }) => (
+          {infoItems.map(({ icon: Icon, text }) => (
             <div key={text} className="flex items-start gap-3 text-sm font-mono text-muted-foreground">
               <Icon className="w-4 h-4 text-accent shrink-0 mt-0.5" />
               <span>{text}</span>
@@ -77,13 +72,13 @@ function SucessoContent() {
             href="/loja"
             className="flex-1 bg-accent text-accent-foreground font-mono font-bold uppercase tracking-widest text-sm px-6 py-4 rounded-xl hover:bg-accent/90 transition-colors"
           >
-            Continuar a comprar
+            {t.sucesso.continueShopping}
           </Link>
           <Link
             href="/criar"
             className="flex-1 border border-border text-muted-foreground font-mono text-sm uppercase tracking-wide px-6 py-4 rounded-xl hover:border-border-strong hover:text-foreground transition-colors"
           >
-            Criar outro design
+            {t.sucesso.createAnother}
           </Link>
         </div>
       </div>
