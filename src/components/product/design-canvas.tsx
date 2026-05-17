@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
-import { Maximize2, AlignCenter, Wand2 } from 'lucide-react';
+import { Maximize2, AlignCenter } from 'lucide-react';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export interface DesignTransform {
@@ -30,47 +30,11 @@ export function defaultDesignTransform(slug: string): DesignTransform {
   return { cx: left + w / 2, cy: top + h / 2, w, h };
 }
 
-/** Canvas API: remove near-black and near-white pixels with soft feathering. */
-async function removeImageBackground(src: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width  = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) { reject(new Error('no ctx')); return; }
-      ctx.drawImage(img, 0, 0);
-      try {
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const d = imageData.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const r = d[i], g = d[i + 1], b = d[i + 2];
-          const maxCh = Math.max(r, g, b);
-          const minCh = Math.min(r, g, b);
-          if (maxCh < 70) {
-            d[i + 3] = Math.round((maxCh / 70) * d[i + 3]);
-          } else if (minCh > 185) {
-            d[i + 3] = Math.round(((255 - minCh) / 70) * d[i + 3]);
-          }
-        }
-        ctx.putImageData(imageData, 0, 0);
-        resolve(canvas.toDataURL('image/png'));
-      } catch {
-        reject(new Error('tainted canvas'));
-      }
-    };
-    img.onerror = () => reject(new Error('load failed'));
-    img.src = src;
-  });
-}
-
 interface DesignCanvasProps {
   mockupSrc: string;
   designSrc: string;
   productSlug: string;
-  /** True for dark (black) mockups → screen blend; false for light mockups → multiply blend on white bg */
+  /** True for dark (black) mockups → screen blend; false for light mockups → patch look with shadow */
   isDarkMockup?: boolean;
   showControls?: boolean;
   className?: string;
@@ -86,15 +50,11 @@ export function DesignCanvas({
 }: DesignCanvasProps) {
   const [designTx, setDesignTx] = useState<DesignTransform>(() => defaultDesignTransform(productSlug));
   const [sizeScale, setSizeScale] = useState(1.0);
-  const [processedSrc, setProcessedSrc] = useState<string | null>(null);
-  const [bgRemoving, setBgRemoving] = useState(false);
-  // Handle visibility: only shown on hover or active drag
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef   = useRef<DragState | null>(null);
 
-  const effectiveSrc = processedSrc ?? designSrc;
   const showHandles = isHovered || isDragging;
 
   // Reset transform when product changes
@@ -109,26 +69,6 @@ export function DesignCanvas({
     setDesignTx({ cx: base.cx, cy: base.cy, w: base.w * sizeScale, h: base.h * sizeScale });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeScale]);
-
-  // Auto-remove background for light mockups (multiply blend needs transparency)
-  useEffect(() => {
-    setProcessedSrc(null);
-    if (!isDarkMockup) {
-      setBgRemoving(true);
-      removeImageBackground(designSrc)
-        .then(setProcessedSrc)
-        .catch(() => {})
-        .finally(() => setBgRemoving(false));
-    }
-  }, [designSrc, isDarkMockup]);
-
-  const handleRemoveBg = useCallback(() => {
-    setBgRemoving(true);
-    removeImageBackground(designSrc)
-      .then(setProcessedSrc)
-      .catch(() => {})
-      .finally(() => setBgRemoving(false));
-  }, [designSrc]);
 
   const pctFromEvent = useCallback((clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
@@ -209,7 +149,8 @@ export function DesignCanvas({
   }, [productSlug, sizeScale]);
 
   const printZone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '4px');
+  // Circle for stickers; explicit radius from zone; fallback 12px for patch look on light mockups
+  const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '12px');
 
   const cornerClass: Record<ResizeCorner, string> = {
     nw: 'top-0 left-0 cursor-nw-resize',
@@ -224,10 +165,9 @@ export function DesignCanvas({
     se: 'translate(50%,50%)',
   };
 
-  /** Shared design overlay — handles + dashed border shown only on hover/drag */
+  /** Dashed selection border + corner handles — visible only on hover or drag */
   const designOverlay = (
     <>
-      {/* Dashed selection border */}
       {showHandles && (
         <div
           className="absolute inset-0 pointer-events-none"
@@ -238,7 +178,6 @@ export function DesignCanvas({
           }}
         />
       )}
-      {/* Corner resize handles */}
       {showHandles && (['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
         <div
           key={c}
@@ -259,7 +198,7 @@ export function DesignCanvas({
         style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate' }}
       >
         {isDarkMockup ? (
-          /* ── DARK MOCKUP: mockup base + design with screen blend on top ── */
+          /* ── DARK MOCKUP: mockup base + design with screen blend ── */
           <>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
               <Image src={mockupSrc} alt="Mockup" fill className="object-contain" sizes="500px" unoptimized />
@@ -280,21 +219,22 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={effectiveSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
+              <Image src={designSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
               {designOverlay}
             </div>
           </>
         ) : (
-          /* ── LIGHT MOCKUP: design below + mockup with multiply on top ── */
+          /* ── LIGHT MOCKUP: design as a styled patch + mockup with multiply on top ── */
           <>
             <div
-              className="absolute overflow-hidden cursor-move touch-none"
+              className="absolute cursor-move touch-none overflow-hidden"
               style={{
                 left: `${designTx.cx - designTx.w / 2}%`,
                 top:  `${designTx.cy - designTx.h / 2}%`,
                 width:  `${designTx.w}%`,
                 height: `${designTx.h}%`,
                 borderRadius: designBorderRadius,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
                 zIndex: 1,
               }}
               onMouseEnter={() => setIsHovered(true)}
@@ -302,7 +242,7 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={effectiveSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={effectiveSrc.startsWith('/')} draggable={false} />
+              <Image src={designSrc} alt="Design" fill className="object-cover pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
               {designOverlay}
             </div>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2, mixBlendMode: 'multiply' }}>
@@ -325,14 +265,6 @@ export function DesignCanvas({
             className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors"
           >
             <AlignCenter className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={handleRemoveBg}
-            disabled={bgRemoving}
-            title="Remover fundo"
-            className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors disabled:opacity-40"
-          >
-            <Wand2 className={`w-3.5 h-3.5 ${bgRemoving ? 'animate-pulse' : ''}`} />
           </button>
         </div>
       )}
