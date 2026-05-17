@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Loader2, RefreshCw, ShoppingCart, Download, Sparkles,
-  AlertCircle,
+  AlertCircle, Wand2,
 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
@@ -62,8 +62,13 @@ export function GeneratorLayout() {
     () => products.find((p) => p.slug === 't-shirt')?.variants?.[0] ?? null
   );
 
+  const [inspireCount, setInspireCount]           = useState(0);
+  const [isInspiring, setIsInspiring]             = useState(false);
+  const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
+
   const progressRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const msgIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const typingRef      = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const addToCart = useCartStore((s) => s.add);
   const { t } = useLang();
@@ -76,6 +81,56 @@ export function GeneratorLayout() {
     const p = products.find((pr) => pr.slug === selectedProduct);
     setSelectedVariant(p?.variants?.[0] ?? null);
   }, [selectedProduct]);
+
+  // ── inspire-me ────────────────────────────────────────────────────────────
+
+  const typeText = useCallback((text: string) => {
+    if (typingRef.current) clearInterval(typingRef.current);
+    let i = 0;
+    setPrompt('');
+    typingRef.current = setInterval(() => {
+      i++;
+      setPrompt(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(typingRef.current!);
+        typingRef.current = null;
+      }
+    }, 10);
+  }, []);
+
+  const fetchInspiredPrompt = useCallback(async (nextCount: number) => {
+    setIsInspiring(true);
+    try {
+      const lang = nextCount % 3 === 0 ? 'en' : 'pt';
+      const res = await fetch('/api/generate-prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lang }),
+      });
+      const data = await res.json() as { prompt?: string };
+      if (data.prompt) typeText(data.prompt);
+    } catch {
+      // silently ignore network errors
+    } finally {
+      setIsInspiring(false);
+    }
+  }, [typeText]);
+
+  const handleInspire = useCallback(() => {
+    if (isInspiring) return;
+    const next = inspireCount + 1;
+    setInspireCount(next);
+    if (prompt.trim()) {
+      setShowReplaceConfirm(true);
+    } else {
+      fetchInspiredPrompt(next);
+    }
+  }, [isInspiring, inspireCount, prompt, fetchInspiredPrompt]);
+
+  const confirmReplace = useCallback(() => {
+    setShowReplaceConfirm(false);
+    fetchInspiredPrompt(inspireCount);
+  }, [fetchInspiredPrompt, inspireCount]);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -197,10 +252,24 @@ export function GeneratorLayout() {
           {/* ── LEFT COLUMN ── */}
           <div className="space-y-6">
             {/* Prompt textarea */}
-            <div>
-              <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-3">
-                {t.generator.label01}
-              </label>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-xs font-mono uppercase tracking-widest text-muted">
+                  {t.generator.label01}
+                </label>
+                <button
+                  onClick={handleInspire}
+                  disabled={isInspiring}
+                  className="flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-mono border border-accent/40 text-muted rounded hover:border-accent hover:text-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {isInspiring ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-3 h-3" />
+                  )}
+                  {isInspiring ? 'A criar...' : '✨ Inspirar-me'}
+                </button>
+              </div>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
@@ -211,7 +280,25 @@ export function GeneratorLayout() {
               />
               <div className="flex justify-between mt-1.5 text-xs text-muted font-mono">
                 <span>{prompt.length}/400</span>
-                <span>{t.generator.beSpecific}</span>
+                {showReplaceConfirm ? (
+                  <span className="flex items-center gap-2">
+                    <span className="text-muted/70">Substituir texto atual?</span>
+                    <button
+                      onClick={confirmReplace}
+                      className="px-2 py-0.5 border border-accent text-accent rounded hover:bg-accent/10 transition-colors"
+                    >
+                      Sim
+                    </button>
+                    <button
+                      onClick={() => setShowReplaceConfirm(false)}
+                      className="px-2 py-0.5 border border-border text-muted rounded hover:border-border-strong transition-colors"
+                    >
+                      Não
+                    </button>
+                  </span>
+                ) : (
+                  <span>{t.generator.beSpecific}</span>
+                )}
               </div>
             </div>
 
