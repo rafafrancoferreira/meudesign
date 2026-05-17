@@ -50,6 +50,14 @@ const PT = {
     errorTitle: 'Algo correu mal',
     production: 'Produção',
     sizes: 'Tamanhos',
+    inspireMe: '✨ Inspirar-me',
+    inspiring: 'A criar...',
+    colorLabel: 'Cor',
+    inspireReplaceConfirm: 'Substituir texto atual?',
+    inspireReplaceYes: 'Sim',
+    inspireReplaceNo: 'Não',
+    inspireErrorGeneric: 'Erro ao gerar inspiração',
+    inspireErrorNoConnection: 'Sem ligação ao servidor',
     loadingMessages: [
       'A interpretar o teu prompt...',
       'A gerar o conceito visual...',
@@ -66,6 +74,16 @@ const PT = {
       tipografico: 'Tipográfico',
       ilustrado: 'Ilustrado',
     },
+  },
+  productMeta: {
+    'tshirt': { name: 'T-shirt personalizada', nameShort: 'T-shirt', description: 'Usa um design único que só tu tens.', productionTime: '3–5 dias úteis' },
+    'hoodie': { name: 'Hoodie personalizada', nameShort: 'Hoodie', description: 'Conforto máximo com estilo exclusivo.', productionTime: '3–5 dias úteis' },
+    'poster': { name: 'Poster personalizado', nameShort: 'Poster', description: 'Transforma uma parede em algo teu.', productionTime: '2–4 dias úteis' },
+    'capatelemovel': { name: 'Capa de telemóvel personalizada', nameShort: 'Capa telemovel', description: 'Protege o teu telemóvel com um design que é só teu.', productionTime: '3–5 dias úteis' },
+    'caneca': { name: 'Caneca personalizada', nameShort: 'Caneca', description: 'O teu café da manhã merece uma caneca com personalidade.', productionTime: '3–5 dias úteis' },
+    'autocolantes': { name: 'Autocolantes personalizados', nameShort: 'Autocolantes', description: 'Pequenos detalhes que fazem a diferença.', productionTime: '2–3 dias úteis' },
+    'totebag': { name: 'Tote bag personalizada', nameShort: 'Tote bag', description: 'Substitui os sacos de plástico com estilo.', productionTime: '3–5 dias úteis' },
+    'quadro': { name: 'Quadro decorativo personalizado', nameShort: 'Quadro', description: 'Arte genuína nas tuas paredes.', productionTime: '4–6 dias úteis' },
   },
   home: {
     // hero
@@ -339,6 +357,14 @@ const EN = {
     errorTitle: 'Something went wrong',
     production: 'Production',
     sizes: 'Sizes',
+    inspireMe: '✨ Inspire me',
+    inspiring: 'Creating...',
+    colorLabel: 'Color',
+    inspireReplaceConfirm: 'Replace current text?',
+    inspireReplaceYes: 'Yes',
+    inspireReplaceNo: 'No',
+    inspireErrorGeneric: 'Error generating inspiration',
+    inspireErrorNoConnection: 'No server connection',
     loadingMessages: [
       'Interpreting your prompt...',
       'Generating the visual concept...',
@@ -355,6 +381,16 @@ const EN = {
       tipografico: 'Typographic',
       ilustrado: 'Illustrated',
     },
+  },
+  productMeta: {
+    'tshirt': { name: 'Custom T-shirt', nameShort: 'T-shirt', description: "Wear a design that's uniquely yours.", productionTime: '3–5 business days' },
+    'hoodie': { name: 'Custom Hoodie', nameShort: 'Hoodie', description: 'Maximum comfort with exclusive style.', productionTime: '3–5 business days' },
+    'poster': { name: 'Custom Poster', nameShort: 'Poster', description: 'Transform a wall into something yours.', productionTime: '2–4 business days' },
+    'capatelemovel': { name: 'Custom Phone Case', nameShort: 'Phone Case', description: "Protect your phone with a design that's uniquely yours.", productionTime: '3–5 business days' },
+    'caneca': { name: 'Custom Mug', nameShort: 'Mug', description: 'Your morning coffee deserves a mug with personality.', productionTime: '3–5 business days' },
+    'autocolantes': { name: 'Custom Stickers', nameShort: 'Stickers', description: 'Small details that make a difference.', productionTime: '2–3 business days' },
+    'totebag': { name: 'Custom Tote Bag', nameShort: 'Tote Bag', description: 'Replace plastic bags in style.', productionTime: '3–5 business days' },
+    'quadro': { name: 'Custom Wall Art', nameShort: 'Wall Art', description: 'Genuine art on your walls.', productionTime: '4–6 business days' },
   },
   home: {
     // hero
@@ -609,4 +645,24 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
 export function useLang() {
   return useContext(LanguageContext);
+}
+
+type ProductMeta = { name: string; nameShort: string; description: string; productionTime: string };
+
+// Maps slug → camelCase key used in productMeta
+const slugToMetaKey: Record<string, string> = {
+  'tshirt': 'tshirt', 't-shirt': 'tshirt',
+  'hoodie': 'hoodie',
+  'poster': 'poster',
+  'capa-telemovel': 'capatelemovel', 'capatelemovel': 'capatelemovel',
+  'caneca': 'caneca',
+  'autocolantes': 'autocolantes',
+  'tote-bag': 'totebag', 'totebag': 'totebag',
+  'quadro': 'quadro',
+};
+
+export function getProductMeta(slug: string, t: Translations): ProductMeta | null {
+  const key = slugToMetaKey[slug];
+  if (!key) return null;
+  return (t.productMeta as Record<string, ProductMeta>)[key] ?? null;
 }

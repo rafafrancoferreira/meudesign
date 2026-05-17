@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
-import { useLang } from '@/lib/i18n';
+import { useLang, getProductMeta } from '@/lib/i18n';
 import { products, type ProductVariant } from '@/lib/products';
 import { DesignCanvas, defaultDesignTransform } from '@/components/product/design-canvas';
 
@@ -110,16 +110,16 @@ export function GeneratorLayout() {
       });
       const data = await res.json() as { prompt?: string; error?: string };
       if (!res.ok || data.error) {
-        setInspireError(data.error ?? 'Erro ao gerar inspiração');
+        setInspireError(data.error ?? t.generator.inspireErrorGeneric);
         return;
       }
       if (data.prompt) typeText(data.prompt);
     } catch {
-      setInspireError('Sem ligação ao servidor');
+      setInspireError(t.generator.inspireErrorNoConnection);
     } finally {
       setIsInspiring(false);
     }
-  }, [typeText, setInspireError]);
+  }, [typeText, setInspireError, t, lang]);
 
   const handleInspire = useCallback(() => {
     if (isInspiring) return;
@@ -272,7 +272,7 @@ export function GeneratorLayout() {
                   ) : (
                     <Wand2 className="w-3 h-3" />
                   )}
-                  {isInspiring ? 'A criar...' : '✨ Inspirar-me'}
+                  {isInspiring ? t.generator.inspiring : t.generator.inspireMe}
                 </button>
               </div>
               <textarea
@@ -287,18 +287,18 @@ export function GeneratorLayout() {
                 <span>{prompt.length}/400</span>
                 {showReplaceConfirm ? (
                   <span className="flex items-center gap-2">
-                    <span className="text-muted/70">Substituir texto atual?</span>
+                    <span className="text-muted/70">{t.generator.inspireReplaceConfirm}</span>
                     <button
                       onClick={confirmReplace}
                       className="px-2 py-0.5 border border-accent text-accent rounded hover:bg-accent/10 transition-colors"
                     >
-                      Sim
+                      {t.generator.inspireReplaceYes}
                     </button>
                     <button
                       onClick={() => setShowReplaceConfirm(false)}
                       className="px-2 py-0.5 border border-border text-muted rounded hover:border-border-strong transition-colors"
                     >
-                      Não
+                      {t.generator.inspireReplaceNo}
                     </button>
                   </span>
                 ) : inspireError ? (
@@ -392,7 +392,7 @@ export function GeneratorLayout() {
                         selectedProduct === product.slug ? 'text-accent' : 'text-muted'
                       }`}
                     >
-                      {product.name
+                      {getProductMeta(product.slug, t)?.nameShort ?? product.name
                         .replace(' personalizados', '')
                         .replace(' personalizada', '')
                         .replace(' personalizado', '')
@@ -407,7 +407,7 @@ export function GeneratorLayout() {
             {currentProduct.variants && currentProduct.variants.length > 1 && (
               <div>
                 <label className="block text-xs font-mono uppercase tracking-widest text-muted mb-3">
-                  Cor
+                  {t.generator.colorLabel}
                 </label>
                 <div className="flex gap-2">
                   {currentProduct.variants.map((v) => (
@@ -621,16 +621,18 @@ export function GeneratorLayout() {
             <div className="mt-4 p-4 bg-surface-2 rounded-lg border border-border">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-mono uppercase tracking-wider text-muted">
-                  {currentProduct.name}
+                  {getProductMeta(currentProduct.slug, t)?.name ?? currentProduct.name}
                 </span>
                 <span className="font-mono font-semibold text-foreground text-sm">
                   {currentProduct.price.toFixed(2).replace('.', ',')} €
                 </span>
               </div>
-              <p className="text-xs text-muted/70 leading-relaxed">{currentProduct.description.split('.')[0]}.</p>
+              <p className="text-xs text-muted/70 leading-relaxed">
+                {getProductMeta(currentProduct.slug, t)?.description ?? currentProduct.description.split('.')[0] + '.'}
+              </p>
               <div className="flex gap-3 mt-2">
                 <span className="text-[10px] font-mono text-muted/50 uppercase tracking-wider">
-                  {t.generator.production}: {currentProduct.productionTime}
+                  {t.generator.production}: {getProductMeta(currentProduct.slug, t)?.productionTime ?? currentProduct.productionTime}
                 </span>
                 {currentProduct.sizes && (
                   <span className="text-[10px] font-mono text-muted/50 uppercase tracking-wider">

@@ -72,7 +72,7 @@ REGRAS ABSOLUTAS:
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
-      max_tokens: 85,
+      max_tokens: 120,
       messages: [{ role: 'user', content: messageContent }],
     }),
   });
