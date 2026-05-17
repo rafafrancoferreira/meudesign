@@ -72,7 +72,7 @@ export function GeneratorLayout() {
   const typingRef      = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const addToCart = useCartStore((s) => s.add);
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const currentProduct = products.find((p) => p.slug === selectedProduct) ?? products[0];
   const activeMockup = selectedVariant?.mockup ?? currentProduct.mockup;
@@ -99,11 +99,10 @@ export function GeneratorLayout() {
     }, 10);
   }, []);
 
-  const fetchInspiredPrompt = useCallback(async (nextCount: number) => {
+  const fetchInspiredPrompt = useCallback(async (_nextCount: number) => {
     setIsInspiring(true);
     setInspireError('');
     try {
-      const lang = nextCount % 3 === 0 ? 'en' : 'pt';
       const res = await fetch('/api/generate-prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
