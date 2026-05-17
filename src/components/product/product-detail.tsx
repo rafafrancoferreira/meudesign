@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingCart, Wand2, ChevronDown, ChevronUp, Check, ArrowLeft, Clock, Package } from 'lucide-react';
 import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
-import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
+import { DesignCanvas } from '@/components/product/design-canvas';
 
 const DESIGN_GALLERY = [
   { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
@@ -24,52 +24,18 @@ type DesignEntry = (typeof DESIGN_GALLERY)[0];
 
 function CompositedMockup({
   mockupSrc,
-  designSrc,
-  productSlug,
+  productSlug: _productSlug,
   alt,
   className = '',
 }: {
   mockupSrc: string;
-  designSrc?: string;
   productSlug: string;
   alt: string;
   className?: string;
 }) {
-  const zone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
   return (
     <div className={`relative w-full h-full ${className}`}>
-      {/* Mockup base layer */}
-      <Image
-        src={mockupSrc}
-        alt={alt}
-        fill
-        className="object-contain"
-        sizes="400px"
-        unoptimized
-      />
-      {/* Design layer — on top, in print zone */}
-      {designSrc && (
-        <div
-          className="absolute overflow-hidden"
-          style={{
-            top: zone.top,
-            left: zone.left,
-            width: zone.width,
-            height: zone.height,
-            borderRadius: zone.shape === 'circle' ? '50%' : (zone.borderRadius ?? undefined),
-            mixBlendMode: 'screen',
-          }}
-        >
-          <Image
-            src={designSrc}
-            alt="Design aplicado"
-            fill
-            className="object-contain"
-            sizes="400px"
-            unoptimized={designSrc.startsWith('/')}
-          />
-        </div>
-      )}
+      <Image src={mockupSrc} alt={alt} fill className="object-contain" sizes="400px" unoptimized />
     </div>
   );
 }
@@ -130,46 +96,52 @@ export function ProductDetail({ product }: { product: Product }) {
         {/* ── Left: Image gallery ── */}
         <div className="space-y-4">
           {/* Main preview */}
-          <div
-            className="relative rounded-2xl overflow-hidden aspect-square border border-border"
-            style={{ background: '#1a1a1a' }}
-          >
-            <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait">
+            {isDesignSelected ? (
               <motion.div
-                key={selectedDesign?.src ?? 'mockup-only'}
+                key={selectedDesign.src}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="absolute inset-0 p-10"
               >
-                <CompositedMockup
+                <DesignCanvas
+                  key={selectedDesign.src + activeMockup}
                   mockupSrc={activeMockup}
-                  designSrc={selectedDesign?.src}
+                  designSrc={selectedDesign.src}
                   productSlug={product.slug}
-                  alt={product.name}
+                  isDarkMockup={selectedVariant?.hex === '#1a1a1a'}
+                  showControls
                 />
+                <div className="mt-2 flex items-center justify-between px-1">
+                  <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1 rounded-full">
+                    {selectedDesign.label}
+                  </span>
+                  <p className="text-[10px] font-mono text-muted/60 truncate ml-3">
+                    &ldquo;{selectedDesign.prompt}&rdquo;
+                  </p>
+                </div>
               </motion.div>
-            </AnimatePresence>
-
-            {/* Design label badge */}
-            {isDesignSelected && (
-              <div className="absolute top-4 left-4">
-                <span className="bg-accent text-accent-foreground text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
-                  {selectedDesign.label}
-                </span>
-              </div>
+            ) : (
+              <motion.div
+                key="mockup-only"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="relative rounded-2xl overflow-hidden aspect-square border border-border"
+                style={{ background: '#1a1a1a' }}
+              >
+                <div className="absolute inset-0 p-10">
+                  <CompositedMockup
+                    mockupSrc={activeMockup}
+                    productSlug={product.slug}
+                    alt={product.name}
+                  />
+                </div>
+              </motion.div>
             )}
-
-            {/* Prompt hint */}
-            {isDesignSelected && (
-              <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-[10px] font-mono text-muted/70 truncate">
-                  &ldquo;{selectedDesign.prompt}&rdquo;
-                </p>
-              </div>
-            )}
-          </div>
+          </AnimatePresence>
 
           {/* Thumbnail strip */}
           <div className="grid grid-cols-4 gap-3">
@@ -207,13 +179,10 @@ export function ProductDetail({ product }: { product: Product }) {
                 }`}
                 style={{ background: '#1a1a1a' }}
               >
-                <div className="absolute inset-0 p-3">
-                  <CompositedMockup
-                    mockupSrc={activeMockup}
-                    designSrc={d.src}
-                    productSlug={product.slug}
-                    alt={d.label}
-                  />
+                <div className="absolute inset-0 p-2">
+                  <div className="relative w-full h-full">
+                    <Image src={d.src} alt={d.label} fill className="object-contain" sizes="80px" unoptimized={d.src.startsWith('/')} />
+                  </div>
                 </div>
                 <div className="absolute bottom-0 inset-x-0 bg-background/80 py-1 text-[8px] font-mono uppercase tracking-wider text-center text-muted">
                   {d.label}
@@ -425,12 +394,9 @@ export function ProductDetail({ product }: { product: Product }) {
                     style={{ background: '#1a1a1a' }}
                   >
                     <div className="absolute inset-0 p-2">
-                      <CompositedMockup
-                        mockupSrc={activeMockup}
-                        designSrc={design.src}
-                        productSlug={product.slug}
-                        alt={design.label}
-                      />
+                      <div className="relative w-full h-full">
+                        <Image src={design.src} alt={design.label} fill className="object-contain group-hover:scale-105 transition-transform duration-300" sizes="120px" unoptimized={design.src.startsWith('/')} />
+                      </div>
                     </div>
                     <div className="absolute bottom-0 inset-x-0 bg-background/85 py-1.5 text-[9px] font-mono uppercase tracking-wider text-center text-muted">
                       {design.label}

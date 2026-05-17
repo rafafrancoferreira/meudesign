@@ -4,13 +4,13 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Loader2, RefreshCw, ShoppingCart, Download, Sparkles,
-  AlertCircle, Maximize2, AlignCenter,
+  AlertCircle,
 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
 import { useLang } from '@/lib/i18n';
 import { products, type ProductVariant } from '@/lib/products';
-import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
+import { DesignCanvas, defaultDesignTransform } from '@/components/product/design-canvas';
 
 type GenerationState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -29,13 +29,6 @@ interface SessionItem {
   productSlug: string;
 }
 
-// Design position/size expressed as % of canvas dimensions
-interface DesignTransform {
-  cx: number; // center-x %
-  cy: number; // center-y %
-  w: number;  // width %
-  h: number;  // height %
-}
 
 const STYLE_IDS = [
   { id: 'abstrato',    key: 'abstrato' as const },
@@ -53,23 +46,6 @@ function asciiBar(progress: number, width = 12): string {
   return `[${'█'.repeat(filled)}${'░'.repeat(width - filled)}] ${Math.round(progress)}%`;
 }
 
-function defaultTransform(slug: string): DesignTransform {
-  const z = MOCKUP_PRINT_ZONES[slug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  const left = parseFloat(z.left);
-  const top  = parseFloat(z.top);
-  const w    = parseFloat(z.width);
-  const h    = parseFloat(z.height);
-  return { cx: left + w / 2, cy: top + h / 2, w, h };
-}
-
-type ResizeCorner = 'nw' | 'ne' | 'sw' | 'se';
-type DragMode = 'move' | ResizeCorner;
-
-interface DragState {
-  mode: DragMode;
-  startMousePct: { x: number; y: number };
-  startTx: DesignTransform;
-}
 
 export function GeneratorLayout() {
   const [prompt, setPrompt] = useState('');
@@ -82,16 +58,12 @@ export function GeneratorLayout() {
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0);
   const [history, setHistory] = useState<SessionItem[]>([]);
   const [customStyle, setCustomStyle] = useState('');
-  const [designTx, setDesignTx] = useState<DesignTransform>(() => defaultTransform('t-shirt'));
-  const [sizeScale, setSizeScale] = useState(1.0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     () => products.find((p) => p.slug === 't-shirt')?.variants?.[0] ?? null
   );
 
   const progressRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const msgIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const canvasRef      = useRef<HTMLDivElement>(null);
-  const dragRef        = useRef<DragState | null>(null);
 
   const addToCart = useCartStore((s) => s.add);
   const { t } = useLang();
@@ -99,26 +71,11 @@ export function GeneratorLayout() {
   const currentProduct = products.find((p) => p.slug === selectedProduct) ?? products[0];
   const activeMockup = selectedVariant?.mockup ?? currentProduct.mockup;
 
-  // Reset design position + scale + variant when product changes
+  // Reset variant when product changes
   useEffect(() => {
-    const tx = defaultTransform(selectedProduct);
-    setSizeScale(1.0);
-    setDesignTx(tx);
     const p = products.find((pr) => pr.slug === selectedProduct);
     setSelectedVariant(p?.variants?.[0] ?? null);
   }, [selectedProduct]);
-
-  // Apply size slider to designTx
-  useEffect(() => {
-    const base = defaultTransform(selectedProduct);
-    setDesignTx({
-      cx: base.cx,
-      cy: base.cy,
-      w: base.w * sizeScale,
-      h: base.h * sizeScale,
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sizeScale]);
 
   // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -126,84 +83,6 @@ export function GeneratorLayout() {
     if (progressRef.current) clearInterval(progressRef.current);
     if (msgIntervalRef.current) clearInterval(msgIntervalRef.current);
   }, []);
-
-  const pctFromEvent = useCallback((clientX: number, clientY: number) => {
-    if (!canvasRef.current) return { x: 0, y: 0 };
-    const r = canvasRef.current.getBoundingClientRect();
-    return {
-      x: ((clientX - r.left) / r.width) * 100,
-      y: ((clientY - r.top)  / r.height) * 100,
-    };
-  }, []);
-
-  const clientXY = (e: MouseEvent | TouchEvent) =>
-    'touches' in e
-      ? { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }
-      : { clientX: (e as MouseEvent).clientX, clientY: (e as MouseEvent).clientY };
-
-  // ── drag / resize ─────────────────────────────────────────────────────────
-
-  const startDrag = useCallback(
-    (e: React.MouseEvent | React.TouchEvent, mode: DragMode) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const { clientX, clientY } = 'touches' in e
-        ? { clientX: e.touches[0].clientX, clientY: e.touches[0].clientY }
-        : { clientX: (e as React.MouseEvent).clientX, clientY: (e as React.MouseEvent).clientY };
-
-      dragRef.current = {
-        mode,
-        startMousePct: pctFromEvent(clientX, clientY),
-        startTx: { ...designTx },
-      };
-
-      const onMove = (ev: MouseEvent | TouchEvent) => {
-        if (!dragRef.current) return;
-        const { clientX: cx, clientY: cy } = clientXY(ev);
-        const cur = pctFromEvent(cx, cy);
-        const dx = cur.x - dragRef.current.startMousePct.x;
-        const dy = cur.y - dragRef.current.startMousePct.y;
-        const base = dragRef.current.startTx;
-        const aspect = base.w / base.h;
-
-        if (dragRef.current.mode === 'move') {
-          setDesignTx({
-            ...base,
-            cx: Math.max(base.w / 2, Math.min(100 - base.w / 2, base.cx + dx)),
-            cy: Math.max(base.h / 2, Math.min(100 - base.h / 2, base.cy + dy)),
-          });
-        } else {
-          // Resize: derive new width from horizontal drag; keep aspect ratio
-          let newW = base.w;
-          if (dragRef.current.mode === 'ne' || dragRef.current.mode === 'se') newW = base.w + dx * 2;
-          if (dragRef.current.mode === 'nw' || dragRef.current.mode === 'sw') newW = base.w - dx * 2;
-          newW = Math.max(8, Math.min(95, newW));
-          const newH = newW / aspect;
-          setDesignTx({ ...base, w: newW, h: newH });
-          setSizeScale(newW / (defaultTransform(selectedProduct).w || 1));
-        }
-      };
-
-      const onUp = () => {
-        dragRef.current = null;
-        window.removeEventListener('mousemove', onMove);
-        window.removeEventListener('touchmove', onMove);
-        window.removeEventListener('mouseup', onUp);
-        window.removeEventListener('touchend', onUp);
-      };
-
-      window.addEventListener('mousemove', onMove);
-      window.addEventListener('touchmove', onMove, { passive: false });
-      window.addEventListener('mouseup', onUp);
-      window.addEventListener('touchend', onUp);
-    },
-    [designTx, pctFromEvent, selectedProduct],
-  );
-
-  const centerDesign = useCallback(() => {
-    const base = defaultTransform(selectedProduct);
-    setDesignTx({ ...base, w: base.w * sizeScale, h: base.h * sizeScale });
-  }, [selectedProduct, sizeScale]);
 
   // ── generation ────────────────────────────────────────────────────────────
 
@@ -247,9 +126,6 @@ export function GeneratorLayout() {
       setTimeout(() => {
         setResult(data);
         setState('success');
-        // Reset position for new result
-        setSizeScale(1.0);
-        setDesignTx(defaultTransform(selectedProduct));
         setHistory((prev) =>
           [{ id: `${data.seed}-${Date.now()}`, imageUrl: data.imageUrl, prompt: prompt.slice(0, 60), style: effectiveStyle, productSlug: selectedProduct }, ...prev].slice(0, 8)
         );
@@ -295,15 +171,7 @@ export function GeneratorLayout() {
     setSelectedProduct(item.productSlug);
     setSelectedStyle(item.style);
     setState('success');
-    setSizeScale(1.0);
-    setDesignTx(defaultTransform(item.productSlug));
   }, []);
-
-  // ── print zone border-radius ──────────────────────────────────────────────
-  const printZone = MOCKUP_PRINT_ZONES[selectedProduct] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  const designBorderRadius =
-    printZone.shape === 'circle' ? '50%' :
-    printZone.borderRadius ?? '0';
 
   // ── render ────────────────────────────────────────────────────────────────
 
@@ -524,169 +392,90 @@ export function GeneratorLayout() {
               {t.generator.preview}
             </label>
 
-            {/* Canvas */}
-            <div
-              ref={canvasRef}
-              className={`relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none ${
-                state === 'success' ? 'bg-white' : 'bg-surface'
-              }`}
-              style={{ isolation: 'isolate' }}
-            >
-              {/* ── IDLE ── */}
-              {state === 'idle' && (
-                <div className="text-center px-8">
-                  <div className="w-16 h-16 mx-auto mb-6 opacity-30">
-                    <Image
-                      src={activeMockup}
-                      alt={currentProduct.name}
-                      width={64}
-                      height={64}
-                      className="object-contain w-full h-full"
-                      unoptimized
-                    />
-                  </div>
-                  <p className="text-muted text-sm font-mono">
-                    {t.generator.describeDesign}
-                    <br />
-                    {t.generator.andPress}{' '}
-                    <span className="text-accent">{t.generator.generate.toUpperCase()}</span>
-                  </p>
-                </div>
-              )}
-
-              {/* ── LOADING ── */}
-              {state === 'loading' && (
-                <div className="w-full h-full flex flex-col items-center justify-center p-8 relative">
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      backgroundImage:
-                        'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px)',
-                    }}
-                  />
-                  <div className="relative z-10 text-center space-y-6">
-                    <div className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
-                      <ScrambledText
-                        text={t.generator.loadingMessages[loadingMsgIndex]}
-                        isActive={state === 'loading'}
-                        className="text-accent"
+            {/* Canvas — idle / loading / error states */}
+            {state !== 'success' && (
+              <div
+                className="relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none bg-surface"
+                style={{ isolation: 'isolate' }}
+              >
+                {/* ── IDLE ── */}
+                {state === 'idle' && (
+                  <div className="text-center px-8">
+                    <div className="w-16 h-16 mx-auto mb-6 opacity-30">
+                      <Image
+                        src={activeMockup}
+                        alt={currentProduct.name}
+                        width={64}
+                        height={64}
+                        className="object-contain w-full h-full"
+                        unoptimized
                       />
                     </div>
-                    <div className="font-mono text-sm text-foreground/60">{asciiBar(progress)}</div>
-                    <div className="font-mono text-[10px] text-muted/50 space-y-1">
-                      <div>PROMPT: {prompt.slice(0, 40)}{prompt.length > 40 ? '…' : ''}</div>
-                      <div>STYLE: {selectedStyle === '__none__' ? 'SEM ESTILO' : selectedStyle === '__custom__' ? (customStyle.trim().toUpperCase() || 'PERSONALIZADO') : selectedStyle.toUpperCase()}</div>
-                      <div>PRODUCT: {selectedProduct.toUpperCase()}</div>
+                    <p className="text-muted text-sm font-mono">
+                      {t.generator.describeDesign}
+                      <br />
+                      {t.generator.andPress}{' '}
+                      <span className="text-accent">{t.generator.generate.toUpperCase()}</span>
+                    </p>
+                  </div>
+                )}
+
+                {/* ── LOADING ── */}
+                {state === 'loading' && (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-8 relative">
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        backgroundImage:
+                          'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,255,255,0.015) 3px, rgba(255,255,255,0.015) 4px)',
+                      }}
+                    />
+                    <div className="relative z-10 text-center space-y-6">
+                      <div className="font-mono text-xs uppercase tracking-[0.3em] text-muted">
+                        <ScrambledText
+                          text={t.generator.loadingMessages[loadingMsgIndex]}
+                          isActive={state === 'loading'}
+                          className="text-accent"
+                        />
+                      </div>
+                      <div className="font-mono text-sm text-foreground/60">{asciiBar(progress)}</div>
+                      <div className="font-mono text-[10px] text-muted/50 space-y-1">
+                        <div>PROMPT: {prompt.slice(0, 40)}{prompt.length > 40 ? '…' : ''}</div>
+                        <div>STYLE: {selectedStyle === '__none__' ? 'SEM ESTILO' : selectedStyle === '__custom__' ? (customStyle.trim().toUpperCase() || 'PERSONALIZADO') : selectedStyle.toUpperCase()}</div>
+                        <div>PRODUCT: {selectedProduct.toUpperCase()}</div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* ── SUCCESS ── */}
-              {state === 'success' && result && (
-                <div className="absolute inset-0">
-                  {/* Layer 1: draggable + resizable design */}
-                  <div
-                    className="absolute overflow-hidden cursor-move touch-none"
-                    style={{
-                      left:   `${designTx.cx - designTx.w / 2}%`,
-                      top:    `${designTx.cy - designTx.h / 2}%`,
-                      width:  `${designTx.w}%`,
-                      height: `${designTx.h}%`,
-                      borderRadius: designBorderRadius,
-                      zIndex: 1,
-                    }}
-                    onMouseDown={(e) => startDrag(e, 'move')}
-                    onTouchStart={(e) => startDrag(e, 'move')}
-                  >
-                    <Image
-                      src={result.imageUrl}
-                      alt="Design gerado"
-                      fill
-                      className="object-cover pointer-events-none"
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      unoptimized={result.imageUrl.startsWith('/')}
-                      draggable={false}
-                    />
-
-                    {/* Resize handles — 4 corners */}
-                    {(['nw','ne','sw','se'] as ResizeCorner[]).map((corner) => (
-                      <div
-                        key={corner}
-                        className={`absolute w-4 h-4 bg-accent border-2 border-accent-foreground rounded-sm z-20 touch-none ${
-                          corner === 'nw' ? 'top-0 left-0 cursor-nw-resize'  :
-                          corner === 'ne' ? 'top-0 right-0 cursor-ne-resize' :
-                          corner === 'sw' ? 'bottom-0 left-0 cursor-sw-resize' :
-                                            'bottom-0 right-0 cursor-se-resize'
-                        }`}
-                        style={{ transform: 'translate(-50%, -50%)',
-                          ...(corner === 'ne' && { transform: 'translate(50%, -50%)' }),
-                          ...(corner === 'sw' && { transform: 'translate(-50%, 50%)' }),
-                          ...(corner === 'se' && { transform: 'translate(50%, 50%)' }),
-                        }}
-                        onMouseDown={(e) => startDrag(e, corner)}
-                        onTouchStart={(e) => startDrag(e, corner)}
-                      />
-                    ))}
+                {/* ── ERROR ── */}
+                {state === 'error' && (
+                  <div className="text-center px-8">
+                    <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-4" />
+                    <p className="text-sm text-muted font-mono mb-1">{t.generator.errorTitle}</p>
+                    <p className="text-xs text-muted/60 font-mono">{error}</p>
                   </div>
+                )}
+              </div>
+            )}
 
-                  {/* Layer 2: mockup on top with multiply to blend into product */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ zIndex: 2, mixBlendMode: 'multiply' }}
-                  >
-                    <Image
-                      src={activeMockup}
-                      alt={currentProduct.name}
-                      fill
-                      className="object-contain"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      unoptimized
-                    />
-                  </div>
-
-                  {/* Seed badge */}
-                  <div className="absolute top-3 right-3" style={{ zIndex: 3 }}>
-                    <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded px-2 py-1">
-                      <span className="font-mono text-[10px] text-white/50">seed: {result.seed}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── ERROR ── */}
-              {state === 'error' && (
-                <div className="text-center px-8">
-                  <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-4" />
-                  <p className="text-sm text-muted font-mono mb-1">{t.generator.errorTitle}</p>
-                  <p className="text-xs text-muted/60 font-mono">{error}</p>
-                </div>
-              )}
-            </div>
-
-            {/* ── Design controls (visible in success state) ── */}
+            {/* ── SUCCESS: shared DesignCanvas with drag/resize ── */}
             {state === 'success' && result && (
-              <div className="mt-3 flex items-center gap-3 px-1">
-                {/* Size slider */}
-                <Maximize2 className="w-3.5 h-3.5 text-muted shrink-0" />
-                <input
-                  type="range"
-                  min={0.4}
-                  max={2.2}
-                  step={0.05}
-                  value={sizeScale}
-                  onChange={(e) => setSizeScale(parseFloat(e.target.value))}
-                  className="flex-1 h-1 accent-[#dafe22] cursor-pointer"
-                  aria-label="Tamanho do design"
+              <div className="relative">
+                <DesignCanvas
+                  key={result.imageUrl}
+                  mockupSrc={activeMockup}
+                  designSrc={result.imageUrl}
+                  productSlug={selectedProduct}
+                  isDarkMockup={selectedVariant?.hex === '#1a1a1a'}
+                  showControls
                 />
-                {/* Center button */}
-                <button
-                  onClick={centerDesign}
-                  title="Centrar design"
-                  className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors"
-                >
-                  <AlignCenter className="w-3.5 h-3.5" />
-                </button>
+                {/* Seed badge overlaid on canvas */}
+                <div className="absolute top-3 right-3 z-10">
+                  <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded px-2 py-1">
+                    <span className="font-mono text-[10px] text-white/50">seed: {result.seed}</span>
+                  </div>
+                </div>
               </div>
             )}
 
