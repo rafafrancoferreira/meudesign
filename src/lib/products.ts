@@ -71,7 +71,7 @@ export const products: Product[] = [
     name: "Capa de telemóvel personalizada",
     price: 17.9,
     category: "acessórios",
-    mockup: "/mockups/capa-telemovel.jpg",
+    mockup: "/mockups/capa-telemovel.png",
     description:
       "Protege o teu telemóvel com um design que é só teu. A impressão UV de última geração garante cores brilhantes e resistência a riscos do dia a dia. Encaixa perfeitamente no teu modelo e mantém acesso a todos os botões, entradas e câmaras. Ligeira e resistente em simultâneo.",
     materials:
@@ -86,26 +86,18 @@ export const products: Product[] = [
       "Samsung Galaxy S24 Ultra",
     ],
     productionTime: "3–5 dias úteis",
-    variants: [
-      { color: "Preto", mockup: "/mockups/capa-telemovel.jpg", hex: "#1a1a1a" },
-      { color: "Transparente", mockup: "/mockups/capa-telemovel.png", hex: "transparent" },
-    ],
   },
   {
     slug: "caneca",
     name: "Caneca personalizada",
     price: 12.9,
     category: "acessórios",
-    mockup: "/mockups/caneca.jpg",
+    mockup: "/mockups/caneca-white.png",
     description:
       "O teu café da manhã merece uma caneca com personalidade. O design envolve toda a superfície em 360° e resiste a centenas de lavagens sem desbotar ou descascar. Uma prenda com utilidade garantida, que as pessoas usam todos os dias e nunca esquecem de onde veio.",
     materials:
       "Cerâmica de alta densidade, 325 ml, revestimento vítreo de grau alimentar, apta para micro-ondas e máquina de lavar loiça",
     productionTime: "3–5 dias úteis",
-    variants: [
-      { color: "Preto", mockup: "/mockups/caneca.jpg", hex: "#1a1a1a" },
-      { color: "Branco", mockup: "/mockups/caneca-white.png", hex: "#f0f0f0" },
-    ],
   },
   {
     slug: "autocolantes",

@@ -27,7 +27,7 @@ export function ProductCard({ product }: { product: Product }) {
       {/* Image container */}
       <div
         className="relative border border-border rounded-xl overflow-hidden aspect-square mb-3 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.07)]"
-        style={{ background: 'rgba(255,255,255,0.04)' }}
+        style={{ background: '#1a1a1a' }}
       >
         {/* Mockup — always visible, brightens on hover */}
         <div className="absolute inset-0 flex items-center justify-center p-8">

@@ -73,7 +73,7 @@ export function Header() {
 
             {/* Instagram */}
             <a
-              href="https://www.instagram.com/meudesign.isag/"
+              href="https://www.instagram.com/meudesign.pt/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram MeuDesign"
