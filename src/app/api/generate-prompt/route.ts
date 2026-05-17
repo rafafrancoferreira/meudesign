@@ -17,10 +17,14 @@ function getRandomTheme(): string {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('[generate-prompt] endpoint called');
+
   const { lang = 'pt' } = await req.json().catch(() => ({})) as { lang?: string };
+  console.log('[generate-prompt] lang:', lang);
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
+    console.error('[generate-prompt] ANTHROPIC_API_KEY is not set in environment');
     return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured' }, { status: 500 });
   }
 
@@ -95,7 +99,7 @@ REGRAS:
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20251001',
+      model: 'claude-sonnet-4-6',
       max_tokens: 400,
       messages: [{ role: 'user', content: messageContent }],
     }),
@@ -103,6 +107,7 @@ REGRAS:
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
+    console.error('[generate-prompt] Anthropic API error:', response.status, err);
     return NextResponse.json({ error: JSON.stringify(err) }, { status: response.status });
   }
 

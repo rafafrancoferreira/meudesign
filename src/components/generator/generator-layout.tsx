@@ -65,6 +65,7 @@ export function GeneratorLayout() {
   const [inspireCount, setInspireCount]           = useState(0);
   const [isInspiring, setIsInspiring]             = useState(false);
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
+  const [inspireError, setInspireError]           = useState('');
 
   const progressRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const msgIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -100,6 +101,7 @@ export function GeneratorLayout() {
 
   const fetchInspiredPrompt = useCallback(async (nextCount: number) => {
     setIsInspiring(true);
+    setInspireError('');
     try {
       const lang = nextCount % 3 === 0 ? 'en' : 'pt';
       const res = await fetch('/api/generate-prompt', {
@@ -107,14 +109,18 @@ export function GeneratorLayout() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ lang }),
       });
-      const data = await res.json() as { prompt?: string };
+      const data = await res.json() as { prompt?: string; error?: string };
+      if (!res.ok || data.error) {
+        setInspireError(data.error ?? 'Erro ao gerar inspiração');
+        return;
+      }
       if (data.prompt) typeText(data.prompt);
     } catch {
-      // silently ignore network errors
+      setInspireError('Sem ligação ao servidor');
     } finally {
       setIsInspiring(false);
     }
-  }, [typeText]);
+  }, [typeText, setInspireError]);
 
   const handleInspire = useCallback(() => {
     if (isInspiring) return;
@@ -296,6 +302,8 @@ export function GeneratorLayout() {
                       Não
                     </button>
                   </span>
+                ) : inspireError ? (
+                  <span className="text-destructive/80">{inspireError}</span>
                 ) : (
                   <span>{t.generator.beSpecific}</span>
                 )}
