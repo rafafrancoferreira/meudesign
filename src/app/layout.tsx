@@ -6,6 +6,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Grain } from "@/components/effects/grain";
 import { ClientProviders } from "@/components/layout/client-providers";
+import { SupportChat } from "@/components/chat/support-chat";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -53,6 +54,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <SupportChat />
         </ClientProviders>
       </body>
     </html>
