@@ -9,6 +9,7 @@ import { type Product, type ProductVariant, formatPrice } from '@/lib/products';
 import { useCartStore } from '@/lib/store-cart';
 import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
 import { DesignCanvas } from '@/components/product/design-canvas';
+import { ProductReviews } from '@/components/product/product-reviews';
 
 const DESIGN_GALLERY = [
   { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
@@ -421,6 +422,9 @@ export function ProductDetail({ product }: { product: Product }) {
           </motion.section>
         )}
       </AnimatePresence>
+
+      {/* ── Reviews ── */}
+      <ProductReviews />
     </div>
   );
 }
