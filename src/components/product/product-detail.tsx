@@ -139,7 +139,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="relative rounded-2xl overflow-hidden aspect-square border border-border"
-                style={{ background: '#1a1a1a' }}
+                style={{ background: product.mockupBg ?? '#1a1a1a' }}
               >
                 <div className="absolute inset-0 p-10">
                   <CompositedMockup
@@ -161,7 +161,7 @@ export function ProductDetail({ product }: { product: Product }) {
               className={`relative aspect-square rounded-xl overflow-hidden border transition-all hover:scale-[1.02] ${
                 !isDesignSelected ? 'border-accent ring-1 ring-accent' : 'border-border hover:border-border-strong'
               }`}
-              style={{ background: '#1a1a1a' }}
+              style={{ background: product.mockupBg ?? '#1a1a1a' }}
             >
               <div className="absolute inset-0 p-3">
                 <CompositedMockup

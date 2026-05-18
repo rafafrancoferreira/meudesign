@@ -69,7 +69,7 @@ export function FeaturedProducts() {
               <Link href={`/produto/${product.slug}`} className="group block">
                 <div
                   className="relative border border-border group-hover:border-[var(--border-strong)] rounded-xl overflow-hidden aspect-square mb-4 transition-all duration-300 group-hover:scale-[1.02]"
-                  style={{ background: 'rgba(255,255,255,0.04)' }}
+                  style={{ background: product.mockupBg ?? 'rgba(255,255,255,0.04)' }}
                 >
                   {/* Mockup */}
                   <div className="absolute inset-0 flex items-center justify-center p-8">

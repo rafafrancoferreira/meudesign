@@ -12,6 +12,7 @@ export type Product = {
   price: number;
   category: ProductCategory;
   mockup: string; // default mockup (first/dark variant)
+  mockupBg?: string; // override container background (e.g. '#0a0a0a' for poster)
   description: string;
   materials: string;
   sizes?: string[];
@@ -59,6 +60,7 @@ export const products: Product[] = [
     price: 14.9,
     category: "decoração",
     mockup: "/mockups/poster.png",
+    mockupBg: '#0a0a0a',
     description:
       "Transforma uma parede em algo teu. Impresso em papel fotográfico de alta gramagem com acabamento mate, o teu design ganha vida com cores profundas e contrastes nítidos. Perfeito para quartos, escritórios ou como prenda original. Bordas brancas incluídas para facilitar o emolduramento.",
     materials:

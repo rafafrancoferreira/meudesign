@@ -377,7 +377,10 @@ export function GeneratorLayout() {
                         : 'border-border bg-surface hover:border-border-strong'
                     }`}
                   >
-                    <div className="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
+                    <div
+                      className="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity rounded"
+                      style={product.mockupBg ? { background: product.mockupBg } : {}}
+                    >
                       <Image
                         src={product.mockup}
                         alt={product.name}
@@ -495,7 +498,10 @@ export function GeneratorLayout() {
                 {/* ── IDLE ── */}
                 {state === 'idle' && (
                   <div className="text-center px-8">
-                    <div className="w-16 h-16 mx-auto mb-6 opacity-30">
+                    <div
+                      className="w-16 h-16 mx-auto mb-6 opacity-30 rounded"
+                      style={currentProduct.mockupBg ? { background: currentProduct.mockupBg } : {}}
+                    >
                       <Image
                         src={activeMockup}
                         alt={currentProduct.name}
