@@ -823,7 +823,7 @@ const EN = {
     btnSupport: 'Contact support',
     btnTryNow: 'Try now',
     btnMoreQuestions: 'More questions',
-    btnGoToCreate: 'Go to /criar',
+    btnGoToCreate: 'Go to Create',
     btnUseGenerator: 'Use the prompt generator',
     btnViewProducts: 'View products',
     btnGoToContact: 'Go to Contact',
