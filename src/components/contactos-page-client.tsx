@@ -97,9 +97,9 @@ export function ContactosPageClient() {
                 <p className="text-xs font-mono text-muted-foreground leading-relaxed">
                   {contactInfo.address.institution}
                 </p>
-                <p className="text-xs font-mono text-muted-foreground">{contactInfo.address.street}</p>
-                <p className="text-xs font-mono text-muted-foreground">{contactInfo.address.postalCode}</p>
-                <p className="text-xs font-mono text-muted-foreground">{contactInfo.address.country}</p>
+                <p className="text-xs font-mono text-muted-foreground">{t.contactos.addressStreet}</p>
+                <p className="text-xs font-mono text-muted-foreground">{t.contactos.addressPostal}</p>
+                <p className="text-xs font-mono text-muted-foreground">{t.contactos.addressCountry}</p>
               </address>
             </div>
           </div>

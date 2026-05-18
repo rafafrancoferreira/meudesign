@@ -42,9 +42,6 @@ export const contactInfo = {
   tiktok: { label: '@meudesign', url: 'https://tiktok.com/@meudesign' },
   address: {
     institution: 'ISAG — Instituto Superior de Administração e Gestão',
-    street: 'Rua Tomás Ribeiro, 50',
-    postalCode: '1050-225 Lisboa',
-    country: 'Portugal',
   },
 };
 

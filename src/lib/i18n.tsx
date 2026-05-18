@@ -233,6 +233,9 @@ const PT = {
     replyTime: 'Respondemos em 1–2 dias úteis',
     socialMedia: 'Redes sociais',
     location: 'Localização',
+    addressStreet: 'Avenida Doutor Francisco Sá Carneiro, 87',
+    addressPostal: '4445-102 Porto',
+    addressCountry: 'Portugal',
   },
   carrinho: {
     continueShopping: 'Continuar a comprar',
@@ -670,6 +673,9 @@ const EN = {
     replyTime: 'We reply within 1–2 business days',
     socialMedia: 'Social media',
     location: 'Location',
+    addressStreet: '87 Avenida Doutor Francisco Sá Carneiro',
+    addressPostal: '4445-102 Porto',
+    addressCountry: 'Portugal',
   },
   carrinho: {
     continueShopping: 'Continue shopping',

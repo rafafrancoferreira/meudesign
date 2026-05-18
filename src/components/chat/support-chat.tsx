@@ -127,7 +127,7 @@ function TypingDots() {
 }
 
 export function SupportChat() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const ct = (t as unknown as { chat: ChatT }).chat;
   const router = useRouter();
 
@@ -138,6 +138,15 @@ export function SupportChat() {
   const [unread, setUnread] = useState(1);
   const [initialized, setInitialized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Reset chat state when language changes so messages appear in the new language
+  useEffect(() => {
+    setInitialized(false);
+    setMessages([]);
+    setIsTyping(false);
+    setOpen(false);
+    setUnread(1);
+  }, [lang]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
