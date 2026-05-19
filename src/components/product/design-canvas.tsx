@@ -58,6 +58,7 @@ export function DesignCanvas({
   const [tileMode, setTileMode] = useState(false);
   const [tileGrid, setTileGrid] = useState(2);
   const [tileGap, setTileGap] = useState(0);
+  const [tileOffset, setTileOffset] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -72,6 +73,7 @@ export function DesignCanvas({
     setScaleX(1.0);
     setScaleY(1.0);
     setTileMode(false);
+    setTileOffset({ x: 0, y: 0 });
     setDesignTx(defaultDesignTransform(productSlug));
   }, [productSlug]);
 
@@ -83,13 +85,6 @@ export function DesignCanvas({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeScale, lockRatio]);
 
-  // Unlocked mode: independent X/Y scale sliders
-  useEffect(() => {
-    if (lockRatio) return;
-    const base = defaultDesignTransform(productSlug);
-    setDesignTx(prev => ({ ...prev, w: base.w * scaleX, h: base.h * scaleY }));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scaleX, scaleY, lockRatio]);
 
   const pctFromEvent = useCallback((clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
@@ -189,10 +184,28 @@ export function DesignCanvas({
     }
   }, [productSlug, sizeScale, lockRatio, scaleX, scaleY]);
 
+  const startTileDrag = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startOff = { ...tileOffset };
+
+    const onMove = (ev: PointerEvent) => {
+      setTileOffset({ x: startOff.x + (ev.clientX - startX), y: startOff.y + (ev.clientY - startY) });
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }, [tileOffset]);
+
   const toggleLock = useCallback(() => {
     if (lockRatio) {
-      setScaleX(sizeScale);
-      setScaleY(sizeScale);
+      setScaleX(1.0);
+      setScaleY(1.0);
     } else {
       setSizeScale(scaleX);
     }
@@ -263,15 +276,16 @@ export function DesignCanvas({
 
   const renderTileGrid = (zIndex: number) => (
     <div
-      className="absolute overflow-hidden"
+      className="absolute overflow-hidden cursor-move touch-none"
       style={{
-        left: printZone.left,
-        top: printZone.top,
+        left: `calc(${printZone.left} + ${tileOffset.x}px)`,
+        top: `calc(${printZone.top} + ${tileOffset.y}px)`,
         width: printZone.width,
         height: printZone.height,
         zIndex,
         borderRadius: designBorderRadius,
       }}
+      onPointerDown={startTileDrag}
     >
       <div
         style={{
@@ -342,7 +356,7 @@ export function DesignCanvas({
                 onMouseDown={(e) => startDrag(e, 'move')}
                 onTouchStart={(e) => startDrag(e, 'move')}
               >
-                <Image src={designSrc} alt="Design" fill style={{ filter: filterUrl }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+                <Image src={designSrc} alt="Design" fill style={{ filter: filterUrl, objectFit: 'contain', ...(lockRatio ? {} : { transform: `scaleX(${scaleX}) scaleY(${scaleY})`, transformOrigin: 'center center' }) }} className="pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
                 {designOverlay}
               </div>
             )}
@@ -369,8 +383,8 @@ export function DesignCanvas({
                   src={designSrc}
                   alt="Design"
                   fill
-                  style={{ filter: filterUrl }}
-                  className="object-contain pointer-events-none"
+                  style={{ filter: filterUrl, objectFit: 'contain', ...(lockRatio ? {} : { transform: `scaleX(${scaleX}) scaleY(${scaleY})`, transformOrigin: 'center center' }) }}
+                  className="pointer-events-none"
                   sizes="400px"
                   unoptimized={designSrc.startsWith('/')}
                   draggable={false}
@@ -444,7 +458,7 @@ export function DesignCanvas({
           {/* Tile mode row */}
           <div className={`flex flex-wrap items-center gap-2${!tileMode ? ' pt-1.5 border-t border-border' : ''}`}>
             <button
-              onClick={() => setTileMode(prev => !prev)}
+              onClick={() => { setTileMode(prev => !prev); setTileOffset({ x: 0, y: 0 }); }}
               className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded border transition-all shrink-0 ${
                 tileMode
                   ? 'bg-accent/10 border-accent/40 text-accent'

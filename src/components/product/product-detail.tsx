@@ -13,14 +13,14 @@ import { ProductReviews } from '@/components/product/product-reviews';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 const DESIGN_GALLERY = [
-  { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
-  { src: '/mock-designs/futurista-1.png',   label: 'Futurista',   prompt: 'capacete de astronauta futurista com reflexo de galáxia, linhas neon azul e ciano' },
-  { src: '/mock-designs/geometrico-1.png',  label: 'Geométrico',  prompt: 'lobo feito de triângulos geométricos, tons azul-marinho e prata, olhos dourados' },
-  { src: '/mock-designs/organico-1.png',    label: 'Orgânico',    prompt: 'árvore bonsai japonesa com raízes em círculo, verde esmeralda e dourado' },
-  { src: '/mock-designs/abstrato-1.png',    label: 'Abstrato',    prompt: 'explosão de tinta líquida coral, magenta e dourado sobre fundo preto, textura metálica' },
-  { src: '/mock-designs/minimalista-1.png', label: 'Minimalista', prompt: 'montanha minimalista com lua cheia, silhueta branca e dourado, reflexo em lago' },
-  { src: '/mock-designs/tipografico-1.png', label: 'Tipográfico', prompt: 'letra M monumental 3D art déco, dourado metalizado, ornamentos geométricos' },
-  { src: '/mock-designs/ilustrado-1.png',   label: 'Ilustrado',   prompt: 'dragão oriental chinês em espiral, escamas vermelho e dourado, nuvens estilizadas' },
+  { src: '/mock-designs/retro-1.png',       label: 'Retro',       bg: 'dark' as const, prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
+  { src: '/mock-designs/futurista-1.png',   label: 'Futurista',   bg: 'dark' as const, prompt: 'capacete de astronauta futurista com reflexo de galáxia, linhas neon azul e ciano' },
+  { src: '/mock-designs/geometrico-1.png',  label: 'Geométrico',  bg: 'dark' as const, prompt: 'lobo feito de triângulos geométricos, tons azul-marinho e prata, olhos dourados' },
+  { src: '/mock-designs/organico-1.png',    label: 'Orgânico',    bg: 'dark' as const, prompt: 'árvore bonsai japonesa com raízes em círculo, verde esmeralda e dourado' },
+  { src: '/mock-designs/abstrato-1.png',    label: 'Abstrato',    bg: 'dark' as const, prompt: 'explosão de tinta líquida coral, magenta e dourado sobre fundo preto, textura metálica' },
+  { src: '/mock-designs/minimalista-1.png', label: 'Minimalista', bg: 'dark' as const, prompt: 'montanha minimalista com lua cheia, silhueta branca e dourado, reflexo em lago' },
+  { src: '/mock-designs/tipografico-1.png', label: 'Tipográfico', bg: 'dark' as const, prompt: 'letra M monumental 3D art déco, dourado metalizado, ornamentos geométricos' },
+  { src: '/mock-designs/ilustrado-1.png',   label: 'Ilustrado',   bg: 'dark' as const, prompt: 'dragão oriental chinês em espiral, escamas vermelho e dourado, nuvens estilizadas' },
 ];
 
 type DesignEntry = (typeof DESIGN_GALLERY)[0];
@@ -123,6 +123,7 @@ export function ProductDetail({ product }: { product: Product }) {
                   designSrc={selectedDesign.src}
                   productSlug={product.slug}
                   isDarkMockup={selectedVariant?.hex === '#1a1a1a'}
+                  designBg={selectedDesign.bg}
                   showControls
                 />
                 <div className="mt-2 flex items-center justify-between px-1">

@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/footer";
 import { Grain } from "@/components/effects/grain";
 import { ClientProviders } from "@/components/layout/client-providers";
 import { SupportChat } from "@/components/chat/support-chat";
+import { CookieBanner } from "@/components/layout/cookie-banner";
 import "./globals.css";
 
 const display = Bricolage_Grotesque({
@@ -55,6 +56,7 @@ export default function RootLayout({
           {children}
           <Footer />
           <SupportChat />
+          <CookieBanner />
         </ClientProviders>
       </body>
     </html>
