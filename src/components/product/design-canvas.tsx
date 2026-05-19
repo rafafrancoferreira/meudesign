@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, useId } from 'react';
 import Image from 'next/image';
+import { removeDarkBackground } from '@/lib/remove-dark-bg';
 import { Maximize2, AlignCenter, Lock, Unlock, LayoutGrid } from 'lucide-react';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
@@ -61,6 +62,7 @@ export function DesignCanvas({
   const [tileOffset, setTileOffset] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [processedDesignSrc, setProcessedDesignSrc] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef   = useRef<DragState | null>(null);
 
@@ -84,6 +86,13 @@ export function DesignCanvas({
     setDesignTx({ cx: base.cx, cy: base.cy, w: base.w * sizeScale, h: base.h * sizeScale });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sizeScale, lockRatio]);
+
+  // Canvas API dark-background removal — runs whenever the design image or bg type changes
+  useEffect(() => {
+    if (designBg !== 'dark') { setProcessedDesignSrc(null); return; }
+    setProcessedDesignSrc(null);
+    removeDarkBackground(designSrc).then(setProcessedDesignSrc);
+  }, [designSrc, designBg]);
 
 
   const pctFromEvent = useCallback((clientX: number, clientY: number) => {
@@ -228,12 +237,12 @@ export function DesignCanvas({
     se: 'translate(50%,50%)',
   };
 
-  // For dark mockups with dark-bg designs, screen blend removes the near-black background
-  // without SVG filter precision issues (screen(black, surface) = surface = invisible).
-  const useScreenBlend = isDarkMockup && designBg === 'dark';
-  const filterUrl = useScreenBlend
-    ? 'none'
-    : `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}}`)`;
+  // Use the canvas-processed (transparent) image once ready; fall back to original while loading
+  const activeSrc = (designBg === 'dark' && processedDesignSrc) ? processedDesignSrc : designSrc;
+  // While Canvas is processing, SVG rbbg filter acts as interim; once done, no filter needed.
+  const filterUrl = designBg === 'light'
+    ? `url(#rwbg-${uid})`
+    : (processedDesignSrc ? 'none' : `url(#rbbg-${uid})`);
 
   const designOverlay = (
     <>
@@ -289,7 +298,6 @@ export function DesignCanvas({
         height: printZone.height,
         zIndex,
         borderRadius: designBorderRadius,
-        ...(useScreenBlend ? { mixBlendMode: 'screen' as const } : {}),
       }}
       onPointerDown={startTileDrag}
     >
@@ -306,13 +314,13 @@ export function DesignCanvas({
         {Array.from({ length: tileGrid * tileGrid }).map((_, i) => (
           <div key={i} className="relative overflow-hidden">
             <Image
-              src={designSrc}
+              src={activeSrc}
               alt="Design tile"
               fill
               className="object-contain pointer-events-none"
               style={{ filter: filterUrl }}
               sizes="200px"
-              unoptimized={designSrc.startsWith('/')}
+              unoptimized={activeSrc.startsWith('/') || activeSrc.startsWith('data:')}
               draggable={false}
             />
           </div>
@@ -362,14 +370,13 @@ export function DesignCanvas({
                   height: `${designTx.h}%`,
                   borderRadius: designBorderRadius,
                   zIndex: 2,
-                  ...(useScreenBlend ? { mixBlendMode: 'screen' as const } : {}),
                 }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 onMouseDown={(e) => startDrag(e, 'move')}
                 onTouchStart={(e) => startDrag(e, 'move')}
               >
-                <Image src={designSrc} alt="Design" fill style={{ filter: filterUrl, objectFit: 'contain', ...(lockRatio ? {} : { transform: `scaleX(${scaleX}) scaleY(${scaleY})`, transformOrigin: 'center center' }) }} className="pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+                <Image src={activeSrc} alt="Design" fill style={{ filter: filterUrl, objectFit: 'contain', ...(lockRatio ? {} : { transform: `scaleX(${scaleX}) scaleY(${scaleY})`, transformOrigin: 'center center' }) }} className="pointer-events-none" sizes="400px" unoptimized={activeSrc.startsWith('/') || activeSrc.startsWith('data:')} draggable={false} />
                 {designOverlay}
               </div>
             )}
@@ -393,13 +400,13 @@ export function DesignCanvas({
                 onTouchStart={(e) => startDrag(e, 'move')}
               >
                 <Image
-                  src={designSrc}
+                  src={activeSrc}
                   alt="Design"
                   fill
                   style={{ filter: filterUrl, objectFit: 'contain', ...(lockRatio ? {} : { transform: `scaleX(${scaleX}) scaleY(${scaleY})`, transformOrigin: 'center center' }) }}
                   className="pointer-events-none"
                   sizes="400px"
-                  unoptimized={designSrc.startsWith('/')}
+                  unoptimized={activeSrc.startsWith('/') || activeSrc.startsWith('data:')}
                   draggable={false}
                 />
                 {designOverlay}
