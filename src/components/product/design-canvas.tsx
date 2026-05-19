@@ -202,7 +202,8 @@ export function DesignCanvas({
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
         <defs>
           <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="whiteRemoved"/>
+            <feComposite in="whiteRemoved" in2="SourceGraphic" operator="in"/>
           </filter>
         </defs>
       </svg>
