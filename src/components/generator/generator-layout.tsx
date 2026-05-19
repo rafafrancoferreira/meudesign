@@ -379,7 +379,6 @@ export function GeneratorLayout() {
                   >
                     <div
                       className="w-10 h-10 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity rounded"
-                      style={product.mockupBg ? { background: product.mockupBg } : {}}
                     >
                       <Image
                         src={product.mockup}
@@ -493,7 +492,7 @@ export function GeneratorLayout() {
             {state !== 'success' && (
               <div
                 className="relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none"
-                style={{ isolation: 'isolate', background: selectedProduct === 'poster' ? '#ffffff' : '#0a0a0a' }}
+                style={{ isolation: 'isolate', background: '#000000' }}
               >
                 {/* ── IDLE ── */}
                 {state === 'idle' && (
