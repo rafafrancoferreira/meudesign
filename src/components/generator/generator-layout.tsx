@@ -492,8 +492,8 @@ export function GeneratorLayout() {
             {/* Canvas — idle / loading / error states */}
             {state !== 'success' && (
               <div
-                className="relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none bg-surface"
-                style={{ isolation: 'isolate' }}
+                className="relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none"
+                style={{ isolation: 'isolate', background: selectedProduct === 'poster' ? '#ffffff' : '#0a0a0a' }}
               >
                 {/* ── IDLE ── */}
                 {state === 'idle' && (
