@@ -198,12 +198,23 @@ export function DesignCanvas({
         className="relative border border-border rounded-xl overflow-hidden aspect-square select-none"
         style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate' }}
       >
-        {/* SVG filter: alpha = 3 − R − G − B → white(1,1,1)→0 transparent; black/dark→opaque */}
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
         <defs>
+          {/* Light mockup: remove white background. alpha = 3 − R − G − B */}
           <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="whiteRemoved"/>
-            <feComposite in="whiteRemoved" in2="SourceGraphic" operator="in"/>
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="wr"/>
+            <feComposite in="wr" in2="SourceGraphic" operator="in"/>
+          </filter>
+          {/* Dark mockup: invert colors (dark→bright) then keep only bright pixels.
+              Simulates white-ink printing: black text→white, grey/white bg→transparent. */}
+          <filter id={`rwbg-dark-${uid}`} colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix"
+              values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0"
+              result="inv"/>
+            <feColorMatrix type="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  1 1 1 0 -2"
+              in="inv" result="bgRm"/>
+            <feComposite in="bgRm" in2="SourceGraphic" operator="in"/>
           </filter>
         </defs>
       </svg>
@@ -229,7 +240,7 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#rwbg-${uid})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#rwbg-dark-${uid})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
               {designOverlay}
             </div>
           </>
