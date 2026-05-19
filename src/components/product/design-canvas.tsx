@@ -2,18 +2,19 @@
 
 import { useState, useRef, useCallback, useEffect, useId } from 'react';
 import Image from 'next/image';
-import { Maximize2, AlignCenter } from 'lucide-react';
+import { Maximize2, AlignCenter, Lock, Unlock, LayoutGrid } from 'lucide-react';
 import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export interface DesignTransform {
-  cx: number; // center-x %
-  cy: number; // center-y %
-  w: number;  // width %
-  h: number;  // height %
+  cx: number;
+  cy: number;
+  w: number;
+  h: number;
 }
 
 type ResizeCorner = 'nw' | 'ne' | 'sw' | 'se';
-type DragMode = 'move' | ResizeCorner;
+type ResizeEdge = 'n' | 's' | 'e' | 'w';
+type DragMode = 'move' | ResizeCorner | ResizeEdge;
 
 interface DragState {
   mode: DragMode;
@@ -34,9 +35,7 @@ interface DesignCanvasProps {
   mockupSrc: string;
   designSrc: string;
   productSlug: string;
-  /** True for dark (black) mockups → screen blend; false for light mockups → patch look with shadow */
   isDarkMockup?: boolean;
-  /** 'light' removes white/grey bg (default); 'dark' removes black bg; controlled externally for generator toggle */
   designBg?: 'light' | 'dark';
   showControls?: boolean;
   className?: string;
@@ -53,26 +52,44 @@ export function DesignCanvas({
 }: DesignCanvasProps) {
   const [designTx, setDesignTx] = useState<DesignTransform>(() => defaultDesignTransform(productSlug));
   const [sizeScale, setSizeScale] = useState(1.0);
+  const [lockRatio, setLockRatio] = useState(true);
+  const [scaleX, setScaleX] = useState(1.0);
+  const [scaleY, setScaleY] = useState(1.0);
+  const [tileMode, setTileMode] = useState(false);
+  const [tileGrid, setTileGrid] = useState(2);
+  const [tileGap, setTileGap] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef   = useRef<DragState | null>(null);
 
-  const showHandles = isHovered || isDragging;
+  const showHandles = (isHovered || isDragging) && !tileMode;
   const uid = useId().replace(/:/g, '');
 
-  // Reset transform when product changes
+  // Reset all when product changes
   useEffect(() => {
     setSizeScale(1.0);
+    setScaleX(1.0);
+    setScaleY(1.0);
+    setTileMode(false);
     setDesignTx(defaultDesignTransform(productSlug));
   }, [productSlug]);
 
-  // Apply size slider
+  // Locked mode: uniform scale slider
   useEffect(() => {
+    if (!lockRatio) return;
     const base = defaultDesignTransform(productSlug);
     setDesignTx({ cx: base.cx, cy: base.cy, w: base.w * sizeScale, h: base.h * sizeScale });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sizeScale]);
+  }, [sizeScale, lockRatio]);
+
+  // Unlocked mode: independent X/Y scale sliders
+  useEffect(() => {
+    if (lockRatio) return;
+    const base = defaultDesignTransform(productSlug);
+    setDesignTx(prev => ({ ...prev, w: base.w * scaleX, h: base.h * scaleY }));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scaleX, scaleY, lockRatio]);
 
   const pctFromEvent = useCallback((clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
@@ -85,6 +102,7 @@ export function DesignCanvas({
 
   const startDrag = useCallback(
     (e: React.MouseEvent | React.TouchEvent, mode: DragMode) => {
+      if (tileMode) return;
       e.preventDefault();
       e.stopPropagation();
       const { clientX, clientY } = 'touches' in e
@@ -92,7 +110,6 @@ export function DesignCanvas({
         : { clientX: (e as React.MouseEvent).clientX, clientY: (e as React.MouseEvent).clientY };
 
       setIsDragging(true);
-
       dragRef.current = {
         mode,
         startMousePct: pctFromEvent(clientX, clientY),
@@ -111,22 +128,38 @@ export function DesignCanvas({
         const dx = cur.x - dragRef.current.startMousePct.x;
         const dy = cur.y - dragRef.current.startMousePct.y;
         const base = dragRef.current.startTx;
-        const aspect = base.w / base.h;
+        const m = dragRef.current.mode;
 
-        if (dragRef.current.mode === 'move') {
+        if (m === 'move') {
           setDesignTx({
             ...base,
             cx: Math.max(base.w / 2, Math.min(100 - base.w / 2, base.cx + dx)),
             cy: Math.max(base.h / 2, Math.min(100 - base.h / 2, base.cy + dy)),
           });
-        } else {
-          let newW = base.w;
-          if (dragRef.current.mode === 'ne' || dragRef.current.mode === 'se') newW = base.w + dx * 2;
-          if (dragRef.current.mode === 'nw' || dragRef.current.mode === 'sw') newW = base.w - dx * 2;
+        } else if (m === 'nw' || m === 'ne' || m === 'sw' || m === 'se') {
+          // Corner: proportional resize (symmetric from center)
+          const aspect = base.w / base.h;
+          let newW = (m === 'ne' || m === 'se') ? base.w + dx * 2 : base.w - dx * 2;
           newW = Math.max(8, Math.min(95, newW));
           const newH = newW / aspect;
           setDesignTx({ ...base, w: newW, h: newH });
-          setSizeScale(newW / (defaultDesignTransform(productSlug).w || 1));
+          const def = defaultDesignTransform(productSlug);
+          const ns = newW / (def.w || 1);
+          setSizeScale(ns);
+          setScaleX(ns);
+          setScaleY(newH / (def.h || 1));
+        } else if (m === 'e' || m === 'w') {
+          // Horizontal edge: width only
+          let newW = m === 'e' ? base.w + dx * 2 : base.w - dx * 2;
+          newW = Math.max(8, Math.min(95, newW));
+          setDesignTx({ ...base, w: newW });
+          setScaleX(newW / (defaultDesignTransform(productSlug).w || 1));
+        } else if (m === 'n' || m === 's') {
+          // Vertical edge: height only
+          let newH = m === 's' ? base.h + dy * 2 : base.h - dy * 2;
+          newH = Math.max(8, Math.min(95, newH));
+          setDesignTx({ ...base, h: newH });
+          setScaleY(newH / (defaultDesignTransform(productSlug).h || 1));
         }
       };
 
@@ -144,16 +177,29 @@ export function DesignCanvas({
       window.addEventListener('mouseup', onUp);
       window.addEventListener('touchend', onUp);
     },
-    [designTx, pctFromEvent, productSlug],
+    [designTx, pctFromEvent, productSlug, tileMode],
   );
 
   const centerDesign = useCallback(() => {
     const base = defaultDesignTransform(productSlug);
-    setDesignTx({ ...base, w: base.w * sizeScale, h: base.h * sizeScale });
-  }, [productSlug, sizeScale]);
+    if (lockRatio) {
+      setDesignTx({ ...base, w: base.w * sizeScale, h: base.h * sizeScale });
+    } else {
+      setDesignTx({ ...base, w: base.w * scaleX, h: base.h * scaleY });
+    }
+  }, [productSlug, sizeScale, lockRatio, scaleX, scaleY]);
+
+  const toggleLock = useCallback(() => {
+    if (lockRatio) {
+      setScaleX(sizeScale);
+      setScaleY(sizeScale);
+    } else {
+      setSizeScale(scaleX);
+    }
+    setLockRatio(prev => !prev);
+  }, [lockRatio, sizeScale, scaleX]);
 
   const printZone = MOCKUP_PRINT_ZONES[productSlug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
-  // Circle for stickers; explicit radius from zone; fallback 12px for patch look on light mockups
   const designBorderRadius = printZone.shape === 'circle' ? '50%' : (printZone.borderRadius ?? '12px');
 
   const cornerClass: Record<ResizeCorner, string> = {
@@ -169,17 +215,14 @@ export function DesignCanvas({
     se: 'translate(50%,50%)',
   };
 
-  /** Dashed selection border + corner handles — visible only on hover or drag */
+  const filterUrl = `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})`;
+
   const designOverlay = (
     <>
       {showHandles && (
         <div
           className="absolute inset-0 pointer-events-none"
-          style={{
-            border: '1.5px dashed rgba(218,254,34,0.5)',
-            borderRadius: designBorderRadius,
-            zIndex: 10,
-          }}
+          style={{ border: '1.5px dashed rgba(218,254,34,0.5)', borderRadius: designBorderRadius, zIndex: 10 }}
         />
       )}
       {showHandles && (['nw','ne','sw','se'] as ResizeCorner[]).map((c) => (
@@ -191,7 +234,71 @@ export function DesignCanvas({
           onTouchStart={(e) => startDrag(e, c)}
         />
       ))}
+      {showHandles && !lockRatio && (
+        <>
+          <div
+            className="absolute w-5 h-2 bg-accent border border-accent-foreground rounded-sm z-20 touch-none left-1/2 top-0 cursor-n-resize"
+            style={{ transform: 'translate(-50%,-50%)' }}
+            onMouseDown={(e) => startDrag(e, 'n')} onTouchStart={(e) => startDrag(e, 'n')}
+          />
+          <div
+            className="absolute w-5 h-2 bg-accent border border-accent-foreground rounded-sm z-20 touch-none left-1/2 bottom-0 cursor-s-resize"
+            style={{ transform: 'translate(-50%,50%)' }}
+            onMouseDown={(e) => startDrag(e, 's')} onTouchStart={(e) => startDrag(e, 's')}
+          />
+          <div
+            className="absolute w-2 h-5 bg-accent border border-accent-foreground rounded-sm z-20 touch-none right-0 top-1/2 cursor-e-resize"
+            style={{ transform: 'translate(50%,-50%)' }}
+            onMouseDown={(e) => startDrag(e, 'e')} onTouchStart={(e) => startDrag(e, 'e')}
+          />
+          <div
+            className="absolute w-2 h-5 bg-accent border border-accent-foreground rounded-sm z-20 touch-none left-0 top-1/2 cursor-w-resize"
+            style={{ transform: 'translate(-50%,-50%)' }}
+            onMouseDown={(e) => startDrag(e, 'w')} onTouchStart={(e) => startDrag(e, 'w')}
+          />
+        </>
+      )}
     </>
+  );
+
+  const renderTileGrid = (zIndex: number) => (
+    <div
+      className="absolute overflow-hidden"
+      style={{
+        left: printZone.left,
+        top: printZone.top,
+        width: printZone.width,
+        height: printZone.height,
+        zIndex,
+        borderRadius: designBorderRadius,
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${tileGrid}, 1fr)`,
+          gridTemplateRows: `repeat(${tileGrid}, 1fr)`,
+          gap: `${tileGap}px`,
+          width: '100%',
+          height: '100%',
+        }}
+      >
+        {Array.from({ length: tileGrid * tileGrid }).map((_, i) => (
+          <div key={i} className="relative overflow-hidden">
+            <Image
+              src={designSrc}
+              alt="Design tile"
+              fill
+              className="object-contain pointer-events-none"
+              style={{ filter: filterUrl }}
+              sizes="200px"
+              unoptimized={designSrc.startsWith('/')}
+              draggable={false}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 
   return (
@@ -201,76 +308,76 @@ export function DesignCanvas({
         className="relative border border-border rounded-xl overflow-hidden select-none"
         style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate', aspectRatio: printZone.aspectRatio ?? '1' }}
       >
-      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-        <defs>
-          {/* Remove white/light background: alpha = 3 − R − G − B */}
-          <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="wr"/>
-            <feComposite in="wr" in2="SourceGraphic" operator="in"/>
-          </filter>
-          {/* Remove black/dark background: alpha = R*200+G*200+B*200 − 1; pure black→0, all other colors→1 */}
-          <filter id={`rbbg-${uid}`} colorInterpolationFilters="sRGB">
-            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  200 200 200 0 -1" result="br"/>
-            <feComposite in="br" in2="SourceGraphic" operator="in"/>
-          </filter>
-        </defs>
-      </svg>
+        <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+          <defs>
+            <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="wr"/>
+              <feComposite in="wr" in2="SourceGraphic" operator="in"/>
+            </filter>
+            <filter id={`rbbg-${uid}`} colorInterpolationFilters="sRGB">
+              <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  200 200 200 0 -1" result="br"/>
+              <feComposite in="br" in2="SourceGraphic" operator="in"/>
+            </filter>
+          </defs>
+        </svg>
 
-      {isDarkMockup ? (
-          /* ── DARK MOCKUP: mockup below, design on top with white-removal filter ── */
+        {isDarkMockup ? (
           <>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
               <Image src={mockupSrc} alt="Mockup" fill className="object-contain" sizes="500px" unoptimized />
             </div>
-            <div
-              className="absolute overflow-hidden cursor-move touch-none"
-              style={{
-                left: `${designTx.cx - designTx.w / 2}%`,
-                top:  `${designTx.cy - designTx.h / 2}%`,
-                width:  `${designTx.w}%`,
-                height: `${designTx.h}%`,
-                borderRadius: designBorderRadius,
-                zIndex: 2,
-              }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              onMouseDown={(e) => startDrag(e, 'move')}
-              onTouchStart={(e) => startDrag(e, 'move')}
-            >
-              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
-              {designOverlay}
-            </div>
+            {tileMode ? renderTileGrid(2) : (
+              <div
+                className="absolute overflow-hidden cursor-move touch-none"
+                style={{
+                  left: `${designTx.cx - designTx.w / 2}%`,
+                  top:  `${designTx.cy - designTx.h / 2}%`,
+                  width:  `${designTx.w}%`,
+                  height: `${designTx.h}%`,
+                  borderRadius: designBorderRadius,
+                  zIndex: 2,
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onMouseDown={(e) => startDrag(e, 'move')}
+                onTouchStart={(e) => startDrag(e, 'move')}
+              >
+                <Image src={designSrc} alt="Design" fill style={{ filter: filterUrl }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+                {designOverlay}
+              </div>
+            )}
           </>
         ) : (
-          /* ── LIGHT MOCKUP: design below (white bg stripped), mockup on top (multiply for fabric texture) ── */
           <>
-            <div
-              className="absolute cursor-move touch-none overflow-hidden"
-              style={{
-                left: `${designTx.cx - designTx.w / 2}%`,
-                top:  `${designTx.cy - designTx.h / 2}%`,
-                width:  `${designTx.w}%`,
-                height: `${designTx.h}%`,
-                borderRadius: designBorderRadius,
-                zIndex: 1,
-              }}
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-              onMouseDown={(e) => startDrag(e, 'move')}
-              onTouchStart={(e) => startDrag(e, 'move')}
-            >
-              <Image
-                src={designSrc}
-                alt="Design"
-                fill
-                style={{ filter: `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})` }}
-                className="object-contain pointer-events-none"
-                sizes="400px"
-                unoptimized={designSrc.startsWith('/')}
-                draggable={false}
-              />
-              {designOverlay}
-            </div>
+            {tileMode ? renderTileGrid(1) : (
+              <div
+                className="absolute cursor-move touch-none overflow-hidden"
+                style={{
+                  left: `${designTx.cx - designTx.w / 2}%`,
+                  top:  `${designTx.cy - designTx.h / 2}%`,
+                  width:  `${designTx.w}%`,
+                  height: `${designTx.h}%`,
+                  borderRadius: designBorderRadius,
+                  zIndex: 1,
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onMouseDown={(e) => startDrag(e, 'move')}
+                onTouchStart={(e) => startDrag(e, 'move')}
+              >
+                <Image
+                  src={designSrc}
+                  alt="Design"
+                  fill
+                  style={{ filter: filterUrl }}
+                  className="object-contain pointer-events-none"
+                  sizes="400px"
+                  unoptimized={designSrc.startsWith('/')}
+                  draggable={false}
+                />
+                {designOverlay}
+              </div>
+            )}
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2, mixBlendMode: 'multiply' }}>
               <Image src={mockupSrc} alt="Mockup" fill className="object-contain" sizes="500px" unoptimized />
             </div>
@@ -279,19 +386,105 @@ export function DesignCanvas({
       </div>
 
       {showControls && (
-        <div className="mt-3 flex items-center gap-3 px-1">
-          <Maximize2 className="w-3.5 h-3.5 text-muted shrink-0" />
-          <input
-            type="range" min={0.4} max={2.2} step={0.05} value={sizeScale}
-            onChange={(e) => setSizeScale(parseFloat(e.target.value))}
-            className="flex-1 h-1 accent-[#dafe22] cursor-pointer"
-            aria-label="Tamanho do design"
-          />
-          <button onClick={centerDesign} title="Centrar design"
-            className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors"
-          >
-            <AlignCenter className="w-3.5 h-3.5" />
-          </button>
+        <div className="mt-3 space-y-2 px-1">
+          {/* Size controls — hidden when tileMode */}
+          {!tileMode && (
+            lockRatio ? (
+              <div className="flex items-center gap-3">
+                <Maximize2 className="w-3.5 h-3.5 text-muted shrink-0" />
+                <input
+                  type="range" min={0.4} max={2.2} step={0.05} value={sizeScale}
+                  onChange={(e) => setSizeScale(parseFloat(e.target.value))}
+                  className="flex-1 h-1 accent-[#dafe22] cursor-pointer"
+                  aria-label="Tamanho do design"
+                />
+                <button onClick={centerDesign} title="Centrar design"
+                  className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors">
+                  <AlignCenter className="w-3.5 h-3.5" />
+                </button>
+                <button onClick={toggleLock} title="Escalar eixos independentemente"
+                  className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors">
+                  <Lock className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-3">
+                  <span className="shrink-0 w-3.5 text-[11px] font-mono text-muted text-center select-none">↔</span>
+                  <input
+                    type="range" min={0.4} max={2.5} step={0.05} value={scaleX}
+                    onChange={(e) => setScaleX(parseFloat(e.target.value))}
+                    className="flex-1 h-1 accent-[#dafe22] cursor-pointer"
+                    aria-label="Largura do design"
+                  />
+                  <button onClick={centerDesign} title="Centrar design"
+                    className="shrink-0 p-1.5 rounded border border-border text-muted hover:text-foreground hover:border-border-strong transition-colors">
+                    <AlignCenter className="w-3.5 h-3.5" />
+                  </button>
+                  <button onClick={toggleLock} title="Manter proporções"
+                    className="shrink-0 p-1.5 rounded border border-accent/50 text-accent hover:border-accent transition-colors">
+                    <Unlock className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="shrink-0 w-3.5 text-[11px] font-mono text-muted text-center select-none">↕</span>
+                  <input
+                    type="range" min={0.4} max={2.5} step={0.05} value={scaleY}
+                    onChange={(e) => setScaleY(parseFloat(e.target.value))}
+                    className="flex-1 h-1 accent-[#dafe22] cursor-pointer"
+                    aria-label="Altura do design"
+                  />
+                  <div className="shrink-0 p-1.5 invisible" aria-hidden><AlignCenter className="w-3.5 h-3.5" /></div>
+                  <div className="shrink-0 p-1.5 invisible" aria-hidden><Unlock className="w-3.5 h-3.5" /></div>
+                </div>
+              </div>
+            )
+          )}
+
+          {/* Tile mode row */}
+          <div className={`flex flex-wrap items-center gap-2${!tileMode ? ' pt-1.5 border-t border-border' : ''}`}>
+            <button
+              onClick={() => setTileMode(prev => !prev)}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider rounded border transition-all shrink-0 ${
+                tileMode
+                  ? 'bg-accent/10 border-accent/40 text-accent'
+                  : 'border-border text-muted hover:border-border-strong hover:text-foreground'
+              }`}
+            >
+              <LayoutGrid className="w-3 h-3" />
+              Repetir
+            </button>
+
+            {tileMode && (
+              <>
+                <div className="flex gap-1 shrink-0">
+                  {[1, 2, 3, 4].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setTileGrid(n)}
+                      className={`w-8 h-6 text-[10px] font-mono rounded border transition-all ${
+                        tileGrid === n
+                          ? 'bg-accent/10 border-accent/40 text-accent'
+                          : 'border-border text-muted hover:border-border-strong hover:text-foreground'
+                      }`}
+                    >
+                      {n}×{n}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-1.5 flex-1 min-w-[80px]">
+                  <span className="text-[10px] font-mono text-muted shrink-0">Gap</span>
+                  <input
+                    type="range" min={0} max={20} step={1} value={tileGap}
+                    onChange={(e) => setTileGap(parseInt(e.target.value))}
+                    className="flex-1 h-1 accent-[#dafe22] cursor-pointer min-w-0"
+                    aria-label="Espaçamento entre tiles"
+                  />
+                  <span className="text-[9px] font-mono text-muted/70 shrink-0 w-6">{tileGap}px</span>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
