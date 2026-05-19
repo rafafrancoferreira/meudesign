@@ -198,8 +198,17 @@ export function DesignCanvas({
         className="relative border border-border rounded-xl overflow-hidden aspect-square select-none"
         style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate' }}
       >
-        {isDarkMockup ? (
-          /* ── DARK MOCKUP: mockup base + design with screen blend ── */
+        {/* SVG filter: alpha = 3 − R − G − B → white(1,1,1)→0 transparent; black/dark→opaque */}
+      <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
+        <defs>
+          <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" />
+          </filter>
+        </defs>
+      </svg>
+
+      {isDarkMockup ? (
+          /* ── DARK MOCKUP: mockup below, design on top with white-removal filter ── */
           <>
             <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
               <Image src={mockupSrc} alt="Mockup" fill className="object-contain" sizes="500px" unoptimized />
@@ -212,7 +221,6 @@ export function DesignCanvas({
                 width:  `${designTx.w}%`,
                 height: `${designTx.h}%`,
                 borderRadius: designBorderRadius,
-                mixBlendMode: 'screen',
                 zIndex: 2,
               }}
               onMouseEnter={() => setIsHovered(true)}
@@ -220,21 +228,13 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#rwbg-${uid})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
               {designOverlay}
             </div>
           </>
         ) : (
-          /* ── LIGHT MOCKUP: SVG feColorMatrix makes black px transparent; multiply mockup adds fabric texture ── */
+          /* ── LIGHT MOCKUP: design below (white bg stripped), mockup on top (multiply for fabric texture) ── */
           <>
-            {/* alpha = 5R+5G+5B−0.3 → pure black (0,0,0) → alpha 0 (transparent); colored content → alpha 1 */}
-            <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
-              <defs>
-                <filter id={`rbg-${uid}`} colorInterpolationFilters="sRGB">
-                  <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  5 5 5 0 -0.3" />
-                </filter>
-              </defs>
-            </svg>
             <div
               className="absolute cursor-move touch-none overflow-hidden"
               style={{
@@ -254,7 +254,7 @@ export function DesignCanvas({
                 src={designSrc}
                 alt="Design"
                 fill
-                style={{ filter: `url(#rbg-${uid})` }}
+                style={{ filter: `url(#rwbg-${uid})` }}
                 className="object-contain pointer-events-none"
                 sizes="400px"
                 unoptimized={designSrc.startsWith('/')}
