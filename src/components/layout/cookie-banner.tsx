@@ -40,13 +40,13 @@ export function CookieBanner() {
             }}
           >
             <p className="flex-1 text-xs font-mono text-muted-foreground leading-relaxed">
-              Este site usa cookies para melhorar a experiência. Ao continuar,
-              consentes o uso de cookies.{' '}
+              This site uses cookies to improve your experience. By continuing,
+              you consent to the use of cookies.{' '}
               <a
                 href="/legal/privacidade"
                 className="text-muted underline underline-offset-2 hover:text-foreground transition-colors"
               >
-                Saber mais
+                Learn more
               </a>
             </p>
             <div className="flex gap-2 shrink-0">
@@ -54,13 +54,13 @@ export function CookieBanner() {
                 onClick={() => respond('rejected')}
                 className="px-4 py-2 text-[11px] font-mono font-bold uppercase tracking-widest rounded-lg border border-border text-muted hover:border-border-strong hover:text-foreground transition-colors"
               >
-                Rejeitar
+                Reject
               </button>
               <button
                 onClick={() => respond('accepted')}
                 className="px-4 py-2 text-[11px] font-mono font-bold uppercase tracking-widest rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
               >
-                Aceitar
+                Accept
               </button>
             </div>
           </div>

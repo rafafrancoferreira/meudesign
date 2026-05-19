@@ -3,64 +3,64 @@ import Link from 'next/link';
 import { ArrowLeft, Shield } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidade | MeuDesign',
+  title: 'Privacy Policy | MeuDesign',
   description:
-    'Como o MeuDesign recolhe, utiliza e protege os teus dados pessoais, em conformidade com o RGPD.',
+    'How MeuDesign collects, uses and protects your personal data, in compliance with the GDPR.',
   openGraph: {
-    title: 'Política de Privacidade | MeuDesign',
+    title: 'Privacy Policy | MeuDesign',
     type: 'website',
   },
 };
 
 const DATA_COLLECTED = [
   {
-    category: 'Dados de identificação',
-    items: ['Nome completo', 'Endereço de email', 'Número de telefone (opcional)'],
+    category: 'Identification data',
+    items: ['Full name', 'Email address', 'Phone number (optional)'],
   },
   {
-    category: 'Dados de entrega',
-    items: ['Morada completa', 'Código postal', 'Cidade e país'],
+    category: 'Delivery data',
+    items: ['Full address', 'Postal code', 'City and country'],
   },
   {
-    category: 'Dados de utilização',
+    category: 'Usage data',
     items: [
-      'Prompts de design submetidos',
-      'Designs gerados e selecionados',
-      'Produtos visualizados e adicionados ao carrinho',
+      'Design prompts submitted',
+      'Designs generated and selected',
+      'Products viewed and added to cart',
     ],
   },
 ];
 
 const LEGAL_BASES = [
   {
-    purpose: 'Processamento e gestão de encomendas',
-    basis: 'Execução de contrato',
-    article: 'Art.º 6.º, n.º 1, al. b)',
+    purpose: 'Processing and managing orders',
+    basis: 'Performance of a contract',
+    article: 'Art. 6(1)(b)',
   },
   {
-    purpose: 'Envio de confirmações e atualizações por email',
-    basis: 'Execução de contrato',
-    article: 'Art.º 6.º, n.º 1, al. b)',
+    purpose: 'Sending order confirmations and updates by email',
+    basis: 'Performance of a contract',
+    article: 'Art. 6(1)(b)',
   },
   {
-    purpose: 'Resposta a pedidos de contacto e suporte',
-    basis: 'Interesse legítimo',
-    article: 'Art.º 6.º, n.º 1, al. f)',
+    purpose: 'Responding to contact and support requests',
+    basis: 'Legitimate interest',
+    article: 'Art. 6(1)(f)',
   },
   {
-    purpose: 'Melhoria da plataforma (dados anonimizados)',
-    basis: 'Interesse legítimo',
-    article: 'Art.º 6.º, n.º 1, al. f)',
+    purpose: 'Platform improvement (anonymised data)',
+    basis: 'Legitimate interest',
+    article: 'Art. 6(1)(f)',
   },
 ];
 
 const RIGHTS = [
-  { right: 'Acesso', description: 'Solicitar uma cópia dos dados pessoais que conservamos sobre ti.' },
-  { right: 'Retificação', description: 'Corrigir dados inexatos ou incompletos.' },
-  { right: 'Apagamento', description: "Solicitar a eliminação dos teus dados ('direito a ser esquecido'), quando aplicável." },
-  { right: 'Limitação', description: 'Restringir o tratamento dos teus dados em determinadas circunstâncias.' },
-  { right: 'Portabilidade', description: 'Receber os teus dados num formato estruturado e legível por máquina.' },
-  { right: 'Oposição', description: 'Opor-te ao tratamento baseado em interesse legítimo.' },
+  { right: 'Access', description: 'Request a copy of the personal data we hold about you.' },
+  { right: 'Rectification', description: 'Correct inaccurate or incomplete data.' },
+  { right: 'Erasure', description: "Request the deletion of your data ('right to be forgotten'), where applicable." },
+  { right: 'Restriction', description: 'Restrict the processing of your data in certain circumstances.' },
+  { right: 'Portability', description: 'Receive your data in a structured, machine-readable format.' },
+  { right: 'Objection', description: 'Object to processing based on legitimate interest.' },
 ];
 
 export default function PrivacidadePage() {
@@ -73,7 +73,7 @@ export default function PrivacidadePage() {
           className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-muted hover:text-foreground transition-colors mb-8"
         >
           <ArrowLeft className="w-3 h-3" />
-          Início
+          Home
         </Link>
 
         {/* Header */}
@@ -83,12 +83,12 @@ export default function PrivacidadePage() {
             className="font-display font-black uppercase leading-none text-foreground mb-4"
             style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', letterSpacing: '-0.025em' }}
           >
-            Política de
+            Privacy
             <br />
-            Privacidade
+            Policy
           </h1>
           <p className="text-sm font-mono text-muted/60">
-            Última atualização: 8 de maio de 2026 · RGPD (UE) 2016/679
+            Last updated: 8 May 2026 · GDPR (EU) 2016/679
           </p>
         </div>
 
@@ -96,42 +96,42 @@ export default function PrivacidadePage() {
           {/* Intro */}
           <section>
             <p>
-              O MeuDesign (projeto académico desenvolvido no ISAG) compromete-se a proteger a
-              privacidade dos utilizadores da plataforma meudesign.pt. Esta política descreve, de
-              forma transparente, como tratamos os dados pessoais em conformidade com o{' '}
+              MeuDesign (an academic project developed at ISAG) is committed to protecting the
+              privacy of its platform users. This policy transparently describes how we process
+              personal data in compliance with the{' '}
               <strong className="text-foreground">
-                Regulamento Geral sobre a Proteção de Dados (RGPD — Regulamento (UE) 2016/679)
+                General Data Protection Regulation (GDPR — Regulation (EU) 2016/679)
               </strong>
               .
             </p>
           </section>
 
-          {/* Responsável */}
+          {/* Data Controller */}
           <section>
             <div className="flex items-center gap-3 mb-5">
               <Shield className="w-5 h-5 text-accent shrink-0" />
               <h2 className="text-lg font-display font-black uppercase text-foreground" style={{ letterSpacing: '-0.01em' }}>
-                Responsável pelo tratamento
+                Data Controller
               </h2>
             </div>
             <div className="bg-surface border border-border rounded-xl p-5 space-y-1 font-mono text-xs">
-              <p className="text-foreground">MeuDesign (Projeto Académico ISAG)</p>
+              <p className="text-foreground">MeuDesign (ISAG Academic Project)</p>
               <p>ISAG — Instituto Superior de Administração e Gestão</p>
-              <p>Rua Tomás Ribeiro, 50 · 1050-225 Lisboa · Portugal</p>
+              <p>Rua Tomás Ribeiro, 50 · 1050-225 Lisbon · Portugal</p>
               <a href="mailto:info@meudesign.pt" className="text-accent hover:underline underline-offset-4">
                 info@meudesign.pt
               </a>
             </div>
             <p className="mt-3 text-[12px]">
-              Trata-se de um projeto académico. Não existe entidade comercial registada. Nenhuma
-              encomenda é efetivamente processada ou cobrada.
+              This is an academic project. No commercial entity is registered. No order is
+              actually processed or charged.
             </p>
           </section>
 
-          {/* Dados recolhidos */}
+          {/* Data collected */}
           <section>
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-5" style={{ letterSpacing: '-0.01em' }}>
-              Dados recolhidos
+              Data collected
             </h2>
             <div className="space-y-4">
               {DATA_COLLECTED.map((cat) => (
@@ -151,22 +151,21 @@ export default function PrivacidadePage() {
               ))}
             </div>
             <p className="mt-4 text-[12px] bg-surface border border-border rounded-xl px-5 py-3">
-              <strong className="text-foreground">Nota:</strong> Não recolhemos dados de pagamento.
-              Numa implementação real, o processamento seria delegado a um prestador certificado
-              (ex.: Stripe). Em modo de demonstração, nenhum dado financeiro é inserido nem
-              armazenado.
+              <strong className="text-foreground">Note:</strong> We do not collect payment data.
+              In a real implementation, processing would be delegated to a certified provider
+              (e.g. Stripe). In demonstration mode, no financial data is entered or stored.
             </p>
           </section>
 
-          {/* Finalidades e bases legais */}
+          {/* Purposes and legal bases */}
           <section>
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-5" style={{ letterSpacing: '-0.01em' }}>
-              Finalidades e bases legais
+              Purposes and legal bases
             </h2>
             <div className="bg-surface border border-border rounded-xl overflow-hidden">
               <div className="grid grid-cols-[1fr_auto] text-[10px] font-mono uppercase tracking-[0.15em] text-muted px-5 py-3 border-b border-border">
-                <span>Finalidade</span>
-                <span>Base legal (RGPD)</span>
+                <span>Purpose</span>
+                <span>Legal basis (GDPR)</span>
               </div>
               {LEGAL_BASES.map((row, i) => (
                 <div
@@ -185,35 +184,35 @@ export default function PrivacidadePage() {
             </div>
           </section>
 
-          {/* Conservação */}
+          {/* Retention */}
           <section>
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-5" style={{ letterSpacing: '-0.01em' }}>
-              Prazo de conservação
+              Retention period
             </h2>
             <div className="space-y-3">
               <p>
-                Os dados de encomenda são conservados pelo prazo de{' '}
-                <strong className="text-foreground">5 anos</strong> para efeitos de obrigações
-                fiscais e legais.
+                Order data is retained for{' '}
+                <strong className="text-foreground">5 years</strong> for tax and legal compliance
+                purposes.
               </p>
               <p>
-                Dados de contacto não associados a encomendas são eliminados{' '}
-                <strong className="text-foreground">12 meses</strong> após o último contacto.
+                Contact data not associated with orders is deleted{' '}
+                <strong className="text-foreground">12 months</strong> after the last interaction.
               </p>
               <p>
-                Podes solicitar a eliminação antecipada dos teus dados a qualquer momento através do
-                email indicado abaixo.
+                You may request early deletion of your data at any time by contacting us at the
+                email address below.
               </p>
             </div>
           </section>
 
-          {/* Direitos */}
+          {/* Rights */}
           <section>
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-5" style={{ letterSpacing: '-0.01em' }}>
-              Os teus direitos
+              Your rights
             </h2>
             <p className="mb-5">
-              Nos termos do RGPD, tens os seguintes direitos em relação aos teus dados pessoais:
+              Under the GDPR, you have the following rights regarding your personal data:
             </p>
             <div className="space-y-3">
               {RIGHTS.map((r) => (
@@ -227,17 +226,18 @@ export default function PrivacidadePage() {
             </div>
             <div className="mt-5 space-y-3">
               <p>
-                Para exercer qualquer destes direitos, envia um email para{' '}
+                To exercise any of these rights, send an email to{' '}
                 <a
                   href="mailto:info@meudesign.pt"
                   className="text-accent hover:underline underline-offset-4"
                 >
                   info@meudesign.pt
                 </a>{' '}
-                com a indicação do direito que pretendes exercer.
+                specifying which right you wish to exercise.
               </p>
               <p>
-                Tens também o direito de apresentar reclamação à autoridade de controlo nacional:{' '}
+                You also have the right to lodge a complaint with the national supervisory
+                authority:{' '}
                 <strong className="text-foreground">Comissão Nacional de Proteção de Dados (CNPD)</strong>{' '}
                 — www.cnpd.pt.
               </p>
@@ -247,41 +247,41 @@ export default function PrivacidadePage() {
           {/* Cookies */}
           <section>
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-5" style={{ letterSpacing: '-0.01em' }}>
-              Cookies e armazenamento local
+              Cookies and local storage
             </h2>
             <p>
-              O MeuDesign utiliza{' '}
-              <strong className="text-foreground">localStorage do browser</strong>{' '}
-              exclusivamente para guardar o conteúdo do carrinho de compras entre sessões (chave{' '}
+              MeuDesign uses the browser&apos;s{' '}
+              <strong className="text-foreground">localStorage</strong>{' '}
+              exclusively to persist the shopping cart between sessions (key{' '}
               <code className="text-[11px] bg-surface px-1 py-0.5 rounded border border-border text-muted-foreground">
                 meudesign-cart-v1
               </code>
-              ). Não utilizamos cookies de rastreio, analytics de terceiros, pixels de redes sociais
-              ou qualquer tecnologia de seguimento comportamental nesta fase do projeto.
+              ). We do not use tracking cookies, third-party analytics, social media pixels or any
+              behavioural tracking technology at this stage of the project.
             </p>
           </section>
 
-          {/* Alterações */}
+          {/* Changes */}
           <section className="border-t border-border pt-10">
             <h2 className="text-lg font-display font-black uppercase text-foreground mb-4" style={{ letterSpacing: '-0.01em' }}>
-              Alterações a esta política
+              Changes to this policy
             </h2>
             <p>
-              Qualquer alteração relevante a esta política será comunicada através de um aviso
-              destacado no site. Recomendamos que reveja esta página periodicamente. Para questões,
-              contacta-nos através de{' '}
+              Any significant changes to this policy will be communicated via a prominent notice
+              on the site. We recommend reviewing this page periodically. For any questions,
+              contact us at{' '}
               <a
                 href="mailto:info@meudesign.pt"
                 className="text-accent hover:underline underline-offset-4"
               >
                 info@meudesign.pt
               </a>{' '}
-              ou do nosso{' '}
+              or via our{' '}
               <Link
                 href="/contactos"
                 className="text-accent hover:underline underline-offset-4"
               >
-                formulário de contacto
+                contact form
               </Link>
               .
             </p>

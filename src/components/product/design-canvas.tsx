@@ -228,7 +228,12 @@ export function DesignCanvas({
     se: 'translate(50%,50%)',
   };
 
-  const filterUrl = `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})`;
+  // For dark mockups with dark-bg designs, screen blend removes the near-black background
+  // without SVG filter precision issues (screen(black, surface) = surface = invisible).
+  const useScreenBlend = isDarkMockup && designBg === 'dark';
+  const filterUrl = useScreenBlend
+    ? 'none'
+    : `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}}`)`;
 
   const designOverlay = (
     <>
@@ -284,6 +289,7 @@ export function DesignCanvas({
         height: printZone.height,
         zIndex,
         borderRadius: designBorderRadius,
+        ...(useScreenBlend ? { mixBlendMode: 'screen' as const } : {}),
       }}
       onPointerDown={startTileDrag}
     >
@@ -329,8 +335,14 @@ export function DesignCanvas({
               <feComposite in="wr" in2="SourceGraphic" operator="in"/>
             </filter>
             <filter id={`rbbg-${uid}`} colorInterpolationFilters="sRGB">
-              <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  200 200 200 0 -1" result="br"/>
-              <feComposite in="br" in2="SourceGraphic" operator="in"/>
+              {/* Converts luminance to alpha, then linearly maps so anything
+                  darker than ~#0a0a0a becomes transparent (slope=12, intercept=-0.5
+                  → threshold ≈ luma 0.042). */}
+              <feColorMatrix type="luminanceToAlpha" result="luma"/>
+              <feComponentTransfer in="luma" result="mask">
+                <feFuncA type="linear" slope="12" intercept="-0.5"/>
+              </feComponentTransfer>
+              <feComposite in="SourceGraphic" in2="mask" operator="in"/>
             </filter>
           </defs>
         </svg>
@@ -350,6 +362,7 @@ export function DesignCanvas({
                   height: `${designTx.h}%`,
                   borderRadius: designBorderRadius,
                   zIndex: 2,
+                  ...(useScreenBlend ? { mixBlendMode: 'screen' as const } : {}),
                 }}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
