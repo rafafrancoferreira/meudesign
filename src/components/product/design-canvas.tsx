@@ -36,6 +36,8 @@ interface DesignCanvasProps {
   productSlug: string;
   /** True for dark (black) mockups → screen blend; false for light mockups → patch look with shadow */
   isDarkMockup?: boolean;
+  /** 'light' removes white/grey bg (default); 'dark' removes black bg; controlled externally for generator toggle */
+  designBg?: 'light' | 'dark';
   showControls?: boolean;
   className?: string;
 }
@@ -45,6 +47,7 @@ export function DesignCanvas({
   designSrc,
   productSlug,
   isDarkMockup = false,
+  designBg = 'light',
   showControls = true,
   className = '',
 }: DesignCanvasProps) {
@@ -200,10 +203,15 @@ export function DesignCanvas({
       >
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
         <defs>
-          {/* Remove white/light background: alpha = 3 − R − G − B. feComposite preserves original transparency. */}
+          {/* Remove white/light background: alpha = 3 − R − G − B */}
           <filter id={`rwbg-${uid}`} colorInterpolationFilters="sRGB">
             <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3" result="wr"/>
             <feComposite in="wr" in2="SourceGraphic" operator="in"/>
+          </filter>
+          {/* Remove black/dark background: alpha = R*200+G*200+B*200 − 1; pure black→0, all other colors→1 */}
+          <filter id={`rbbg-${uid}`} colorInterpolationFilters="sRGB">
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  200 200 200 0 -1" result="br"/>
+            <feComposite in="br" in2="SourceGraphic" operator="in"/>
           </filter>
         </defs>
       </svg>
@@ -229,7 +237,7 @@ export function DesignCanvas({
               onMouseDown={(e) => startDrag(e, 'move')}
               onTouchStart={(e) => startDrag(e, 'move')}
             >
-              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#rwbg-${uid})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
+              <Image src={designSrc} alt="Design" fill style={{ filter: `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})` }} className="object-contain pointer-events-none" sizes="400px" unoptimized={designSrc.startsWith('/')} draggable={false} />
               {designOverlay}
             </div>
           </>
@@ -255,7 +263,7 @@ export function DesignCanvas({
                 src={designSrc}
                 alt="Design"
                 fill
-                style={{ filter: `url(#rwbg-${uid})` }}
+                style={{ filter: `url(#${designBg === 'dark' ? `rbbg-${uid}` : `rwbg-${uid}`})` }}
                 className="object-contain pointer-events-none"
                 sizes="400px"
                 unoptimized={designSrc.startsWith('/')}

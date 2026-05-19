@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Loader2, RefreshCw, ShoppingCart, Download, Sparkles,
-  AlertCircle, Wand2,
+  AlertCircle, Wand2, Sun, Moon,
 } from 'lucide-react';
 import { ScrambledText } from '@/components/effects/scrambled-text';
 import { useCartStore } from '@/lib/store-cart';
@@ -61,6 +61,8 @@ export function GeneratorLayout() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     () => products.find((p) => p.slug === 't-shirt')?.variants?.[0] ?? null
   );
+
+  const [designBg, setDesignBg] = useState<'light' | 'dark'>('light');
 
   const [inspireCount, setInspireCount]           = useState(0);
   const [isInspiring, setIsInspiring]             = useState(false);
@@ -185,6 +187,7 @@ export function GeneratorLayout() {
 
       setTimeout(() => {
         setResult(data);
+        setDesignBg('light');
         setState('success');
         setHistory((prev) =>
           [{ id: `${data.seed}-${Date.now()}`, imageUrl: data.imageUrl, prompt: prompt.slice(0, 60), style: effectiveStyle, productSlug: selectedProduct }, ...prev].slice(0, 8)
@@ -567,10 +570,27 @@ export function GeneratorLayout() {
                   designSrc={result.imageUrl}
                   productSlug={selectedProduct}
                   isDarkMockup={selectedVariant?.hex === '#1a1a1a'}
+                  designBg={designBg}
                   showControls
                 />
-                {/* Seed badge overlaid on canvas */}
-                <div className="absolute top-3 right-3 z-10">
+                {/* Seed badge + bg toggle */}
+                <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+                  <div className="flex bg-black/40 backdrop-blur-sm border border-white/10 rounded overflow-hidden">
+                    <button
+                      onClick={() => setDesignBg('light')}
+                      title="Fundo claro (remover branco)"
+                      className={`flex items-center gap-1 px-2 py-1 text-[10px] font-mono transition-colors ${designBg === 'light' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/70'}`}
+                    >
+                      <Sun className="w-2.5 h-2.5" />
+                    </button>
+                    <button
+                      onClick={() => setDesignBg('dark')}
+                      title="Fundo escuro (remover preto)"
+                      className={`flex items-center gap-1 px-2 py-1 text-[10px] font-mono transition-colors ${designBg === 'dark' ? 'bg-white/15 text-white' : 'text-white/40 hover:text-white/70'}`}
+                    >
+                      <Moon className="w-2.5 h-2.5" />
+                    </button>
+                  </div>
                   <div className="bg-black/40 backdrop-blur-sm border border-white/10 rounded px-2 py-1">
                     <span className="font-mono text-[10px] text-white/50">seed: {result.seed}</span>
                   </div>
