@@ -10,6 +10,7 @@ import { useCartStore } from '@/lib/store-cart';
 import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
 import { DesignCanvas } from '@/components/product/design-canvas';
 import { ProductReviews } from '@/components/product/product-reviews';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 const DESIGN_GALLERY = [
   { src: '/mock-designs/retro-1.png',       label: 'Retro',       prompt: 'sol retro estilo anos 70 com raios geométricos, paleta laranja queimado e amarelo mostarda' },
@@ -55,6 +56,8 @@ export function ProductDetail({ product }: { product: Product }) {
 
   const activeMockup = selectedVariant?.mockup ?? product.mockup;
   const isDesignSelected = selectedDesign !== null;
+  const printZone = MOCKUP_PRINT_ZONES[product.slug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
+  const canvasAspectRatio = printZone.aspectRatio ?? '1';
 
   const addToCart = useCartStore((s) => s.add);
   const { t } = useLang();
@@ -138,8 +141,8 @@ export function ProductDetail({ product }: { product: Product }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="relative rounded-2xl overflow-hidden aspect-square border border-border"
-                style={{ background: product.mockupBg ?? '#1a1a1a' }}
+                className="relative rounded-2xl overflow-hidden border border-border"
+                style={{ background: product.mockupBg ?? '#1a1a1a', aspectRatio: canvasAspectRatio }}
               >
                 <div className="absolute inset-0 p-10">
                   <CompositedMockup

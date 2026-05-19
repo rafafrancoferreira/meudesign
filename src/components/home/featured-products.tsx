@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { products, formatPrice } from '@/lib/products';
 import { useLang, getProductMeta } from '@/lib/i18n';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 const FEATURED_SLUGS = ['t-shirt', 'hoodie', 'poster', 'caneca'];
 
@@ -64,12 +65,14 @@ export function FeaturedProducts() {
           viewport={{ once: true, margin: '-60px' }}
           className="grid grid-cols-2 lg:grid-cols-4 gap-4"
         >
-          {featured.map((product) => (
+          {featured.map((product) => {
+            const zone = MOCKUP_PRINT_ZONES[product.slug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
+            return (
             <motion.div key={product.slug} variants={item}>
               <Link href={`/produto/${product.slug}`} className="group block">
                 <div
-                  className="relative border border-border group-hover:border-[var(--border-strong)] rounded-xl overflow-hidden aspect-square mb-4 transition-all duration-300 group-hover:scale-[1.02]"
-                  style={{ background: product.mockupBg ?? 'rgba(255,255,255,0.04)' }}
+                  className="relative border border-border group-hover:border-[var(--border-strong)] rounded-xl overflow-hidden mb-4 transition-all duration-300 group-hover:scale-[1.02]"
+                  style={{ background: product.mockupBg ?? 'rgba(255,255,255,0.04)', aspectRatio: zone.aspectRatio ?? '1' }}
                 >
                   {/* Mockup */}
                   <div className="absolute inset-0 flex items-center justify-center p-8">
@@ -110,7 +113,8 @@ export function FeaturedProducts() {
                 </div>
               </Link>
             </motion.div>
-          ))}
+            );
+          })}
         </motion.div>
       </div>
     </section>

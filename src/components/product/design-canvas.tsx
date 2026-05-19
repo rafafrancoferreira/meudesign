@@ -198,8 +198,8 @@ export function DesignCanvas({
     <div className={className}>
       <div
         ref={canvasRef}
-        className="relative border border-border rounded-xl overflow-hidden aspect-square select-none"
-        style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate' }}
+        className="relative border border-border rounded-xl overflow-hidden select-none"
+        style={{ background: isDarkMockup ? '#1a1a1a' : '#ffffff', isolation: 'isolate', aspectRatio: printZone.aspectRatio ?? '1' }}
       >
       <svg aria-hidden="true" style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden' }}>
         <defs>

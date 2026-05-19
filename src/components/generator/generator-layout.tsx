@@ -11,6 +11,7 @@ import { useCartStore } from '@/lib/store-cart';
 import { useLang, getProductMeta, getColorName } from '@/lib/i18n';
 import { products, type ProductVariant } from '@/lib/products';
 import { DesignCanvas, defaultDesignTransform } from '@/components/product/design-canvas';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 type GenerationState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -494,8 +495,8 @@ export function GeneratorLayout() {
             {/* Canvas — idle / loading / error states */}
             {state !== 'success' && (
               <div
-                className="relative border border-border rounded-xl overflow-hidden aspect-square flex items-center justify-center select-none"
-                style={{ isolation: 'isolate', background: '#000000' }}
+                className="relative border border-border rounded-xl overflow-hidden flex items-center justify-center select-none"
+                style={{ isolation: 'isolate', background: '#000000', aspectRatio: (MOCKUP_PRINT_ZONES[selectedProduct] ?? MOCKUP_PRINT_ZONES['t-shirt']).aspectRatio ?? '1' }}
               >
                 {/* ── IDLE ── */}
                 {state === 'idle' && (

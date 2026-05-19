@@ -7,12 +7,14 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { type Product, formatPrice } from '@/lib/products';
 import { useLang, getProductMeta } from '@/lib/i18n';
+import { MOCKUP_PRINT_ZONES } from '@/lib/mockup-zones';
 
 export function ProductCard({ product }: { product: Product }) {
   const defaultMockup = product.variants?.[0]?.mockup ?? product.mockup;
   const [activeMockup, setActiveMockup] = useState(defaultMockup);
   const { t } = useLang();
   const meta = getProductMeta(product.slug, t);
+  const zone = MOCKUP_PRINT_ZONES[product.slug] ?? MOCKUP_PRINT_ZONES['t-shirt'];
 
   const displayName = meta?.nameShort ?? product.name
     .replace(' personalizados', '')
@@ -35,8 +37,8 @@ export function ProductCard({ product }: { product: Product }) {
       >
       {/* Image container */}
       <div
-        className="relative border border-border rounded-xl overflow-hidden aspect-square mb-3 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.07)]"
-        style={{ background: product.mockupBg ?? '#1a1a1a' }}
+        className="relative border border-border rounded-xl overflow-hidden mb-3 transition-shadow duration-300 group-hover:shadow-[0_0_24px_rgba(218,254,34,0.07)]"
+        style={{ background: product.mockupBg ?? '#1a1a1a', aspectRatio: zone.aspectRatio ?? '1' }}
       >
         {/* Mockup — always visible, brightens on hover */}
         <div className="absolute inset-0 flex items-center justify-center p-8">
