@@ -5,10 +5,28 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const STORAGE_KEY = 'cookie-consent';
 
+const LABELS = {
+  pt: {
+    text: 'Este site utiliza cookies para melhorar a tua experiência. Ao continuar, aceitas a utilização de cookies.',
+    link: 'Saber mais',
+    reject: 'Recusar',
+    accept: 'Aceitar',
+  },
+  en: {
+    text: 'This site uses cookies to improve your experience. By continuing, you consent to the use of cookies.',
+    link: 'Learn more',
+    reject: 'Reject',
+    accept: 'Accept',
+  },
+};
+
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const [lang, setLang] = useState<'pt' | 'en'>('en');
 
   useEffect(() => {
+    const browserLang = navigator.language || '';
+    setLang(browserLang.toLowerCase().startsWith('pt') ? 'pt' : 'en');
     if (!localStorage.getItem(STORAGE_KEY)) {
       setVisible(true);
     }
@@ -40,13 +58,12 @@ export function CookieBanner() {
             }}
           >
             <p className="flex-1 text-xs font-mono text-muted-foreground leading-relaxed">
-              This site uses cookies to improve your experience. By continuing,
-              you consent to the use of cookies.{' '}
+              {LABELS[lang].text}{' '}
               <a
                 href="/legal/privacidade"
                 className="text-muted underline underline-offset-2 hover:text-foreground transition-colors"
               >
-                Learn more
+                {LABELS[lang].link}
               </a>
             </p>
             <div className="flex gap-2 shrink-0">
@@ -54,13 +71,13 @@ export function CookieBanner() {
                 onClick={() => respond('rejected')}
                 className="px-4 py-2 text-[11px] font-mono font-bold uppercase tracking-widest rounded-lg border border-border text-muted hover:border-border-strong hover:text-foreground transition-colors"
               >
-                Reject
+                {LABELS[lang].reject}
               </button>
               <button
                 onClick={() => respond('accepted')}
                 className="px-4 py-2 text-[11px] font-mono font-bold uppercase tracking-widest rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 transition-colors"
               >
-                Accept
+                {LABELS[lang].accept}
               </button>
             </div>
           </div>
