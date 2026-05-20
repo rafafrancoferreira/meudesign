@@ -132,7 +132,7 @@ const PT = {
           'Em segundos, o modelo de IA interpreta o teu prompt e cria um design único, pronto a aplicar no produto que escolheres.',
       },
       {
-        title: 'Receves em casa',
+        title: 'Recebes em casa',
         description:
           'Aprovado o design, tratamos da produção e do envio. Em poucos dias úteis, o produto chega à tua porta.',
       },
@@ -572,7 +572,7 @@ const EN = {
           'In seconds, the AI model interprets your prompt and creates a unique design, ready to apply on the product of your choice.',
       },
       {
-        title: 'Delivered home',
+        title: 'Delivered to your door',
         description:
           'Once you approve the design, we handle production and shipping. In a few business days, it arrives at your door.',
       },
